@@ -29,6 +29,8 @@ Toda necesidad de desarrollo nace de una de dos fuentes, ambas provistas por [An
 | **Ampliar capacidad** (brecha crónica / pool frágil) | Habilitar a más personas para una unidad. | UCI tiene solo 5 elegibles → formar 2 más. |
 | **Mantener capacidad** (habilitaciones por vencer) | Recertificar antes del vencimiento. | 6 personas con RCP por vencer → recertificación. |
 
+> **La conversión genera una propuesta, no un hecho.** Analítica propone la necesidad; el **Supervisor la confirma, ajusta o descarta**. Nada se agenda a la fuerza.
+
 Cada necesidad se resuelve con una o varias **acciones de desarrollo** (los cinco tipos):
 
 | Acción | Para qué | Se conecta con Habilitación como… |
@@ -58,8 +60,16 @@ El **catálogo** de orientaciones, cursos y entrenamientos disponibles, con insc
 ### Progreso
 Cada acción y cada plan muestran su **avance** (pendiente → en curso → evaluación → completada) y el % global.
 
-### Responsables
-Cada acción tiene un **responsable** nombrado: tutor de orientación, formador, evaluador/a, jefatura. Nadie "en general": siempre una persona rinde cuentas.
+### Responsables (roles diferenciados)
+Cada acción tiene un **responsable** nombrado, con **roles distintos** que no se confunden:
+
+| Rol | Responsable de… |
+|-----|-----------------|
+| **Supervisor** | Orientación/inducción a la unidad y **validación final** de la habilitación. |
+| **Formador** | Entrenamiento/capacitación (impartir y registrar el aprendizaje). |
+| **Evaluador/a** | Evaluación de desempeño y certificación (verificar el dominio). |
+
+Un mismo caso pasa por los tres: se forma, se evalúa y el Supervisor valida. Nadie "en general": siempre una persona rinde cuentas por cada paso.
 
 ### Trazabilidad
 Historial completo: quién orientó/evaluó/certificó, cuándo, con qué resultado y evidencia. Append-only y auditable (igual que el resto del sistema).
@@ -85,17 +95,20 @@ Una acción **reprobada** no cierra la puerta: se reintenta (con trazabilidad de
 
 ## 20.5 Cierre automático del ciclo
 
-Este es el corazón de M7 y de la promesa "al completar un plan, la habilitación se actualiza automáticamente":
+Este es el corazón de M7. **Regla confirmada:** el plan completo **no habilita solo** — requiere una **validación final humana** (del Supervisor). Tras esa validación, la habilitación y todo lo que sigue **sí se propaga automáticamente**.
 
 ```mermaid
 sequenceDiagram
     participant D as Desarrollo (M7)
+    participant S as Supervisor
     participant BUS as Bus de eventos
     participant H as Habilitación (M2)
     participant NEX as Índice NEX
     participant AN as Analítica
     D->>D: última acción del plan Aprobada (Completado)
-    D->>BUS: AccionFormativaCompletada {funcionario, competencia/unidad}
+    D->>S: Solicita validación final
+    Note over S: Revisa evidencia y confirma
+    S->>BUS: HabilitacionValidada (AccionFormativaCompletada)
     BUS-->>H: entrega evento
     H->>H: otorga/renueva habilitación (Vigente)
     H->>BUS: HabilitacionOtorgada
@@ -103,7 +116,7 @@ sequenceDiagram
     BUS-->>AN: capacidad de reemplazo +1 · brecha estructural ↓
 ```
 
-- **Sin pasos manuales entre módulos:** completar el plan **es** habilitar. La persona aparece de inmediato como elegible en la unidad nueva ([05 · SSOT](./05-fuente-unica-de-verdad.md)).
+- **Validación humana primero, propagación automática después:** el Supervisor confirma; a partir de ahí ningún paso es manual ([05 · SSOT](./05-fuente-unica-de-verdad.md)).
 - El efecto es medible: el **pool efectivo** de esa unidad sube y el Índice NEX tiene una opción más.
 
 ## 20.6 Roles
@@ -136,15 +149,24 @@ sequenceDiagram
 |-----------|----------|-----------|
 | **Cobertura de competencias críticas** | % de la dotación con las competencias clave vigentes. | Todos |
 | **Planes activos / completados** | Volumen y avance de la formación. | Supervisor / Coordinador |
-| **Capacidad ganada** | Nuevos elegibles por unidad en el período. | Coordinador / Subdirección |
-| **Recertificaciones a tiempo** | % de habilitaciones renovadas antes de vencer. | Todos |
-| **Brechas de competencia abiertas** | Requisitos de unidad sin suficiente personal habilitado. | Subdirección |
-| **Retorno de formación** | Brechas/costos reducidos tras ampliar capacidad. | Subdirección |
+| **Brechas de competencia abiertas** | Requisitos de unidad sin suficiente personal habilitado. | Supervisor / Coordinador |
 
-## 20.9 Qué validar
+**Vista de Subdirección (confirmada):**
 
-1. **¿Los cinco tipos de acción** (orientación, entrenamiento, evaluación, certificación, recertificación) cubren tu realidad, o falta alguno?
-2. **¿La conversión automática brecha → necesidad de desarrollo** debe ser una **propuesta** que el Supervisor confirma, o algo que se crea solo?
-3. **¿Los responsables** de orientación/evaluación/certificación son los correctos (Supervisor, formador, evaluador)?
-4. **¿La actualización automática de la habilitación** al completar el plan es lo esperado, o requiere una validación final humana?
-5. **¿Qué indicadores** de §20.8 son los que Subdirección usará para aprobar inversión en formación?
+| Indicador | Qué mide |
+|-----------|----------|
+| **Brechas cerradas por formación** | Brechas estructurales resueltas gracias al desarrollo (no a coberturas puntuales). |
+| **Aumento de personal elegible** | Nuevos elegibles por unidad (capacidad ganada). |
+| **Reducción de coberturas críticas** | Baja de brechas críticas atribuible a la mayor capacidad. |
+| **Recertificaciones oportunas** | % de habilitaciones renovadas antes de vencer. |
+| **Retorno operativo de la capacitación** | Impacto de la formación en la operación (menos escaladas, menor costo de cobertura). |
+
+## 20.9 Decisiones validadas
+
+- ✅ **Cinco tipos de acción** correctos: orientación, entrenamiento, evaluación, certificación, recertificación.
+- ✅ **Brecha → propuesta de necesidad;** el Supervisor la **confirma, ajusta o descarta**.
+- ✅ **Responsables diferenciados:** Supervisor (orientación + validación final), Formador (entrenamiento), Evaluador (evaluación/certificación).
+- ✅ **La habilitación se actualiza solo tras validación final humana** (del Supervisor); luego la propagación es automática.
+- ✅ **Subdirección ve:** brechas cerradas por formación, aumento de personal elegible, reducción de coberturas críticas, recertificaciones oportunas y retorno operativo de la capacitación.
+
+Siguiente paso: **Administración y Configuración** — ver [21 · Administración](./21-administracion-configuracion.md).
