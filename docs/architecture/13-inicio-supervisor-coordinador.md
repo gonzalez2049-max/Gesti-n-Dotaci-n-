@@ -120,9 +120,11 @@ Todo sin salir de Inicio.
 - **Confianza:** el panel siempre explica *por qué* falta gente y *por qué* estos candidatos (y no otros).
 - **Lenguaje operativo** de [12 §12.8](./12-inicio-bandeja.md#128-vocabulario-claro-para-el-usuario) en toda la pantalla.
 
-## 13.9 Qué validar de esta pantalla
+## 13.9 Decisiones validadas
 
-1. ¿El **panel lateral** con reemplazos comparables es la forma correcta de resolver, o esperas algo distinto?
-2. ¿El orden **estado → indicadores → acciones** funciona, o prefieres las acciones primero?
-3. ¿Los **reemplazos** deben mostrar el **costo** explícito (hora extra, refuerzo) al Supervisor, o eso solo lo ve Dirección/Coordinador?
-4. ¿*Escalar a Coordinación* es el paso correcto cuando el Supervisor no puede cubrir?
+- ✅ **Panel lateral con candidatos comparables:** correcto. Muestra **solo candidatos elegibles** (habilitados y sin exceder tope) y **explica por qué se recomienda cada uno** (una línea: *"habilitada en UCI, 0 h extra, no deja otra brecha"*).
+- ✅ **Orden estado → indicadores → acciones**, y la acción crítica **"Resolver" siempre visible** en la tarjeta.
+- ✅ **Costo del reemplazo:** lo ven **Supervisor y Coordinador**. **Dirección** lo ve **consolidado en analítica** (no por caso).
+- ✅ **"Escalar a Coordinación":** es el paso correcto cuando el Supervisor no logra resolver con los candidatos disponibles.
+
+El siguiente paso es el **flujo completo de resolución de cobertura** — ver [14 · Flujo de resolución de cobertura](./14-flujo-resolucion-cobertura.md).
