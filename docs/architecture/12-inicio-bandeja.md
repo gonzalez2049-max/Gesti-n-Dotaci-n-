@@ -25,10 +25,10 @@ Todo lo demás (turnos próximos, ausencias recientes, certificaciones por vence
 │     🟢/🟡/🔴  "Tu unidad está cubierta" / "Faltan 2 personas" │
 ├──────────────────────────────────────────────────────────────┤
 │ (1) ACCIONES PRIORITARIAS  (lo primero, ordenado por riesgo)  │
-│     🔴 Ahora   · tarjeta con "qué pasa · por qué · [Abrir]"   │
-│     🟠 Hoy     · ...                                          │
-│     🟡 Semana  · ...                                          │
-│     ⚪ Info     · ...                                          │
+│     🔴 Ahora        · tarjeta con "qué pasa · por qué · [Abrir]"│
+│     🟠 Hoy          · ...                                     │
+│     🟡 Esta semana  · ...                                     │
+│     ⚪ Para revisar  · ...                                     │
 ├───────────────────────────────┬──────────────────────────────┤
 │ (2) INDICADORES (resumen)      │ (3) CÓMO SE ORDENA           │
 │  · Estado de dotación          │  riesgo · urgencia ·         │
@@ -50,12 +50,14 @@ Todo lo demás (turnos próximos, ausencias recientes, certificaciones por vence
 
 Cada acción recibe una prioridad según **cuatro factores**, en palabras simples:
 
+> **Orden confirmado:** la prioridad se ordena por **riesgo operativo → urgencia → cercanía del turno → acción pendiente**.
+
 | Factor | Pregunta que responde | Ejemplo que sube la prioridad |
 |--------|------------------------|-------------------------------|
-| **Riesgo** | ¿Qué tan grave es si no se resuelve? | UCI o Urgencias; turno bajo el mínimo seguro. |
+| **Riesgo operativo** | ¿Qué tan grave es para la operación si no se resuelve? | UCI o Urgencias; turno bajo el mínimo seguro. |
 | **Urgencia** | ¿Cuánto tiempo hay para actuar? | Falta cubrir el turno de esta noche. |
-| **Fecha** | ¿Para cuándo es? | Hoy pesa más que el sábado que viene. |
-| **Acción requerida** | ¿Depende de mí? | Solo tú puedes aprobar ese permiso. |
+| **Cercanía del turno** | ¿Para cuándo es? | Hoy pesa más que el sábado que viene. |
+| **Acción pendiente** | ¿Depende de ti resolverlo? | Solo tú puedes aprobar ese permiso. |
 
 Con eso, cada tarjeta cae en un **nivel** con nombre claro:
 
@@ -64,7 +66,7 @@ Con eso, cada tarjeta cae en un **nivel** con nombre claro:
 | 🔴 **Ahora** | Grave e inminente. Resolver ya. | Rojo |
 | 🟠 **Hoy** | Importante. Resolver durante el día. | Ámbar |
 | 🟡 **Esta semana** | Planificar con tiempo. | Azul |
-| ⚪ **Para saber** | Solo enterarse, sin acción. | Neutro |
+| ⚪ **Para revisar** | Conviene mirarlo, sin urgencia de acción. | Neutro |
 
 Cada tarjeta muestra su **"por qué"** en una línea: *"UCI · turno de esta noche · falta 1 enfermero/a"*. Nada de números sin contexto.
 
@@ -97,6 +99,19 @@ Ningún indicador es "solo para mirar": **todos abren el proceso correspondiente
 | **Certificaciones por vencer** *(reevaluaciones)* | Habilitaciones que caducan pronto. | Fecha | Ficha de la persona / Habilitación |
 | **Acciones prioritarias** | La lista combinada y ordenada. | Los 4 factores | Cada proceso, según la tarjeta |
 
+### Indicadores principales para Supervisor / Coordinador
+
+Para los perfiles operativos (que **detectan, priorizan y resuelven**), estos son los seis indicadores fijos en la parte superior de Inicio:
+
+| Indicador principal | Qué muestra | Estado que alerta | Abre → |
+|---------------------|-------------|-------------------|--------|
+| **Dotación actual vs. requerida** | Personal disponible contra el necesario (p. ej. *12 / 14 · faltan 2*). | Disponible < requerido | Programación / Cobertura |
+| **Ausencias del día** | Cuántas personas no están hoy y por qué. | — | Ausencias |
+| **Brechas sin resolver** | Turnos con dotación insuficiente aún abiertos. | Hay críticas | Panel de cobertura |
+| **Coberturas en proceso** | Reemplazos en gestión (oferta enviada, esperando). | Sin avance / vencidas | Panel de cobertura |
+| **Próximo turno en riesgo** | El siguiente turno que puede quedar bajo el mínimo. | En riesgo / crítico | Panel de cobertura |
+| **Reevaluaciones pendientes** | Orientaciones, evaluaciones o certificaciones por vencer. | Vencen esta semana | Habilitación / Ficha |
+
 ## 12.6 Comportamiento y experiencia
 
 1. **Un vistazo basta.** El estado se entiende sin leer números: semáforo + una frase clara.
@@ -122,27 +137,28 @@ Nueva → Vista → En curso → Resuelta (desaparece)
 
 ## 12.8 Vocabulario claro (para el usuario)
 
-Traducimos los términos internos a palabras del día a día. **En la interfaz mandan las de la derecha.**
+Usamos **lenguaje operativo muy claro**. Estas son las definiciones confirmadas; **en la interfaz mandan estos significados**.
 
-| Término interno | En la pantalla (claro) |
-|-----------------|------------------------|
-| Brecha activa | **Turno sin cubrir** / *Falta gente* |
-| Cobertura sin resolver | **Reemplazo por confirmar** |
-| Dotación | **Personal del turno** / *el equipo* |
-| Dotación objetivo | **Cuánta gente se necesita** |
-| Habilitación / reevaluación por vencer | **Certificación por renovar** |
-| Solicitud (ausencia/cambio) | **Permiso** / *cambio de turno* |
-| Ausencia | **Licencia** / *permiso* |
-| Severidad crítica | **Urgente / turno en riesgo** |
-| Oferta de cobertura | **Te pidieron cubrir un turno** |
-| Pool / flotante | **Equipo de apoyo** |
+| Término | Definición operativa (confirmada) |
+|---------|-----------------------------------|
+| **Brecha** | Turno con **dotación insuficiente**. |
+| **Cobertura** | **Reemplazo requerido o en gestión**. |
+| **Habilitación por vencer** | **Orientación, evaluación o certificación próxima a vencer**. |
+| **Dotación** | **Personal disponible versus requerido**. |
+| Dotación objetivo | Personal requerido (el "versus requerido"). |
+| Solicitud | Permiso o cambio de turno por responder. |
+| Ausencia | Licencia o permiso registrado. |
+| Severidad crítica | Turno en riesgo (bajo el mínimo seguro). |
+| Oferta de cobertura | Solicitud de cubrir un turno enviada a una persona. |
+| Pool / flotante | **Equipo de apoyo**. |
 
-## 12.9 Qué queda por validar
+## 12.9 Decisiones validadas
 
-1. **¿El orden de las tres preguntas** (estado → atención → acción) es el correcto para tu día a día?
-2. **¿Los cuatro factores de prioridad** (riesgo, urgencia, fecha, acción requerida) reflejan cómo decides tú qué es lo primero?
-3. **¿Los niveles "Ahora / Hoy / Esta semana / Para saber"** son claros, o prefieres otras palabras?
-4. **¿El vocabulario de §12.8** es el que usan realmente los enfermeros/as de tu servicio? (¡corrígeme las palabras!)
-5. **¿Falta algún indicador** que mires siempre al empezar tu turno?
+Confirmado con el usuario (perfil operativo, enfermería):
 
-Con esto validado, avanzamos a la **pantalla** de Inicio para el primer perfil (propongo empezar por **Funcionario**, que es el más usado, o por **Supervisor/Coordinador**, donde vive la resolución de coberturas).
+- ✅ **Orden de prioridad:** riesgo operativo → urgencia → cercanía del turno → acción pendiente.
+- ✅ **Niveles:** Ahora · Hoy · Esta semana · **Para revisar** (antes "Para saber").
+- ✅ **Vocabulario operativo** de §12.8 (brecha = dotación insuficiente; cobertura = reemplazo requerido/en gestión; habilitación por vencer = orientación/evaluación/certificación próxima a vencer; dotación = disponible vs. requerido).
+- ✅ **Indicadores principales** (Supervisor/Coordinador): dotación actual vs. requerida · ausencias del día · brechas sin resolver · coberturas en proceso · próximo turno en riesgo · reevaluaciones pendientes.
+
+Siguiente paso: la **pantalla de Inicio para Supervisor/Coordinador** — ver [13 · Inicio operativo](./13-inicio-supervisor-coordinador.md).
