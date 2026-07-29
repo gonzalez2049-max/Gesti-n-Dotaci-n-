@@ -21,10 +21,10 @@ Ambas miran **los mismos datos** (una sola malla); cambia el **lente**.
 | Concepto | Definición |
 |----------|-----------|
 | **Período** | Rango que cubre la malla (típicamente un mes). |
-| **Turno** | Bloque horario (p. ej. Mañana 08–16, Tarde 14–22, Noche 22–06). Configurable por unidad. |
-| **Dotación objetivo** | Cuántas personas de cada rol se **requieren** por turno y día (la demanda). Puede variar por día de semana o estacionalidad. |
+| **Turno** | Bloque horario. **Base confirmada: sistema de cuarto turno** (Largo diurno ~12 h y Noche ~12 h). Otras jornadas configurables por unidad. |
+| **Dotación objetivo** | Cuántas personas de cada rol se **requieren** por turno y día (la demanda). **Configurable por unidad, turno, día de la semana y período** (no fija). |
 | **Asignación** | Una persona puesta en un turno concreto (día + unidad + turno). Es la "oferta". |
-| **Patrón / ciclo de turnos** | Secuencia repetible que ordena turnos y descansos (p. ej. rotación día/noche con libres). Genera la malla base. |
+| **Patrón / ciclo de turnos** | Secuencia repetible que ordena turnos y descansos. **Patrón base confirmado: Largo → Noche → Libre → Libre** (cuarto turno), con **excepciones y otras jornadas configurables por el Administrador**. Genera la malla base. |
 | **Dotación diaria** | Suma de asignaciones para un día/turno. |
 | **Disponible** | Dotación diaria − ausentes − no habilitados. |
 | **Brecha** | Dotación objetivo − disponible, cuando es > 0. |
@@ -92,20 +92,20 @@ flowchart LR
 
 Dos tipos: **duras** (no se pueden violar; bloquean la publicación) y **blandas** (se optimizan; solo advierten).
 
-### Reglas duras
+### Reglas duras (confirmadas — bloquean la publicación)
 | Regla | Qué asegura |
 |-------|-------------|
-| **Descanso mínimo entre turnos** | No encadenar, p. ej., Noche → Mañana sin descanso suficiente. |
-| **Tope de horas** (semanal/mensual) | No superar la jornada del contrato; controla horas extra. |
+| **Descanso mínimo entre jornadas** | No encadenar jornadas sin el descanso suficiente (p. ej. Noche → Largo). |
+| **Máximo de noches consecutivas** | Límite duro de noches seguidas para evitar fatiga (configurable). |
+| **Límite de horas** (semanal/mensual) | No superar la jornada del contrato; controla horas extra. |
 | **Sin solapamiento** | Una persona no puede estar en dos turnos a la vez. |
-| **Habilitación requerida** | Solo se asigna a quien está habilitado para esa unidad/rol. |
-| **Cobertura mínima de seguridad** | Ningún turno bajo el mínimo seguro (según criticidad de la unidad). |
+| **Habilitación vigente** | Solo se asigna a quien está habilitado **y vigente** para esa unidad/rol. |
+| **Dotación mínima de seguridad** | Ningún turno bajo el mínimo seguro (según criticidad de la unidad). |
 
 ### Reglas blandas (optimización)
 | Regla | Qué mejora |
 |-------|-----------|
 | **Carga equitativa** | Repartir turnos, noches y fines de semana de forma justa. |
-| **Máximo de noches consecutivas** | Evitar fatiga acumulada. |
 | **Continuidad / preferencias** | Respetar preferencias y estabilidad de equipos cuando se pueda. |
 | **Distribución de libres** | Descansos bien repartidos. |
 
@@ -152,10 +152,14 @@ flowchart TB
 - **Operar (diaria):** cada día ve la dotación real por turno, absorbe ausencias y **cubre las brechas** desde la misma vista. Trabajo continuo.
 - **Un solo lugar, dos lentes:** se pasa de mensual a diaria sin cambiar de módulo; es la misma malla vista distinto.
 
-## 15.10 Qué validar
+## 15.10 Decisiones validadas
 
-1. **¿Los turnos base** (Mañana/Tarde/Noche) y sus horarios son los de tu servicio, o usan otros (p. ej. turnos de 12 h, cuarto turno)?
-2. **¿Las reglas duras de §15.6** son las correctas y completas para tu normativa? ¿Falta alguna (p. ej. noches máximas por mes)?
-3. **¿La generación asistida** (el sistema propone y tú ajustas) es lo que esperas, o prefieres armar la malla 100% manual al inicio?
-4. **¿La dotación objetivo varía** por día de semana / temporada, o es fija por turno?
-5. **¿Quién publica** la malla y quién debe **aprobarla** antes de publicar (Supervisor solo, o con visto de Dirección)?
+- ✅ **Cuarto turno** como patrón base: **Largo → Noche → Libre → Libre**, con excepciones y otras jornadas **configurables por el Administrador**.
+- ✅ **Reglas duras** (§15.6): descanso mínimo entre jornadas, máximo de noches consecutivas, límite de horas, sin solapamientos, habilitación vigente y dotación mínima de seguridad.
+- ✅ **Programación asistida:** el sistema propone una malla óptima y el Supervisor la ajusta antes de publicar.
+- ✅ **Dotación objetivo configurable** por unidad, turno, día de la semana y período (no fija).
+- ✅ **Publicación por el Supervisor;** Dirección solo visualiza y analiza, salvo que el Administrador defina **aprobación obligatoria**.
+
+Siguiente paso: **Ausencias**, el evento que conecta la programación con la dotación, las brechas y las coberturas — ver [16 · Ausencias](./16-ausencias.md).
+
+> Nota: el prototipo de malla usó turnos M/T/N como ejemplo genérico; el patrón confirmado es el **cuarto turno** (Largo/Noche/Libre/Libre). El modelo funcional es idéntico; solo cambian las etiquetas y horarios de los turnos.
