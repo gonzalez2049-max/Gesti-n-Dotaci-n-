@@ -48,7 +48,15 @@ Detectada → Priorizada → EnGestión (hay oferta activa) → Resuelta (acepta
 - El Supervisor elige uno (por defecto el recomendado ⭐) y pulsa **Enviar oferta**.
 - **Sistema:** la cobertura pasa a `OfertaEnviada`; la **brecha pasa a `EnGestión`**; se notifica al funcionario; se registra el evento. La tarjeta en Inicio pasa a *En curso*.
 
-> **Envío secuencial por defecto:** se oferta a **un candidato a la vez**, respetando el orden de recomendación, para evitar dobles compromisos. (Opcionalmente, para el *equipo de apoyo* se puede difundir a varios con aceptación por orden de llegada — configurable.)
+> **Envío secuencial (regla confirmada):** se oferta a **un candidato a la vez**, respetando el **ranking NEX** de recomendación. **No hay difusión masiva.** Esto evita dobles compromisos y hace justo el orden.
+
+**Plazo de respuesta según urgencia (confirmado).** Cada oferta tiene un tiempo máximo; al vencer, pasa **automáticamente** al siguiente candidato:
+
+| Cuándo es el turno | Plazo para responder |
+|--------------------|----------------------|
+| **Hoy** | 30 minutos |
+| **Mañana** | 2 horas |
+| **Turnos posteriores** | 6 horas |
 
 ### Paso 2 · Respuesta del funcionario
 El funcionario recibe la oferta (en su bandeja / notificación) con lo esencial: **qué turno, dónde, cuándo y hasta cuándo puede responder.** Dos caminos:
@@ -85,7 +93,7 @@ Motivos típicos (lenguaje del funcionario):
 ### Paso 6 · Confirmación del Supervisor
 - La aceptación **no aplica sola**: el Supervisor **confirma** para mantener el control humano de quién entra al turno. En la confirmación ve el resumen (quién, turno, costo/impacto).
 - Al **Confirmar** → cobertura `Confirmada`.
-- **Regla configurable:** para reemplazos de bajo riesgo (p. ej. *equipo de apoyo* ya validado), la confirmación puede ser **automática**; para hora extra o refuerzo externo, **siempre manual**.
+- **Regla confirmada:** la confirmación del Supervisor es **siempre manual** (sin auto-confirmación por ahora). El control humano de quién entra al turno se mantiene en todos los casos.
 
 ### Paso 7 · Actualización automática de la programación
 Al confirmarse, **el sistema actualiza la malla solo** (fuente única de verdad):
@@ -142,6 +150,10 @@ Se registra, por evento: **qué pasó · quién lo hizo · cuándo · dato clave
 | Programación | `AsignacionCreada` | Sistema | turno asignado |
 | Cierre | `BrechaCerrada` | Sistema | **tiempo de resolución** |
 
+**Visibilidad de la trazabilidad (confirmada):**
+- **Supervisor / Coordinador:** ven el historial **completo** de la cobertura (todos los candidatos, motivos, tiempos).
+- **Funcionario:** ve la trazabilidad de **su propia oferta y cobertura** (qué le ofrecieron, qué respondió, en qué quedó), **sin ver información de otros candidatos**.
+
 **Para qué sirve la trazabilidad:**
 - **Historial visible** de cada cobertura ("¿por qué este turno lo terminó cubriendo B y no A?").
 - **Auditoría** (registro append-only, no editable).
@@ -151,17 +163,19 @@ Se registra, por evento: **qué pasó · quién lo hizo · cuándo · dato clave
 
 | Situación | Qué hace el sistema |
 |-----------|---------------------|
-| **La oferta no se responde** | Tras un plazo configurable, se marca `SinRespuesta` y se reofrece a la siguiente opción. |
+| **La oferta no se responde** | Al vencer el plazo (30 min / 2 h / 6 h según urgencia), se marca `SinRespuesta` y se reofrece automáticamente a la siguiente opción del ranking. |
 | **El funcionario acepta pero deja de ser elegible** (p. ej. otra asignación) | Se invalida la aceptación antes de confirmar; vuelve a búsqueda. |
 | **La causa desaparece** (p. ej. se anula la licencia) | La brecha se `Desestima` y la cobertura en curso se cancela; se notifica. |
 | **Dos brechas compiten por el mismo candidato** | La aceptación **reserva** a la persona; la otra brecha lo excluye y busca alternativa. |
 | **No hay candidatos viables** | La brecha se `Escala` a Coordinación / Dirección; nunca queda sin dueño. |
 | **Confirmación de alto costo** | Requiere confirmación manual; Dirección lo ve consolidado en analítica. |
 
-## 14.7 Qué validar de este flujo
+## 14.7 Decisiones validadas
 
-1. **¿El rechazo con motivo obligatorio** te sirve, y la lista de motivos de §14.3 es la correcta para tu servicio?
-2. **¿La confirmación del Supervisor** debe ser siempre manual, o aceptas la **auto-confirmación** para el equipo de apoyo de bajo riesgo?
-3. **¿El envío secuencial** (uno a la vez) es lo correcto, o prefieres **difundir** la oferta al equipo de apoyo y que acepte el primero?
-4. **¿Qué plazo** de respuesta usamos antes de reofrecer (p. ej. 30 min para turnos de hoy)?
-5. **¿La trazabilidad** debe ser visible para el Funcionario (ver el historial de su propia cobertura), o solo para Supervisor/Coordinador?
+- ✅ **Rechazo con motivo obligatorio**, registrado en la trazabilidad.
+- ✅ **Confirmación del Supervisor siempre manual** (sin auto-confirmación por ahora).
+- ✅ **Envío secuencial** (un candidato a la vez, ranking NEX); **sin difusión masiva**.
+- ✅ **Plazos por urgencia:** hoy 30 min · mañana 2 h · posteriores 6 h. Al vencer, pasa automáticamente al siguiente candidato.
+- ✅ **Trazabilidad para el Funcionario:** ve su propia oferta y cobertura, **no** la de otros candidatos.
+
+Siguiente paso: **Programación / Malla** — ver [15 · Programación](./15-programacion-malla.md).
