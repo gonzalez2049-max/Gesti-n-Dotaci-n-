@@ -22,11 +22,13 @@ flowchart LR
 | Concepto | Definición |
 |----------|-----------|
 | **Competencia** | Capacidad verificable (p. ej. *ventilación mecánica*, *drogas vasoactivas*, *RCP avanzado*, *triage*, *manejo de pabellón*). |
-| **Requisito de unidad/rol** | Qué competencias exige una unidad para un rol. **Obligatorias** (sin ellas no hay habilitación) y **deseables** (suman, no bloquean). |
-| **Habilitación** | Estado que confirma que una persona **puede** trabajar en una unidad/rol porque tiene las competencias obligatorias **vigentes**. |
-| **Vigencia** | Toda habilitación/competencia puede **vencer**. Al vencer, deja de habilitar. |
-| **Estamento** | Categoría profesional (enfermero/a, TENS, matrón/a, médico/a…). Los requisitos varían por estamento. |
-| **Reevaluación** | El proceso que **otorga o renueva** una habilitación: **orientación** (inducción a la unidad), **evaluación** (interna) o **certificación** (acreditación). |
+| **Unidad base** | La unidad de pertenencia del funcionario. **Siempre mantiene su habilitación** en ella (ver §17.3). |
+| **Requisito mínimo (por unidad y estamento)** | El conjunto **mínimo** de competencias que exige una unidad para un estamento. Es lo único que **bloquea** una cobertura en otra unidad. |
+| **Competencia adicional** | Competencia más allá del mínimo. **Nunca bloquea** una cobertura; **solo mejora el ranking** (Índice NEX). |
+| **Habilitación** | Estado que confirma que una persona **puede** cubrir una unidad/rol porque cumple los **requisitos mínimos** vigentes. |
+| **Vigencia** | Competencias y reevaluaciones **vencen**; cada una con su propia vigencia. |
+| **Estamento** | Categoría profesional (enfermero/a, TENS, matrón/a, médico/a…). Los requisitos mínimos varían por estamento. |
+| **Reevaluación** | Proceso que otorga o renueva habilitación. **Tres tipos, cada uno con vigencia independiente:** **Orientación** (inducción a la unidad), **Evaluación de desempeño** (interna) y **Certificación** (acreditación, p. ej. RCP). |
 
 ## 17.3 Estados de la habilitación
 
@@ -42,15 +44,18 @@ stateDiagram-v2
     Vencida --> Vigente: reevaluación aprobada
 ```
 
-| Estado | ¿Elegible para cubrir? |
-|--------|:---:|
-| **Vigente** | ✅ Sí |
-| **Por vencer** | ✅ Sí (con aviso — priorizar renovación) |
-| **En proceso** | ❌ No (aún no habilitado) |
-| **Vencida** | ❌ No |
-| **No habilitado** | ❌ No |
+| Estado | ¿Elegible en su **unidad base**? | ¿Elegible en **otra unidad**? |
+|--------|:---:|:---:|
+| **Vigente** | ✅ Sí | ✅ Sí |
+| **Por vencer** (≤ umbral) | ✅ Sí (con alerta) | ✅ Sí (con alerta) |
+| **Vigente · Reevaluación requerida** | ✅ **Sí** (nunca se excluye de su unidad base) | ⚠️ Según requisito mínimo |
+| **En proceso** | — | ❌ No (aún no habilitado) |
+| **Requisito mínimo no cumplido** | n/a | ❌ No |
 
-> **Por vencer sigue siendo elegible**, pero se marca para actuar antes de que caiga. **En proceso, vencida y no habilitado quedan fuera** del pool de candidatos.
+**Reglas confirmadas:**
+- **La unidad base siempre mantiene la habilitación.** Si una orientación o evaluación **vence**, no se excluye: se muestra **"Habilitación vigente · Reevaluación requerida"** (alerta para regularizar, sin sacar a la persona de su unidad).
+- **Por vencer sigue siendo elegible**, con alerta, para actuar antes de que caiga.
+- Para **otras unidades**, lo único que bloquea es **no cumplir el requisito mínimo**. Las **competencias adicionales nunca bloquean**: solo mejoran el ranking en el Índice NEX.
 
 ## 17.4 La matriz de habilitación (quién puede cubrir cada unidad)
 
@@ -63,15 +68,17 @@ El corazón operativo del módulo es una **matriz persona × unidad**: para cada
 
 Cuando hay una brecha en (unidad U, rol R, turno T):
 
-1. **Filtro de elegibilidad (este módulo):** el pool de candidatos = personas con habilitación **Vigente o Por vencer** para (U, R). El resto **no aparece**.
+1. **Filtro de elegibilidad (este módulo):** el pool = personas que **cumplen el requisito mínimo** de (U, R) con vigencia (Vigente o Por vencer). En su **unidad base**, siempre elegibles. El resto **no aparece**.
 2. **Combinado con otras restricciones duras:** también se excluye a quien tenga **solapamiento** o **exceda su tope de horas** ([15](./15-programacion-malla.md)).
-3. **Entrega al Índice NEX:** sobre ese pool ya limpio, el Índice NEX aplica su ranking (costo, horas, fatiga, cercanía, equidad…). *(El Índice NEX se detalla en su propio documento.)*
+3. **Las competencias adicionales pasan como dato de ranking**, no como filtro: quien tiene más competencias para esa unidad **sube** en el Índice NEX, pero quien solo cumple el mínimo **igual entra**.
+4. **Entrega al Índice NEX:** sobre ese pool ya limpio, el Índice NEX aplica su ranking (costo, idoneidad, fatiga, cercanía, equidad…). Ver [18 · Índice NEX](./18-indice-nex.md).
 
 > La habilitación es **la primera compuerta**. Si está mal, el Índice NEX rankearía candidatos inválidos. Por eso este módulo va **antes**.
 
 ## 17.6 Vencimientos, reevaluaciones y su impacto
 
-- **Umbral "por vencer"** configurable (p. ej. 30 días). Al entrar en el umbral, se genera la alerta **"reevaluación pendiente"** que aparece en Inicio ([12](./12-inicio-bandeja.md)).
+- **Umbral "por vencer": 30 días por defecto, configurable por competencia** (cada competencia/reevaluación puede tener su propio umbral). Al entrar en el umbral, se genera la alerta **"reevaluación pendiente"** que aparece en Inicio ([12](./12-inicio-bandeja.md)).
+- Cada tipo de reevaluación (**Orientación, Evaluación de desempeño, Certificación**) tiene **vigencia independiente**: puede vencer una sin que caigan las otras.
 - Cuando una competencia obligatoria **vence**, la habilitación de las unidades que la exigen pasa a **Vencida** → la persona **sale del pool** → **puede abrir brechas** en turnos donde ya estaba asignada (conecta con [M5](./03-modulos-funcionales.md)).
 - La **reevaluación** (orientación/evaluación/certificación) renueva la vigencia. Al aprobarse, la persona vuelve al pool automáticamente.
 - **Reevaluación al retorno de ausencias largas** (conecta con [16](./16-ausencias.md)): algunas ausencias prolongadas exigen reevaluar antes de volver a habilitar.
@@ -88,12 +95,12 @@ Cuando hay una brecha en (unidad U, rol R, turno T):
 
 ## 17.8 Excepción autorizada (caso borde)
 
-En una urgencia extrema, un perfil con **permiso especial** puede asignar a alguien **no habilitado**. Esto:
-- Requiere **justificación** obligatoria.
-- Queda **auditado** y marcado como excepción.
-- Es visible para Dirección.
+En una urgencia extrema puede asignarse a alguien que **no cumple el requisito mínimo**. Esta excepción:
+- **Solo la otorga el Administrador** (ningún otro perfil, tampoco Dirección).
+- Requiere **motivo obligatorio**.
+- Queda **auditada** y marcada como excepción.
 
-No es un atajo operativo: es una válvula de emergencia trazable.
+No es un atajo operativo: es una válvula de emergencia trazable y de un solo responsable.
 
 ## 17.9 Relación con los módulos y eventos
 
@@ -114,10 +121,12 @@ No es un atajo operativo: es una válvula de emergencia trazable.
 - **Funcionario:** su **ficha de competencias** — qué tiene, en qué unidades está habilitado y qué vence pronto. *(La pantalla de Inicio del Funcionario se diseña aparte.)*
 - **Administrador:** catálogo de competencias, requisitos por unidad/estamento y umbrales.
 
-## 17.11 Qué validar
+## 17.11 Decisiones validadas
 
-1. **¿Las competencias y los requisitos por unidad** (UCI, Urgencias, Pabellón, etc.) son los correctos para tu institución?
-2. **¿"Por vencer" debe seguir siendo elegible** (con aviso), o prefieres excluirlo del pool desde que entra al umbral?
-3. **¿La reevaluación** distingue bien **orientación / evaluación / certificación**, o usan otros nombres/procesos?
-4. **¿Qué umbral** de "por vencer" usamos (30 días u otro), y varía por tipo de competencia?
-5. **¿La excepción autorizada** (asignar a un no habilitado en urgencia) existe en tu operación, y quién tendría ese permiso?
+- ✅ **Unidad base siempre habilitada:** si vence una orientación/evaluación, se muestra **"Habilitación vigente · Reevaluación requerida"**, sin excluir.
+- ✅ **Otras unidades:** solo bloquea el **requisito mínimo** (por unidad y estamento). Las **competencias adicionales nunca bloquean; solo mejoran el ranking**.
+- ✅ **"Por vencer" elegible con alerta.** Umbral **30 días por defecto, configurable por competencia**.
+- ✅ **Reevaluación en tres tipos** con vigencia independiente: **Orientación, Evaluación de desempeño, Certificación**.
+- ✅ **Excepción autorizada: solo el Administrador**, con motivo obligatorio y trazabilidad (Dirección queda fuera).
+
+Siguiente paso: **Índice NEX** — el ranking transparente de los candidatos ya elegibles — ver [18 · Índice NEX](./18-indice-nex.md).
