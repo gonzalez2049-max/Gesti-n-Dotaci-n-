@@ -101,8 +101,8 @@ sequenceDiagram
 
 | Regla | Qué asegura |
 |-------|-------------|
-| **Cupos simultáneos** | Limita cuántas personas de una unidad pueden estar ausentes a la vez, para no dejarla bajo el mínimo. |
-| **Saldo / derechos** | Controla los días disponibles por funcionario (vacaciones, permisos). No se solicita más de lo que se tiene. |
+| **Cupos simultáneos** | Limita cuántas personas pueden estar ausentes a la vez. **Configurable por unidad, tipo de ausencia y estamento** (no un valor fijo). |
+| **Saldo / derechos** | Feriado legal, permisos administrativos, compensatorios y otros. **Los administra RR.HH.;** NEX Shift los **consume y valida automáticamente** al solicitar (no se pide más de lo disponible). |
 | **Antelación mínima** (planificadas) | Las vacaciones/permisos se piden con la anticipación configurada. |
 | **Documentación** (imprevistas) | La licencia médica exige certificado dentro de un plazo; su falta genera objeción, no bloqueo operativo. |
 | **Aprobación según impacto** | Si la ausencia deja una **brecha crítica**, la aprobación exige confirmación consciente (y puede escalar). |
@@ -134,10 +134,15 @@ sequenceDiagram
 | **Vacaciones que dejarían la unidad bajo mínimo** | La regla de **cupos simultáneos** advierte y puede impedir la aprobación hasta reorganizar. |
 | **Licencia sin certificado en plazo** | Queda `Objetada` para gestión, sin afectar la cobertura ya realizada. |
 
-## 16.11 Qué validar
+## 16.11 Decisiones validadas
 
-1. **¿Los tipos de ausencia de §16.2** son los correctos para tu servicio? ¿Falta alguno?
-2. **¿El impacto en dotación visible antes de aprobar** es como lo esperas?
-3. **¿La regla de cupos simultáneos** (cuántos de vacaciones a la vez) aplica en tu unidad? ¿Con qué límite?
-4. **¿La licencia médica se registra** sin aprobación (impacto inmediato) y se valida después, o requiere otro flujo?
-5. **¿Qué saldos/derechos** maneja tu institución (días de vacaciones, permisos administrativos) y quién los controla?
+- ✅ **Impacto en dotación visible antes de aprobar.**
+- ✅ **Cupos simultáneos configurables** por unidad, tipo de ausencia y estamento (no fijo).
+- ✅ **Licencia médica: impacto inmediato sin aprobación previa;** validación documental en paralelo.
+- ✅ **Saldos** (feriado legal, permisos administrativos, compensatorios y otros) **administrados por RR.HH.;** NEX Shift los **consume y valida automáticamente**.
+- ✅ Patrón base de turnos: **cuarto turno** (Largo → Noche → Libre → Libre), coherente con [15](./15-programacion-malla.md).
+
+Siguiente paso: **Habilitación y Competencias** — la puerta de elegibilidad antes del Índice NEX — ver [17 · Habilitación](./17-habilitacion-competencias.md).
+
+### Integración con RR.HH. (saldos)
+NEX Shift **no es el dueño** de los saldos: los lee desde RR.HH. y los **valida en el momento de solicitar** (feriado legal, permisos, compensatorios). Si el saldo no alcanza, la solicitud se bloquea con un mensaje claro. El consumo confirmado se **informa de vuelta** a RR.HH. para mantener una sola verdad.
