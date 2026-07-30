@@ -57,12 +57,21 @@ Dos caminos:
 - **Aceptar** → la cobertura queda *Aceptada* y **a la espera de la confirmación de su Supervisor** (la validación humana de [14](./14-flujo-resolucion-cobertura.md)). El funcionario lo ve reflejado.
 - **Rechazar** → **pide un motivo** (obligatorio, [14](./14-flujo-resolucion-cobertura.md)); el sistema lo registra y reofrece al siguiente. Sin culpa ni fricción.
 
+**Estado completo de la cobertura (confirmado).** El funcionario ve **todo el recorrido de su oferta**, no solo el resultado:
+
+```
+Oferta recibida → Aceptada → Pendiente de confirmación → Confirmada
+                ↘ Rechazada
+```
+
+En cada momento sabe exactamente en qué punto está ("aceptaste, esperando confirmación de tu supervisor", "confirmada: el turno es tuyo").
+
 > El funcionario **no ve** a los demás candidatos ni el ranking: solo su propia oferta.
 
 ## 22.5 Ofrecer disponibilidad (proactivo)
 
-El funcionario puede **ofrecerse** para cubrir ventanas ("estoy disponible el sábado"). Esto:
-- Lo hace aparecer antes cuando surge una brecha compatible.
+El funcionario puede **ofrecerse** para cubrir ventanas. **Confirmado: la disponibilidad se registra por día y turno** (p. ej. *"sábado, turno Noche"*), no solo por día. Esto:
+- Lo hace aparecer antes cuando surge una brecha **compatible** con ese día y turno.
 - **Mejora su posición** en el Índice NEX (cercanía/disponibilidad), sin saltarse la elegibilidad.
 - Es voluntario y reversible.
 
@@ -89,10 +98,11 @@ Coherente con lo validado en [14 §14.5](./14-flujo-resolucion-cobertura.md): el
 | Sus competencias, vencimientos y su plan. | La matriz del equipo. |
 | El historial de su propia cobertura. | Otros candidatos, ranking o costos. |
 
-## 22.9 Qué validar
+## 22.9 Decisiones validadas
 
-1. **¿El orden estado → acciones → (indicadores / mi semana)** es el correcto para el funcionario, o prefiere ver primero su calendario?
-2. **¿"Ofrecer disponibilidad"** es una función que usarán, y con qué granularidad (día, turno, semana)?
-3. **¿Qué saldos** quiere ver el funcionario (feriado legal, permisos, compensatorios)?
-4. **¿Debe poder ver su posición/estado en una cobertura** ("aceptaste, esperando confirmación"), o solo el resultado final?
-5. **¿Cuánto de su desarrollo** mostramos aquí vs. en una sección aparte "Mi desarrollo"?
+- ✅ **Orden:** estado y acciones primero; el **calendario después**.
+- ✅ **Disponibilidad por día y turno** (no solo por día).
+- ✅ **Saldos visibles:** feriado legal, permisos administrativos y compensatorios (fuente RR.HH.).
+- ✅ **Estado completo de la cobertura:** oferta recibida · aceptada · pendiente de confirmación · confirmada · rechazada.
+
+Con este módulo se cierra el recorrido de los cinco perfiles. Índice del sistema: [00 · Índice](./00-indice.md) y la **portada navegable**.

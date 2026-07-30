@@ -1,0 +1,338 @@
+<title>NEX Shift · Portada del sistema</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --paper:#EDF1F4; --surface:#FFFFFF; --surface-2:#E9EEF2; --surface-3:#DEE5EB;
+    --ink:#0E1726; --ink-soft:#47566A; --ink-faint:#7C8B9C; --line:#D6DEE6; --line-strong:#C0CBD5;
+    --accent:#0C8F89; --accent-strong:#0A6E7A; --accent-soft:#DBF0EE;
+    --crit:#D23A41; --crit-soft:#FBE6E7; --warn:#B9741A; --warn-soft:#F7EAD6;
+    --info:#3457C8; --info-soft:#E4E9F9; --good:#2E9E68; --good-soft:#E1F2E9;
+    --violet:#7A5AA6; --violet-soft:#EEE7F5;
+    --neutral:#6B7A8B; --neutral-soft:#EBEFF3;
+    --shadow:0 1px 2px rgba(14,23,38,.05), 0 8px 22px rgba(14,23,38,.07);
+    --font-sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --font-mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --r:14px; --r-sm:10px;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --paper:#06090F; --surface:#101A25; --surface-2:#16212E; --surface-3:#1E2B39;
+    --ink:#E8EFF5; --ink-soft:#9AAABA; --ink-faint:#6C7E90; --line:#233140; --line-strong:#31424F;
+    --accent:#23C7BD; --accent-strong:#12A79E; --accent-soft:#0F2E31;
+    --crit:#EB5860; --crit-soft:#2A1417; --warn:#E0A03C; --warn-soft:#291F10;
+    --info:#5A82E0; --info-soft:#132139; --good:#3FBE7F; --good-soft:#0F2418;
+    --violet:#A98BE0; --violet-soft:#1E1733;
+    --neutral:#8496A6; --neutral-soft:#182430;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 28px rgba(0,0,0,.4);
+  }}
+  :root[data-theme="light"]{
+    --paper:#EDF1F4; --surface:#FFFFFF; --surface-2:#E9EEF2; --surface-3:#DEE5EB;
+    --ink:#0E1726; --ink-soft:#47566A; --ink-faint:#7C8B9C; --line:#D6DEE6; --line-strong:#C0CBD5;
+    --accent:#0C8F89; --accent-strong:#0A6E7A; --accent-soft:#DBF0EE;
+    --crit:#D23A41; --crit-soft:#FBE6E7; --warn:#B9741A; --warn-soft:#F7EAD6;
+    --info:#3457C8; --info-soft:#E4E9F9; --good:#2E9E68; --good-soft:#E1F2E9;
+    --violet:#7A5AA6; --violet-soft:#EEE7F5; --neutral:#6B7A8B; --neutral-soft:#EBEFF3;
+    --shadow:0 1px 2px rgba(14,23,38,.05), 0 8px 22px rgba(14,23,38,.07);
+  }
+  :root[data-theme="dark"]{
+    --paper:#06090F; --surface:#101A25; --surface-2:#16212E; --surface-3:#1E2B39;
+    --ink:#E8EFF5; --ink-soft:#9AAABA; --ink-faint:#6C7E90; --line:#233140; --line-strong:#31424F;
+    --accent:#23C7BD; --accent-strong:#12A79E; --accent-soft:#0F2E31;
+    --crit:#EB5860; --crit-soft:#2A1417; --warn:#E0A03C; --warn-soft:#291F10;
+    --info:#5A82E0; --info-soft:#132139; --good:#3FBE7F; --good-soft:#0F2418;
+    --violet:#A98BE0; --violet-soft:#1E1733; --neutral:#8496A6; --neutral-soft:#182430;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 28px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-sans);line-height:1.45;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  .wrap{max-width:1120px;margin:0 auto;padding:clamp(16px,3vw,30px) clamp(12px,3vw,26px) 70px}
+  .topline{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .brand{display:inline-flex;align-items:center;gap:9px;font-family:var(--font-mono);font-weight:600;font-size:14px}
+  .brand-dot{width:26px;height:26px;border-radius:8px;background:conic-gradient(from 200deg,var(--accent),var(--accent-strong) 55%,var(--info) 85%,var(--violet));box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}
+  .spacer{flex:1}
+  .btn-ghost{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:var(--surface);color:var(--ink-soft);border:1px solid var(--line);border-radius:99px;padding:7px 13px;cursor:pointer}
+  .btn-ghost:hover{border-color:var(--line-strong);color:var(--ink)}
+  .eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-strong);font-weight:600;margin-top:18px}
+  h1{font-size:clamp(24px,4vw,38px);line-height:1.05;letter-spacing:-.02em;margin:.3em 0 .15em;text-wrap:balance;font-weight:700}
+  h1 .thin{color:var(--ink-faint);font-weight:400}
+  .lead{color:var(--ink-soft);font-size:14.5px;max-width:72ch;margin:0}
+  .note{color:var(--ink-faint);font-size:12px;margin:10px 0 0}
+
+  /* avance */
+  .avance{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0 4px}
+  .av{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:13px 14px;box-shadow:var(--shadow)}
+  .av .n{font-size:26px;font-weight:720;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .av .l{font-size:11.5px;color:var(--ink-soft);margin-top:2px}
+  .av.done .n{color:var(--good)} .av.proto .n{color:var(--accent-strong)} .av.warn .n{color:var(--warn)} .av.build .n{color:var(--info)}
+
+  .tabs{display:flex;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:99px;padding:4px;margin:22px 0 8px;flex-wrap:wrap;position:sticky;top:8px;z-index:10;box-shadow:var(--shadow)}
+  .tab{border:0;background:transparent;color:var(--ink-soft);cursor:pointer;font-family:var(--font-sans);font-size:13px;font-weight:560;padding:9px 15px;border-radius:99px}
+  .tab[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+  .view{display:none;animation:fade .25s ease} .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @media(prefers-reduced-motion:reduce){.view{animation:none}}
+
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin:6px 2px 16px;font-size:11.5px;color:var(--ink-soft)}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .st{font-family:var(--font-mono);font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;letter-spacing:.03em}
+  .st.dis{background:var(--good-soft);color:var(--good)} .st.pro{background:var(--accent-soft);color:var(--accent-strong)}
+  .st.rec{background:var(--warn-soft);color:var(--warn)} .st.bld{background:var(--info-soft);color:var(--info)}
+
+  .groupt{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:20px 0 10px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+  .doc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:13px 14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:7px}
+  .doc .dh{display:flex;align-items:flex-start;gap:9px}
+  .doc .num{font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--accent-strong);background:var(--accent-soft);border-radius:6px;padding:2px 7px;flex:0 0 auto}
+  .doc .dt{font-size:13.5px;font-weight:600;letter-spacing:-.01em;line-height:1.25}
+  .doc .db{font-size:11.5px;color:var(--ink-soft);margin:0;flex:1}
+  .doc .sts{display:flex;gap:5px;flex-wrap:wrap}
+  .doc .links{display:flex;gap:6px;margin-top:3px}
+  .lk{font-family:var(--font-mono);font-size:10.5px;font-weight:600;padding:5px 9px;border-radius:7px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink-soft);text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+  .lk:hover{border-color:var(--accent);color:var(--accent-strong);background:var(--accent-soft)}
+  .lk.proto{border-color:color-mix(in srgb,var(--accent) 30%,transparent);color:var(--accent-strong)}
+
+  /* perfiles */
+  .perf{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+  .pcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;box-shadow:var(--shadow)}
+  .pcard .ph{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+  .pcard .pic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--accent-soft)}
+  .pcard h3{font-size:15px;margin:0} .pcard .pscope{font-family:var(--font-mono);font-size:10px;color:var(--ink-faint)}
+  .pcard .pq{font-size:12.5px;color:var(--ink-soft);margin:8px 0 10px}
+  .pcard .puses{display:flex;flex-direction:column;gap:5px}
+  .puse{display:flex;align-items:center;gap:7px;font-size:12px}
+  .puse .un{font-family:var(--font-mono);font-size:10px;color:var(--accent-strong);background:var(--accent-soft);border-radius:5px;padding:1px 5px}
+  .puse a{color:var(--accent-strong);text-decoration:none;font-weight:560}
+  .puse a:hover{text-decoration:underline}
+
+  /* proceso */
+  .flow{display:flex;flex-direction:column;gap:10px}
+  .fnode{display:grid;grid-template-columns:40px 1fr;gap:14px;position:relative}
+  .fnode::before{content:"";position:absolute;left:19px;top:38px;bottom:-14px;width:2px;background:var(--line)}
+  .fnode:last-child::before{display:none}
+  .fnum{width:40px;height:40px;border-radius:50%;background:var(--surface);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;font-size:14px;color:var(--accent-strong);z-index:1}
+  .fnode.loop .fnum{border-color:var(--violet);color:var(--violet)}
+  .fbody{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 15px;box-shadow:var(--shadow)}
+  .fbody .ft{font-weight:640;font-size:14px} .fbody .fd{font-size:12.5px;color:var(--ink-soft);margin:3px 0 8px}
+  .fbody .flinks{display:flex;gap:6px;flex-wrap:wrap}
+
+  /* dependencias */
+  .depwrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);overflow-x:auto}
+  .deprow{display:grid;grid-template-columns:180px 1fr;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);align-items:center;font-size:12.5px}
+  .deprow:last-child{border-bottom:0}
+  .deprow .dm{font-weight:600} .deprow .dm .mid{font-family:var(--font-mono);font-size:10px;color:var(--ink-faint);display:block}
+  .deprow .arrows{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font-family:var(--font-mono);font-size:10px;padding:2px 7px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-soft)}
+  .chip.in{background:var(--info-soft);color:var(--info);border-color:transparent} .chip.out{background:var(--good-soft);color:var(--good);border-color:transparent}
+
+  /* revisión */
+  .rev{display:flex;flex-direction:column;gap:10px}
+  .ritem{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:var(--r-sm);padding:12px 15px;box-shadow:var(--shadow)}
+  .ritem.gap{border-left-color:var(--crit)} .ritem.dup{border-left-color:var(--violet)} .ritem.inc{border-left-color:var(--warn)}
+  .ritem .rt{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:3px}
+  .rtag{font-family:var(--font-mono);font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;letter-spacing:.04em}
+  .rtag.gap{background:var(--crit-soft);color:var(--crit)} .rtag.dup{background:var(--violet-soft);color:var(--violet)} .rtag.inc{background:var(--warn-soft);color:var(--warn)}
+  .ritem .rn{font-weight:620;font-size:13.5px} .ritem .rd{font-size:12.5px;color:var(--ink-soft);margin:2px 0 0}
+  .ritem .rd b{color:var(--ink)} .ritem .reco{font-size:11.5px;color:var(--accent-strong);margin-top:5px;font-family:var(--font-mono)}
+  .revnote{background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);border-radius:10px;padding:10px 13px;font-size:12.5px;margin-bottom:14px}
+  .revnote b{color:var(--accent-strong)}
+
+  .next{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow);margin-top:22px}
+  .next h3{margin:0 0 6px;font-size:15px}
+  .next ol{margin:6px 0 0;padding-left:20px;font-size:13px;color:var(--ink-soft);line-height:1.7}
+  .foot{margin-top:24px;color:var(--ink-faint);font-size:12px}
+  .foot code{font-family:var(--font-mono);font-size:11px;background:var(--surface-2);padding:1px 6px;border-radius:5px}
+</style>
+
+<div class="wrap">
+  <div class="topline">
+    <span class="brand"><span class="brand-dot"></span>NEX&nbsp;Shift</span>
+    <span class="spacer"></span>
+    <button class="btn-ghost" id="theme">◐ Tema</button>
+  </div>
+  <p class="eyebrow">Portada del sistema · arquitectura funcional</p>
+  <h1>NEX Shift, de un vistazo <span class="thin">— 22 documentos, 12 prototipos, un solo sistema</span></h1>
+  <p class="lead">Plataforma de inteligencia operativa para dotación, turnos, coberturas y talento clínico. Esta portada conecta todo: módulos, perfiles, el flujo operativo completo, dependencias, estado de avance y acceso directo a cada prototipo y documento.</p>
+
+  <div class="avance">
+    <div class="av done"><div class="n">22</div><div class="l">Documentos diseñados</div></div>
+    <div class="av proto"><div class="n">12</div><div class="l">Prototipos navegables</div></div>
+    <div class="av warn"><div class="n">2</div><div class="l">Docs por reconciliar</div></div>
+    <div class="av build"><div class="n">0</div><div class="l">Construido en código</div></div>
+  </div>
+  <p class="note">Nota: los prototipos son artefactos privados. Si un enlace directo no abre, están en tu galería (claude.ai/code/artifacts) con el nombre “NEX Shift · …”.</p>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-v="mods">Módulos y docs</button>
+    <button class="tab" role="tab" aria-selected="false" data-v="perf">Por perfil</button>
+    <button class="tab" role="tab" aria-selected="false" data-v="proc">Por proceso</button>
+    <button class="tab" role="tab" aria-selected="false" data-v="dep">Dependencias</button>
+    <button class="tab" role="tab" aria-selected="false" data-v="rev">Revisión ⚠</button>
+  </div>
+
+  <div class="legend">
+    <span><span class="st dis">DISEÑADO</span> documento validado</span>
+    <span><span class="st pro">PROTOTIPO</span> artefacto navegable</span>
+    <span><span class="st rec">POR RECONCILIAR</span> desactualizado</span>
+    <span><span class="st bld">POR CONSTRUIR</span> aún no en código</span>
+  </div>
+
+  <section class="view active" id="v-mods"></section>
+  <section class="view" id="v-perf"></section>
+  <section class="view" id="v-proc"></section>
+  <section class="view" id="v-dep"></section>
+  <section class="view" id="v-rev"></section>
+
+  <div class="next">
+    <h3>Después de validar esta portada</h3>
+    <p style="margin:0;font-size:13px;color:var(--ink-soft)">Comenzamos la construcción real en este orden:</p>
+    <ol>
+      <li><b>Base técnica</b> (doc 07): monorepo, fuente única de verdad reactiva (Outbox + eventos), marco de la app y seguridad mínima.</li>
+      <li><b>Módulo Inicio</b>: el marco + la bandeja, para Supervisor/Coordinador (doc 13) y Funcionario (doc 22).</li>
+    </ol>
+  </div>
+
+  <p class="foot">Portada de <b>NEX Shift</b>. Documentación: <code>docs/architecture/</code> · rama <code>claude/nex-shift-architecture-l9lju9</code>.</p>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  document.getElementById('theme').addEventListener('click',function(){var cur=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');root.setAttribute('data-theme',cur==='dark'?'light':'dark');});
+
+  var GH="https://github.com/gonzalez2049-max/gesti-n-dotaci-n-/blob/claude/nex-shift-architecture-l9lju9/docs/architecture/";
+  var A="https://claude.ai/code/artifact/";
+  // n,title,file,artifact,blurb,flags
+  var DOCS=[
+    [1,"Visión, alcance y glosario","01-vision-alcance-glosario.md",null,"Qué resuelve y el vocabulario común.",[]],
+    [2,"Modelo de dominio","02-modelo-de-dominio.md",null,"Entidades, ecuación de la brecha, ciclos de vida.",["rec"]],
+    [3,"Módulos funcionales","03-modulos-funcionales.md",null,"Los 10 módulos y sus dependencias.",[]],
+    [4,"Flujo brecha → resolución","04-flujo-brecha-a-resolucion.md","82d66227-a795-4596-a8a6-29195ce052d5","El recorrido central del sistema.",[]],
+    [5,"Fuente única de verdad","05-fuente-unica-de-verdad.md",null,"Cómo un cambio actualiza todo (reactivo).",[]],
+    [6,"Roles y navegación","06-roles-y-navegacion.md",null,"Perfiles, matriz RBAC y menús.",["inc"]],
+    [7,"Arquitectura técnica","07-arquitectura-tecnica.md",null,"Stack, capas, tiempo real. (por construir)",[]],
+    [8,"Modelo de datos","08-modelo-de-datos.md",null,"Esquema físico de la SSOT.",["rec"]],
+    [9,"Eventos de dominio","09-eventos-de-dominio.md",null,"Catálogo de eventos reactivos.",["rec"]],
+    [10,"Roadmap de construcción","10-roadmap.md",null,"Orden de construcción por fases.",[]],
+    [11,"Marco y experiencia","11-marco-y-experiencia.md","82d66227-a795-4596-a8a6-29195ce052d5","El marco de la app y el recorrido integral.",[]],
+    [12,"Inicio / Bandeja","12-inicio-bandeja.md","3e0730f3-e60e-4a66-8294-cc8b6857f0f0","El centro de acción (blueprint por perfil).",["dup"]],
+    [13,"Inicio Supervisor/Coordinador","13-inicio-supervisor-coordinador.md","0b4fab75-c043-4943-b5e6-32c3943b02b6","Detectar, priorizar y resolver sin cambiar de módulo.",[]],
+    [14,"Flujo de resolución de cobertura","14-flujo-resolucion-cobertura.md","f5c7d94b-19ea-4b06-853b-e7f9c3d8086f","Oferta, rechazo, nueva búsqueda, cierre, trazabilidad.",[]],
+    [15,"Programación / Malla","15-programacion-malla.md","3d4d222d-0170-498d-9615-909f991b039e","Mensual y diaria; donde nacen las brechas (cuarto turno).",[]],
+    [16,"Ausencias","16-ausencias.md","0a22db27-0788-41ae-8538-9dbd18b178d9","El evento que conecta malla, dotación, brechas y coberturas.",[]],
+    [17,"Habilitación y Competencias","17-habilitacion-competencias.md","7e25fbc8-b262-466a-9f2f-009e440eeef6","Quién puede cubrir cada unidad (antes del NEX).",[]],
+    [18,"Índice NEX","18-indice-nex.md","711eacc0-3a4d-43fd-824f-06cf9738d15d","Ranking transparente y explicable de elegibles.",[]],
+    [19,"Analítica e Inteligencia","19-analitica-inteligencia.md","df80d9c4-ce6d-4f10-b1ef-2a095108b5c7","Tendencias, causas y recomendaciones (Subdirección).",[]],
+    [20,"Desarrollo Profesional","20-desarrollo-profesional.md","c4c60940-1de1-4a7f-918a-5072661a8e16","El lazo de capacidad: de la brecha a la habilitación.",[]],
+    [21,"Administración y Configuración","21-administracion-configuracion.md","c090d1ca-0819-4a0f-926e-e8b9fe936268","El panel de control: todo lo configurable + auditoría.",[]],
+    [22,"Inicio del Funcionario","22-inicio-funcionario.md","4df54e75-5218-4b51-97e8-762f5da4385f","La vista del enfermero/a: su turno, ofertas y desarrollo.",[]]
+  ];
+  var GROUPS=[["Fundamentos",[1,2,3,4,5,6]],["Técnico",[7,8,9,10]],["Producto · módulos y pantallas",[11,12,13,14,15,16,17,18,19,20,21,22]]];
+
+  function stChips(fl){
+    var out='<span class="st dis">DISEÑADO</span>';
+    if(fl.indexOf('rec')>=0)out+='<span class="st rec">POR RECONCILIAR</span>';
+    out+='<span class="st bld">POR CONSTRUIR</span>';
+    return out;
+  }
+  function docCard(d){
+    var n=d[0],title=d[1],file=d[2],art=d[3],blurb=d[4],fl=d[5];
+    var proto=art?'<a class="lk proto" href="'+A+art+'" target="_blank" rel="noopener">▶ Prototipo</a>':'';
+    return '<div class="doc"><div class="dh"><span class="num">'+(n<10?'0':'')+n+'</span><span class="dt">'+title+'</span></div>'+
+      '<p class="db">'+blurb+'</p><div class="sts">'+stChips(fl)+'</div>'+
+      '<div class="links"><a class="lk" href="'+GH+file+'" target="_blank" rel="noopener">📄 Doc</a>'+proto+'</div></div>';
+  }
+  function renderMods(){
+    document.getElementById('v-mods').innerHTML=GROUPS.map(function(g){
+      return '<div class="groupt">'+g[0]+'</div><div class="cards">'+g[1].map(function(n){return docCard(DOCS[n-1])}).join('')+'</div>';
+    }).join('');
+  }
+
+  function L(n){var d=DOCS[n-1];return (d[3]?'<a href="'+A+d[3]+'" target="_blank" rel="noopener">':'<a href="'+GH+d[2]+'" target="_blank" rel="noopener">')+d[1]+'</a>';}
+  var PERF=[
+    {ic:"👑",nm:"Administrador",scope:"Sistema completo",q:"¿Está todo bien configurado, seguro y operativo?",uses:[[21,"Administración y Configuración"],[6,"Roles y permisos (RBAC)"]]},
+    {ic:"📊",nm:"Subdirección",scope:"Toda la organización",q:"¿Cómo vamos, por qué y qué conviene hacer?",uses:[[19,"Analítica e Inteligencia"],[20,"Retorno de la formación"]]},
+    {ic:"🏥",nm:"Supervisor",scope:"Su unidad",q:"¿Cómo está la dotación de mi servicio y qué resuelvo?",uses:[[13,"Inicio operativo"],[15,"Programación / Malla"],[16,"Ausencias"],[17,"Habilitación del equipo"],[20,"Planes de desarrollo"]]},
+    {ic:"🔀",nm:"Coordinador de Coberturas",scope:"Transversal",q:"¿Qué brechas hay y cómo las cierro ya?",uses:[[13,"Inicio operativo"],[14,"Flujo de cobertura"],[18,"Índice NEX"]]},
+    {ic:"👤",nm:"Funcionario",scope:"Solo lo propio",q:"¿Cuándo trabajo, qué tengo pendiente y cómo crezco?",uses:[[22,"Inicio del Funcionario"]]}
+  ];
+  function renderPerf(){
+    document.getElementById('v-perf').innerHTML='<div class="perf">'+PERF.map(function(p){
+      return '<div class="pcard"><div class="ph"><span class="pic">'+p.ic+'</span><div><h3>'+p.nm+'</h3><span class="pscope">'+p.scope+'</span></div></div>'+
+        '<p class="pq">'+p.q+'</p><div class="puses">'+p.uses.map(function(u){
+          var d=DOCS[u[0]-1];var href=d[3]?A+d[3]:GH+d[2];
+          return '<div class="puse"><span class="un">'+(u[0]<10?'0':'')+u[0]+'</span><a href="'+href+'" target="_blank" rel="noopener">'+u[1]+'</a></div>';
+        }).join('')+'</div></div>';
+    }).join('')+'</div>';
+  }
+
+  var PROC=[
+    {t:"Origen del cambio",d:"Una ausencia, una edición de malla o una habilitación que vence.",docs:[16,15,17]},
+    {t:"Detección de la brecha",d:"El motor compara requerido vs. disponible y prioriza por severidad.",docs:[5,2]},
+    {t:"Elegibilidad (¿quién puede?)",d:"Filtro duro de habilitación: solo candidatos válidos.",docs:[17]},
+    {t:"Ranking (¿quién es el mejor?)",d:"El Índice NEX ordena a los elegibles y explica el porqué.",docs:[18]},
+    {t:"Resolución de la cobertura",d:"Oferta secuencial, aceptar/rechazar, confirmación del Supervisor.",docs:[13,14,22]},
+    {t:"Aplicar a la malla y cerrar",d:"La cobertura confirmada actualiza la programación; la brecha se cierra.",docs:[15]},
+    {t:"Aprender",d:"La analítica registra tiempos, causas y costos; anticipa el riesgo.",docs:[19]},
+    {t:"Capacidad futura (lazo)",d:"El desarrollo convierte brechas en nuevas habilitaciones → más elegibles.",docs:[20,17],loop:true},
+    {t:"Gobierno transversal",d:"Configuración, seguridad y auditoría sobre todo el ciclo.",docs:[21,11,5],loop:true}
+  ];
+  function renderProc(){
+    document.getElementById('v-proc').innerHTML='<div class="flow">'+PROC.map(function(n,i){
+      return '<div class="fnode'+(n.loop?' loop':'')+'"><div class="fnum">'+(i+1)+'</div>'+
+        '<div class="fbody"><div class="ft">'+n.t+'</div><div class="fd">'+n.d+'</div>'+
+        '<div class="flinks">'+n.docs.map(function(dn){var d=DOCS[dn-1];var href=d[3]?A+d[3]:GH+d[2];return '<a class="lk'+(d[3]?' proto':'')+'" href="'+href+'" target="_blank" rel="noopener">'+(dn<10?'0':'')+dn+' '+(d[3]?'▶':'📄')+'</a>';}).join('')+'</div></div></div>';
+    }).join('')+'</div>';
+  }
+
+  var DEP=[
+    ["M1","Personas y Organización",[],["M2","M3","M5"]],
+    ["M2","Habilitación y Competencias",["M1","M7"],["M3","M5","M6"]],
+    ["M3","Programación (Malla)",["M1","M2","M4","M6"],["M5","M8"]],
+    ["M4","Ausencias",["M1","M3"],["M5","M8"]],
+    ["M5","Detección de Brechas (motor)",["M1","M2","M3","M4"],["M6","M8"]],
+    ["M6","Coberturas + Índice NEX",["M5","M1","M2"],["M3","M8"]],
+    ["M7","Desarrollo Profesional",["M1","M8"],["M2"]],
+    ["M8","Analítica e Inteligencia",["M3","M4","M5","M6"],["M1","M7"]],
+    ["M9","Administración y Seguridad",["todos"],["todos"]],
+    ["M10","Notificaciones y Bandeja",["eventos"],["usuarios"]]
+  ];
+  function renderDep(){
+    document.getElementById('v-dep').innerHTML='<p class="note" style="margin:0 0 12px">Cada módulo se comunica por eventos. <b>Entra ▸</b> de quién se alimenta · <b>Sale ▸</b> a quién alimenta.</p>'+
+      '<div class="depwrap">'+DEP.map(function(m){
+        return '<div class="deprow"><div class="dm">'+m[1]+'<span class="mid">'+m[0]+'</span></div><div class="arrows">'+
+          m[2].map(function(x){return '<span class="chip in">◂ '+x+'</span>'}).join('')+
+          m[3].map(function(x){return '<span class="chip out">'+x+' ▸</span>'}).join('')+'</div></div>';
+      }).join('')+'</div>';
+  }
+
+  var REV=[
+    {k:"gap",tag:"VACÍO",nm:"Notificaciones y Bandeja (M10) sin documento propio",d:"Es un módulo transversal citado en el doc 03; la bandeja aparece dentro de cada Inicio, pero el motor de notificaciones (canales, preferencias, push/correo, tareas) no está diseñado en detalle.",reco:"→ Crear doc dedicado antes o durante la construcción del Inicio."},
+    {k:"gap",tag:"VACÍO",nm:"Integraciones externas sin diseño funcional",d:"RR.HH./saldos, nómina, marcaje e identidad (OIDC/LDAP) se mencionan (07, 16) pero no tienen diseño propio ni contrato.",reco:"→ Añadir un doc de integraciones (empezando por saldos RR.HH.)."},
+    {k:"gap",tag:"VACÍO",nm:"Vista móvil del Funcionario y estados vacíos/onboarding",d:"El enfermero usará principalmente móvil; el diseño es responsive pero no hay especificación móvil ni de primer uso / estados vacíos.",reco:"→ Definir en la fase de construcción del Inicio del Funcionario."},
+    {k:"inc",tag:"INCONSISTENCIA",nm:"“Dirección” vs “Subdirección”",d:"Los docs 01 y 06 definen el perfil ejecutivo como <b>Dirección</b>; los docs 19 y 17 usan <b>Subdirección</b> (y sacan a Dirección de la excepción autorizada). No queda claro si es un renombre o dos niveles.",reco:"→ Unificar a Subdirección (o definir ambos) en 01/06. No modificado."},
+    {k:"inc",tag:"INCONSISTENCIA",nm:"Modelo de datos (08) usa turnos M/T/N",d:"El doc 08 ejemplifica Mañana/Tarde/Noche; la decisión validada es <b>cuarto turno</b> (Largo/Noche/Libre/Libre). El prototipo de malla ya se actualizó; el modelo de datos no.",reco:"→ Reconciliar 08 con cuarto turno. No modificado."},
+    {k:"inc",tag:"INCONSISTENCIA",nm:"Ciclo de habilitación (02) desactualizado",d:"El doc 02 no incluye los estados “En proceso” ni “Vigente · Reevaluación requerida”, ni los tres tipos de reevaluación (Orientación/Evaluación/Certificación) validados en 17.",reco:"→ Reconciliar 02 con las decisiones de 17. No modificado."},
+    {k:"inc",tag:"INCONSISTENCIA",nm:"Cierre de M7 “automático” vs validación humana",d:"El catálogo de eventos (09) modela la habilitación al completar el plan como automática; la decisión validada añade <b>validación final humana</b> (evento HabilitacionValidada).",reco:"→ Reconciliar 09 (añadir el evento y el paso humano). No modificado."},
+    {k:"dup",tag:"DUPLICIDAD",nm:"Dos artefactos de “Inicio”",d:"El blueprint de Inicio (doc 12) y el Inicio operativo (doc 13) se solapan. El blueprint fue exploración temprana y usa el término antiguo “Para saber”.",reco:"→ Marcar el blueprint (12) como superado por 13 y 22; conservar como referencia."},
+    {k:"dup",tag:"DUPLICIDAD",nm:"Matriz de permisos en 06 y 21",d:"Aparece en Roles (06) y en Administración (21). Es intencional (06 la define, 21 la administra), pero conviene declarar 06 como fuente canónica.",reco:"→ Nota cruzada: 06 fuente, 21 gestión. Sin conflicto real."}
+  ];
+  function renderRev(){
+    document.getElementById('v-rev').innerHTML=
+      '<div class="revnote">🔎 <b>Revisión honesta.</b> Estos puntos están <b>señalados, no modificados</b>: la arquitectura no se cambia sin tu visto bueno. Ninguno bloquea empezar a construir; los de “reconciliar” conviene resolverlos junto con la base técnica.</div>'+
+      '<div class="rev">'+REV.map(function(r){
+        return '<div class="ritem '+r.k+'"><div class="rt"><span class="rtag '+r.k+'">'+r.tag+'</span><span class="rn">'+r.nm+'</span></div>'+
+          '<div class="rd">'+r.d+'</div><div class="reco">'+r.reco+'</div></div>';
+      }).join('')+'</div>';
+  }
+
+  [].forEach.call(document.querySelectorAll('.tab'),function(t){
+    t.addEventListener('click',function(){
+      [].forEach.call(document.querySelectorAll('.tab'),function(x){x.setAttribute('aria-selected','false')});
+      t.setAttribute('aria-selected','true');
+      ['mods','perf','proc','dep','rev'].forEach(function(v){document.getElementById('v-'+v).classList.toggle('active',t.dataset.v===v);});
+    });
+  });
+
+  renderMods(); renderPerf(); renderProc(); renderDep(); renderRev();
+})();
+</script>
