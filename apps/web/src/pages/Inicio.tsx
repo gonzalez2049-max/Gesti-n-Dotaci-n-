@@ -52,10 +52,7 @@ export function Inicio() {
         cta={data.guia.cta}
       />
 
-      <div
-        className="grid g2"
-        style={{ marginTop: 12, gridTemplateColumns: "1.1fr .9fr" }}
-      >
+      <div className="hero2" style={{ marginTop: 12 }}>
         <div className="card hoverable">
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <Orb tone={orbClass(estado.semaforo)} lg />

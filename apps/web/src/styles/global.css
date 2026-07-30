@@ -8,6 +8,10 @@ body,
 #root {
   height: 100%;
 }
+html,
+body {
+  overflow-x: hidden;
+}
 body {
   margin: 0;
   color: var(--ink);
@@ -28,9 +32,13 @@ button {
   grid-template-columns: 214px 1fr;
   grid-template-rows: auto 1fr;
   min-height: 100vh;
+  min-width: 0;
+}
+.shell > * {
+  min-width: 0;
 }
 .topbar {
-  grid-column: 1 / 3;
+  grid-column: 1 / -1;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -381,11 +389,19 @@ h1.title {
 .g4 {
   grid-template-columns: repeat(4, 1fr);
 }
+.hero2 {
+  display: grid;
+  gap: 11px;
+  grid-template-columns: 1.1fr 0.9fr;
+}
 @media (max-width: 760px) {
   .g4 {
     grid-template-columns: 1fr 1fr;
   }
   .g2 {
+    grid-template-columns: 1fr;
+  }
+  .hero2 {
     grid-template-columns: 1fr;
   }
 }
@@ -490,6 +506,9 @@ h1.title {
   grid-template-columns: auto 1fr auto;
   gap: 12px;
   align-items: center;
+}
+.acard > div {
+  min-width: 0;
 }
 .acard .t {
   font-weight: 600;
