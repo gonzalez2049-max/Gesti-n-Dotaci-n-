@@ -130,10 +130,15 @@ Al cambiar de perfil, cambia el **acento**, el fondo-aura y la **acción priorit
 | **Administración** | Grupos de configuración en vidrio; cada cambio con su propagación; auditoría como línea de tiempo. |
 | **Funcionario** | *Mobile-first*, cálido; su turno, la oferta con rastreador de estado, su desarrollo con anillo. |
 
-## 23.15 Qué validar
+## 23.15 Dirección validada (con ajustes)
 
-1. **¿El concepto "sala de control con profundidad"** (vidrio, degradados, glows) es la dirección que buscas, o prefieres algo más sobrio / más audaz?
-2. **¿Los acentos por perfil** son los correctos, o quieres otros colores por rol?
-3. **¿La franja de guía** (qué ocurre / qué hacer / siguiente) en cada pantalla te hace sentido?
-4. **¿La acción prioritaria fija** es útil, o intrusiva?
-5. **¿Mobile-first para el Funcionario** y escritorio para los perfiles de gestión es el enfoque correcto?
+Aprobada la dirección visual, con estos **ajustes que rigen de aquí en adelante**:
+
+- ✅ **Vidrio, profundidad y degradados** se mantienen, pero con **glow moderado** y **foco en la legibilidad**.
+- ✅ **Acentos por perfil** conservados, sobre una **identidad común NEX Shift**.
+- ✅ **Franja de guía y acción prioritaria fija** se mantienen, pero **compactas**: orientan **sin ocupar demasiado espacio** (la guía es una banda de una línea; la barra prioritaria es slim).
+- ✅ **Densidad media, tipografía clara, alto contraste, tarjetas compactas.** **Evitar** fondos recargados, exceso de transparencias y **animaciones decorativas** (solo microinteracciones funcionales: hover sutil, indicador de nav, apertura de panel).
+
+Estas reglas son la **base de estilo para la construcción real**. El prototipo navegable de Inicio, Programación, Brechas y Coberturas (escritorio + móvil) las materializa.
+
+Siguiente paso acordado: **base técnica y código real**, comenzando por el módulo **Inicio**.

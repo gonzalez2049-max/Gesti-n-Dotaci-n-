@@ -1,0 +1,424 @@
+<title>NEX Shift · Sistema Visual</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --bg:#EAEEF4; --bg-ink:#0E1726;
+    --ink:#0E1726; --ink2:#46586C; --ink3:#7C8C9E;
+    --glass:linear-gradient(180deg,rgba(255,255,255,.82),rgba(255,255,255,.60));
+    --glass-2:rgba(255,255,255,.55); --glass-brd:rgba(255,255,255,.75); --hairline:rgba(14,23,38,.08);
+    --hi:inset 0 1px 0 rgba(255,255,255,.85);
+    --shadow:0 2px 6px rgba(20,30,50,.06), 0 14px 34px rgba(20,30,50,.10);
+    --shadow-lg:0 20px 60px rgba(20,30,50,.22);
+    --good:#16A66A; --good-g:rgba(22,166,106,.35); --warn:#C6871A; --warn-g:rgba(198,135,26,.35);
+    --crit:#DC4046; --crit-g:rgba(220,64,70,.40); --info:#2F79BE;
+    --c1:#0A9488; --c2:#3457C8; --c3:#C0397E;
+    --accent:#12B5AD; --accent2:#0E7E86; --accent-soft:rgba(18,181,173,.14); --accent-ink:#0A6E7A;
+    --grad:linear-gradient(135deg,#16C0B6,#0E7E86);
+    --font-sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --font-mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+    --r:16px; --r-sm:11px;
+  }
+  :root[data-theme="dark"], :root:not([data-theme]) { }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#080B12; --ink:#E9EFF6; --ink2:#9DACBD; --ink3:#6A7A8C;
+    --glass:linear-gradient(180deg,rgba(30,41,58,.72),rgba(18,26,40,.55));
+    --glass-2:rgba(22,30,46,.5); --glass-brd:rgba(255,255,255,.10); --hairline:rgba(255,255,255,.08);
+    --hi:inset 0 1px 0 rgba(255,255,255,.06);
+    --shadow:0 2px 6px rgba(0,0,0,.4), 0 16px 40px rgba(0,0,0,.5);
+    --shadow-lg:0 24px 70px rgba(0,0,0,.6);
+    --good:#33C182; --warn:#E4A63C; --crit:#F0575D; --info:#5A9BE6;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#080B12; --ink:#E9EFF6; --ink2:#9DACBD; --ink3:#6A7A8C;
+    --glass:linear-gradient(180deg,rgba(30,41,58,.72),rgba(18,26,40,.55));
+    --glass-2:rgba(22,30,46,.5); --glass-brd:rgba(255,255,255,.10); --hairline:rgba(255,255,255,.08);
+    --hi:inset 0 1px 0 rgba(255,255,255,.06);
+    --shadow:0 2px 6px rgba(0,0,0,.4), 0 16px 40px rgba(0,0,0,.5); --shadow-lg:0 24px 70px rgba(0,0,0,.6);
+    --good:#33C182; --warn:#E4A63C; --crit:#F0575D; --info:#5A9BE6;
+  }
+  /* profile accents */
+  :root[data-profile="supervisor"]{--accent:#12B5AD;--accent2:#0E7E86;--accent-soft:rgba(18,181,173,.14);--grad:linear-gradient(135deg,#16C0B6,#0E7E86)}
+  :root[data-profile="coordinador"]{--accent:#2C9CE6;--accent2:#2C63D6;--accent-soft:rgba(44,156,230,.14);--grad:linear-gradient(135deg,#33ADEE,#2C5FD6)}
+  :root[data-profile="subdireccion"]{--accent:#7E7CF2;--accent2:#9A5AD8;--accent-soft:rgba(126,124,242,.16);--grad:linear-gradient(135deg,#8886F5,#9A5AD8)}
+  :root[data-profile="administrador"]{--accent:#3FA6B8;--accent2:#2E6E8A;--accent-soft:rgba(63,166,184,.15);--grad:linear-gradient(135deg,#46B4C6,#2E6E8A)}
+  :root[data-profile="funcionario"]{--accent:#1FB58A;--accent2:#0E8F76;--accent-soft:rgba(31,181,138,.15);--grad:linear-gradient(135deg,#26C293,#0E8F76)}
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;color:var(--ink);font-family:var(--font-sans);line-height:1.45;-webkit-font-smoothing:antialiased;
+    background:
+      radial-gradient(1100px 560px at 8% -10%, var(--accent-soft), transparent 60%),
+      radial-gradient(900px 480px at 112% 6%, color-mix(in srgb,var(--accent) 12%, transparent), transparent 58%),
+      var(--bg);
+    background-attachment:fixed;}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+    background-image:linear-gradient(var(--hairline) 1px,transparent 1px),linear-gradient(90deg,var(--hairline) 1px,transparent 1px);
+    background-size:44px 44px;mask-image:radial-gradient(circle at 50% 30%,#000,transparent 90%)}
+  .app{position:relative;z-index:1;display:grid;grid-template-columns:230px 1fr;grid-template-rows:auto 1fr;min-height:100vh}
+  @media(max-width:860px){.app{grid-template-columns:1fr}}
+
+  /* top bar */
+  .topbar{grid-column:1/3;display:flex;align-items:center;gap:14px;padding:12px clamp(14px,2.5vw,24px);flex-wrap:wrap;
+    background:var(--glass);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);
+    border-bottom:1px solid var(--glass-brd);position:sticky;top:0;z-index:20}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:680;letter-spacing:-.01em}
+  .brand .logo{width:30px;height:30px;border-radius:9px;background:var(--grad);box-shadow:0 4px 14px var(--accent-soft),var(--hi);position:relative}
+  .brand .logo::after{content:"";position:absolute;inset:6px;border-radius:5px;border:1.5px solid rgba(255,255,255,.7)}
+  .ctx{font-family:var(--font-mono);font-size:11.5px;color:var(--ink3);display:flex;align-items:center;gap:7px}
+  .ctx .dot{width:5px;height:5px;border-radius:50%;background:var(--accent)}
+  .spacer{flex:1}
+  .profiles{display:flex;gap:3px;background:var(--glass-2);border:1px solid var(--hairline);border-radius:99px;padding:3px}
+  .pf{border:0;background:transparent;color:var(--ink2);font-family:var(--font-sans);font-size:12px;font-weight:560;padding:6px 11px;border-radius:99px;cursor:pointer;display:flex;align-items:center;gap:6px}
+  .pf .pd{width:9px;height:9px;border-radius:50%}
+  .pf[aria-pressed="true"]{background:var(--grad);color:#fff;box-shadow:0 3px 10px var(--accent-soft)}
+  .iconbtn{width:34px;height:34px;border-radius:10px;border:1px solid var(--hairline);background:var(--glass-2);color:var(--ink2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .iconbtn:hover{color:var(--ink);border-color:var(--accent)}
+
+  /* sidebar */
+  .side{padding:14px 12px;position:relative}
+  @media(max-width:860px){.side{grid-column:1/3;display:flex;overflow-x:auto;gap:6px;padding:10px 12px}}
+  .nav{position:relative;display:flex;flex-direction:column;gap:3px}
+  @media(max-width:860px){.nav{flex-direction:row}.nav .navind{display:none}}
+  .navind{position:absolute;left:0;right:0;border-radius:12px;background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);transition:top .28s cubic-bezier(.4,1.3,.5,1),height .28s;z-index:0}
+  .navbtn{position:relative;z-index:1;display:flex;align-items:center;gap:11px;border:0;background:transparent;color:var(--ink2);font-family:var(--font-sans);font-size:13.5px;font-weight:540;padding:11px 12px;border-radius:12px;cursor:pointer;white-space:nowrap;text-align:left;width:100%}
+  .navbtn .ic{width:20px;text-align:center;font-size:14px;color:var(--ink3)}
+  .navbtn:hover{color:var(--ink)}
+  .navbtn[aria-current="true"]{color:var(--accent-ink,var(--accent2));font-weight:640}
+  .navbtn[aria-current="true"] .ic{color:var(--accent)}
+  .sidefoot{margin-top:14px;padding:11px;border-radius:12px;background:var(--glass);border:1px solid var(--glass-brd);box-shadow:var(--hi);display:flex;align-items:center;gap:9px}
+  @media(max-width:860px){.sidefoot{display:none}}
+  .sidefoot .av{width:32px;height:32px;border-radius:9px;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:12px}
+  .sidefoot .nm{font-size:12.5px;font-weight:580} .sidefoot .rl{font-family:var(--font-mono);font-size:9.5px;color:var(--ink3)}
+
+  /* main */
+  .main{padding:clamp(14px,2.5vw,26px);min-width:0;padding-bottom:96px}
+  .head{margin-bottom:14px}
+  .eyebrow{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-ink,var(--accent2));font-weight:600}
+  h1.title{font-size:clamp(22px,3.3vw,30px);letter-spacing:-.02em;margin:.25em 0 0;font-weight:720;text-wrap:balance}
+  .title .thin{color:var(--ink3);font-weight:400}
+
+  /* guide strip */
+  .guide{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--hairline);border:1px solid var(--glass-brd);border-radius:var(--r);overflow:hidden;margin:14px 0 18px;box-shadow:var(--shadow)}
+  @media(max-width:640px){.guide{grid-template-columns:1fr}}
+  .gseg{background:var(--glass);backdrop-filter:blur(12px);padding:12px 15px}
+  .gseg .gk{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;gap:6px;margin-bottom:4px}
+  .gseg.q .gk{color:var(--ink3)} .gseg.a .gk{color:var(--accent-ink,var(--accent2))} .gseg.n .gk{color:var(--ink3)}
+  .gseg .gv{font-size:13px;font-weight:540}
+  .gseg .gv b{color:var(--ink)}
+  .gseg.a .gbtn{margin-top:7px;border:0;background:var(--grad);color:#fff;font-weight:600;font-size:12px;padding:7px 13px;border-radius:9px;cursor:pointer;box-shadow:0 4px 14px var(--accent-soft)}
+  .gseg.a .gbtn:hover{filter:brightness(1.06)}
+
+  /* cards & grid */
+  .grid{display:grid;gap:12px}
+  .g2{grid-template-columns:1fr 1fr} .g3{grid-template-columns:1fr 1fr 1fr} .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:820px){.g2,.g3,.g4{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.g2,.g3,.g4{grid-template-columns:1fr}}
+  .card{background:var(--glass);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);
+    border:1px solid var(--glass-brd);border-radius:var(--r);padding:15px 16px;box-shadow:var(--shadow),var(--hi);transition:transform .18s,box-shadow .18s,border-color .18s;position:relative;overflow:hidden}
+  .card.hover:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg),var(--hi);border-color:color-mix(in srgb,var(--accent) 35%,var(--glass-brd))}
+  .card .ch{font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin:0 0 4px}
+  .sect-lead{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin:20px 2px 10px}
+
+  /* orbs */
+  .orb{width:14px;height:14px;border-radius:50%;flex:0 0 auto;position:relative}
+  .orb::after{content:"";position:absolute;inset:-5px;border-radius:50%}
+  .orb.good{background:var(--good);box-shadow:0 0 0 4px var(--good-g)}
+  .orb.warn{background:var(--warn);box-shadow:0 0 0 4px var(--warn-g)}
+  .orb.crit{background:var(--crit);box-shadow:0 0 0 4px var(--crit-g)}
+  .orb.crit::after{border:2px solid var(--crit);animation:pulse 1.8s infinite}
+  @keyframes pulse{0%{transform:scale(1);opacity:.5}70%{transform:scale(1.5);opacity:0}100%{opacity:0}}
+  @media(prefers-reduced-motion:reduce){.orb.crit::after{animation:none}}
+  .orb.lg{width:20px;height:20px}
+
+  /* pills / chips / buttons */
+  .chip{font-family:var(--font-mono);font-size:10px;padding:3px 9px;border-radius:99px;background:var(--glass-2);border:1px solid var(--hairline);color:var(--ink2);display:inline-flex;align-items:center;gap:5px}
+  .chip.crit{background:color-mix(in srgb,var(--crit) 14%,transparent);color:var(--crit);border-color:transparent}
+  .chip.warn{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn);border-color:transparent}
+  .chip.good{background:color-mix(in srgb,var(--good) 14%,transparent);color:var(--good);border-color:transparent}
+  .chip.acc{background:var(--accent-soft);color:var(--accent-ink,var(--accent2));border-color:transparent}
+  .btn{border:0;border-radius:10px;font-family:inherit;font-weight:600;font-size:12.5px;padding:9px 15px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+  .btn.prim{background:var(--grad);color:#fff;box-shadow:0 6px 18px var(--accent-soft)}
+  .btn.prim:hover{filter:brightness(1.06);transform:translateY(-1px)}
+  .btn.ghost{background:var(--glass-2);border:1px solid var(--hairline);color:var(--ink2)}
+  .btn.ghost:hover{border-color:var(--accent);color:var(--ink)}
+
+  /* action card (compact) */
+  .acard{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+  .acard .t{font-weight:600;font-size:14px;letter-spacing:-.01em}
+  .acard .w{font-size:12px;color:var(--ink2);margin-top:2px}
+  .lvltag{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.05em;padding:3px 8px;border-radius:99px}
+  .lvltag.ahora{background:color-mix(in srgb,var(--crit) 15%,transparent);color:var(--crit)}
+  .lvltag.hoy{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)}
+  .lvltag.semana{background:color-mix(in srgb,var(--info) 15%,transparent);color:var(--info)}
+
+  .kpi{padding:13px 14px}
+  .kpi .lab{font-size:11px;color:var(--ink2)}
+  .kpi .big{font-size:24px;font-weight:720;letter-spacing:-.02em;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:5px;margin-top:3px}
+  .kpi .big .u{font-size:11px;color:var(--ink3);font-weight:500}
+  .ringwrap{display:flex;align-items:center;gap:12px}
+  .ringtxt{font-size:14px;font-weight:640}
+
+  /* priority bar */
+  .prio{position:fixed;left:230px;right:0;bottom:0;z-index:15;padding:12px clamp(14px,2.5vw,26px);
+    background:linear-gradient(0deg,var(--bg),transparent);pointer-events:none}
+  @media(max-width:860px){.prio{left:0}}
+  .prio-inner{pointer-events:auto;max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:14px;
+    background:var(--glass);backdrop-filter:blur(16px) saturate(1.3);border:1px solid var(--glass-brd);border-radius:14px;padding:11px 15px;box-shadow:var(--shadow-lg),var(--hi)}
+  .prio-inner .plabel{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-ink,var(--accent2));display:flex;align-items:center;gap:7px}
+  .prio-inner .ptext{font-weight:600;font-size:13.5px;letter-spacing:-.01em}
+  .prio-inner .btn{margin-left:auto}
+
+  /* malla */
+  .malla{display:grid;grid-template-columns:76px repeat(7,1fr);gap:5px}
+  .malla .mh{font-family:var(--font-mono);font-size:10px;color:var(--ink3);text-align:center;padding:4px 0}
+  .malla .mn{font-size:11.5px;color:var(--ink2);display:flex;align-items:center;font-weight:540}
+  .cell{height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;font-size:11.5px}
+  .cell.D{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent-ink,var(--accent2))}
+  .cell.N{background:color-mix(in srgb,var(--info) 18%,transparent);color:var(--info)}
+  .cell.L{background:var(--glass-2);color:var(--ink3)}
+  .covrow{display:grid;grid-template-columns:76px repeat(7,1fr);gap:5px;margin-top:6px}
+  .cov{display:flex;align-items:center;justify-content:center;gap:5px;font-family:var(--font-mono);font-size:10px;color:var(--ink2)}
+
+  /* NEX candidate */
+  .cand{display:grid;grid-template-columns:auto 1fr auto;gap:13px;align-items:center}
+  .cand .nm{font-weight:640;font-size:14px}
+  .cand .meta{font-size:11.5px;color:var(--ink2);margin-top:2px}
+  .scorepill{font-family:var(--font-mono);font-weight:700;font-size:15px;color:#fff;background:var(--grad);border-radius:10px;padding:8px 11px;box-shadow:0 4px 12px var(--accent-soft);min-width:46px;text-align:center}
+
+  /* chart */
+  svg.chart{display:block;width:100%;height:auto;overflow:visible}
+  .axlab{font-family:var(--font-mono);font-size:9px;fill:var(--ink3)}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;font-family:var(--font-mono);font-size:10.5px;color:var(--ink2);margin-bottom:8px}
+  .legend span{display:flex;align-items:center;gap:6px} .lgsw{width:10px;height:10px;border-radius:3px}
+  .tcr{margin-top:10px;font-size:12px;color:var(--ink2)} .tcr b{color:var(--ink)}
+  .banner{display:flex;align-items:center;gap:9px;background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);border-radius:11px;padding:10px 13px;font-size:12.5px;margin-bottom:12px}
+
+  /* system foundations */
+  .swatch{height:52px;border-radius:11px;box-shadow:var(--hi);border:1px solid var(--glass-brd)}
+  .gradbar{height:52px;border-radius:11px;background:var(--grad);box-shadow:0 8px 20px var(--accent-soft),var(--hi)}
+  .depth{height:70px;border-radius:12px;display:flex;align-items:flex-end;padding:9px;font-family:var(--font-mono);font-size:9.5px;color:var(--ink3)}
+  .type-d{font-size:30px;font-weight:760;letter-spacing:-.02em}
+  .type-b{font-size:14px;color:var(--ink2)} .type-m{font-family:var(--font-mono);font-size:12px;color:var(--ink3);letter-spacing:.04em}
+
+  .reveal{opacity:0;transform:translateY(8px);animation:rev .5s ease forwards}
+  @keyframes rev{to{opacity:1;transform:none}}
+  @media(prefers-reduced-motion:reduce){.reveal{animation:none;opacity:1;transform:none}}
+
+  .foot{grid-column:1/3;padding:12px 24px 20px;color:var(--ink3);font-size:11.5px}
+  .foot code{font-family:var(--font-mono);font-size:10.5px}
+</style>
+
+<div class="app" id="app">
+  <div class="topbar">
+    <div class="brand"><span class="logo"></span>NEX&nbsp;Shift</div>
+    <span class="ctx"><span class="dot"></span>Sede Central · UCI</span>
+    <span class="spacer"></span>
+    <div class="profiles" id="profiles"></div>
+    <button class="iconbtn" id="theme" title="Tema">◐</button>
+  </div>
+
+  <aside class="side">
+    <nav class="nav" id="nav"><div class="navind" id="navind"></div></nav>
+    <div class="sidefoot"><span class="av" id="sf-av">JM</span><div><div class="nm" id="sf-nm">José M.</div><div class="rl" id="sf-rl">SUPERVISOR</div></div></div>
+  </aside>
+
+  <main class="main" id="main"></main>
+
+  <div class="prio"><div class="prio-inner"><span class="plabel">◉ Acción prioritaria</span><span class="ptext" id="prio-text">—</span><button class="btn prim" id="prio-btn">Resolver</button></div></div>
+
+  <div class="foot">Sistema visual de <b>NEX&nbsp;Shift</b> — prototipo de identidad. Documentación: <code>docs/architecture/23-sistema-visual.md</code></div>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  root.setAttribute('data-profile','supervisor');
+  document.getElementById('theme').addEventListener('click',function(){var cur=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');root.setAttribute('data-theme',cur==='dark'?'light':'dark');});
+  function cv(n){return getComputedStyle(root).getPropertyValue(n).trim();}
+
+  // profiles
+  var PROFILES=[
+    {k:"supervisor",nm:"Supervisor",av:"JM",who:"José M.",rl:"SUPERVISOR",c:"#12B5AD",prio:"Turno sin cubrir — UCI, hoy 22:00"},
+    {k:"coordinador",nm:"Coordinador",av:"ML",who:"Marta L.",rl:"COORDINADORA",c:"#2C9CE6",prio:"Brecha crítica — UCI, 22 min abierta"},
+    {k:"subdireccion",nm:"Subdirección",av:"DR",who:"Dra. Rivas",rl:"SUBDIRECCIÓN",c:"#7E7CF2",prio:"UCI: brecha crónica (3ª vez este mes)"},
+    {k:"administrador",nm:"Admin",av:"AD",who:"Admin",rl:"ADMINISTRADOR",c:"#3FA6B8",prio:"3 usuarios sin rol asignado"},
+    {k:"funcionario",nm:"Funcionario",av:"PR",who:"Paula R.",rl:"ENFERMERA",c:"#1FB58A",prio:"Responder oferta — Urgencias, mañana 08:00"}
+  ];
+  var profile="supervisor";
+  document.getElementById('profiles').innerHTML=PROFILES.map(function(p){
+    return '<button class="pf" data-k="'+p.k+'" aria-pressed="'+(p.k===profile)+'"><span class="pd" style="background:'+p.c+'"></span>'+p.nm+'</button>';
+  }).join('');
+  [].forEach.call(document.querySelectorAll('.pf'),function(b){b.addEventListener('click',function(){setProfile(b.dataset.k);});});
+  function setProfile(k){
+    profile=k; root.setAttribute('data-profile',k);
+    [].forEach.call(document.querySelectorAll('.pf'),function(x){x.setAttribute('aria-pressed',x.dataset.k===k?'true':'false')});
+    var p=PROFILES.filter(function(x){return x.k===k})[0];
+    document.getElementById('sf-av').textContent=p.av; document.getElementById('sf-nm').textContent=p.who; document.getElementById('sf-rl').textContent=p.rl;
+    document.getElementById('prio-text').textContent=p.prio;
+    if(screen==="inicio"||screen==="func") render();
+  }
+
+  // nav
+  var NAV=[["sistema","◈","Sistema visual"],["inicio","⌂","Inicio"],["prog","▦","Programación"],["brechas","◹","Brechas"],["cob","⇄","Coberturas"],["talento","✦","Talento"],["analitica","◔","Analítica"],["admin","⚙","Administración"],["func","♁","Funcionario"]];
+  var screen="sistema";
+  var navEl=document.getElementById('nav');
+  NAV.forEach(function(n){var b=document.createElement('button');b.className='navbtn';b.dataset.k=n[0];b.setAttribute('aria-current',n[0]===screen);b.innerHTML='<span class="ic">'+n[1]+'</span>'+n[2];b.addEventListener('click',function(){go(n[0]);});navEl.appendChild(b);});
+  var navind=document.getElementById('navind');
+  function moveInd(){var b=navEl.querySelector('.navbtn[aria-current="true"]');if(b&&window.innerWidth>860){navind.style.display='block';navind.style.top=b.offsetTop+'px';navind.style.height=b.offsetHeight+'px';}else navind.style.display='none';}
+  function go(k){screen=k;[].forEach.call(navEl.querySelectorAll('.navbtn'),function(x){x.setAttribute('aria-current',x.dataset.k===k?'true':'false')});moveInd();if(k==="func")setProfile("funcionario");else if(profile==="funcionario"&&k!=="func"&&k!=="sistema")setProfile("supervisor");render();}
+  window.addEventListener('resize',moveInd);
+
+  // helpers
+  function guide(q,a,cta,n){return '<div class="guide reveal"><div class="gseg q"><div class="gk">▸ Qué ocurre</div><div class="gv">'+q+'</div></div>'+
+    '<div class="gseg a"><div class="gk">◉ Qué hacer</div><div class="gv">'+a+'</div>'+(cta?'<button class="gbtn">'+cta+'</button>':'')+'</div>'+
+    '<div class="gseg n"><div class="gk">→ Siguiente</div><div class="gv">'+n+'</div></div></div>';}
+  function ring(pct,size,txt){var r=(size-10)/2,c=2*Math.PI*r,off=c*(1-pct/100),id='r'+Math.floor(Math.random()*1e6);
+    return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'"><defs><linearGradient id="'+id+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+cv('--accent')+'"/><stop offset="1" stop-color="'+cv('--accent2')+'"/></linearGradient></defs>'+
+    '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="'+cv('--hairline')+'" stroke-width="6"/>'+
+    '<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" fill="none" stroke="url(#'+id+')" stroke-width="6" stroke-linecap="round" stroke-dasharray="'+c+'" stroke-dashoffset="'+off+'" transform="rotate(-90 '+size/2+' '+size/2+')"/>'+
+    (txt?'<text x="'+size/2+'" y="'+(size/2+4)+'" text-anchor="middle" font-family="'+cv('--font-mono')+'" font-size="'+(size*.28)+'" font-weight="700" fill="'+cv('--ink')+'">'+txt+'</text>':'')+'</svg>';}
+  function head(eye,title){return '<div class="head reveal"><div class="eyebrow">'+eye+'</div><h1 class="title">'+title+'</h1></div>';}
+  function setPrio(t){document.getElementById('prio-text').textContent=t;}
+
+  // ===== screens =====
+  function render(){
+    var m=document.getElementById('main'); m.scrollTop=0;
+    m.innerHTML=({sistema:S_sistema,inicio:S_inicio,prog:S_prog,brechas:S_brechas,cob:S_cob,talento:S_talento,analitica:S_analitica,admin:S_admin,func:S_func}[screen])();
+    // re-trigger reveal stagger
+    var i=0;[].forEach.call(m.querySelectorAll('.reveal'),function(el){el.style.animationDelay=(i*45)+'ms';i++;});
+    var p=PROFILES.filter(function(x){return x.k===profile})[0]; if(p)setPrio(p.prio);
+  }
+
+  function S_sistema(){
+    return head("Sistema visual","Una identidad con <span class='thin'>profundidad</span>")+
+    guide("Definimos el lenguaje visual: color, tipografía, profundidad y componentes.","Explora los fundamentos y cambia de perfil arriba para ver el aura.","Cambiar perfil","Se aplica a las 8 pantallas del menú.")+
+    '<div class="sect-lead">Color y degradados</div>'+
+    '<div class="grid g4 reveal"><div class="card hover"><div class="ch">Acento</div><div class="swatch" style="background:var(--accent)"></div></div>'+
+    '<div class="card hover"><div class="ch">Degradado de marca</div><div class="gradbar"></div></div>'+
+    '<div class="card hover"><div class="ch">Estados · orbes</div><div style="display:flex;gap:18px;align-items:center;height:52px;padding-left:6px"><span class="orb good"></span><span class="orb warn"></span><span class="orb crit"></span></div></div>'+
+    '<div class="card hover"><div class="ch">Neutros</div><div class="swatch" style="background:var(--glass-2)"></div></div></div>'+
+    '<div class="sect-lead">Tipografía</div>'+
+    '<div class="card reveal"><div class="type-d">Aa · De la brecha a la resolución</div><div class="type-b" style="margin-top:8px">Cuerpo legible para leer y operar rápido, con jerarquía por tamaño y peso.</div><div class="type-m" style="margin-top:6px">MONO · ETIQUETAS · DATOS · IDs · COB-2048</div></div>'+
+    '<div class="sect-lead">Profundidad · 3 elevaciones</div>'+
+    '<div class="grid g3 reveal"><div class="card"><div class="depth" style="background:var(--glass-2)">Base / fondo</div></div>'+
+    '<div class="card"><div class="depth" style="background:var(--glass);box-shadow:var(--shadow),var(--hi)">Tarjeta de vidrio</div></div>'+
+    '<div class="card"><div class="depth" style="background:var(--glass);box-shadow:var(--shadow-lg),var(--hi)">Panel / overlay</div></div></div>'+
+    '<div class="sect-lead">Componentes</div>'+
+    '<div class="card reveal"><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="btn prim">Acción primaria</button><button class="btn ghost">Secundaria</button>'+
+    '<span class="chip acc">chip</span><span class="chip crit">crítico</span><span class="chip good">ok</span>'+
+    '<div class="ringwrap"><span>'+ring(72,54,"72%")+'</span></div></div></div>';
+  }
+
+  function S_inicio(){
+    var p=PROFILES.filter(function(x){return x.k===profile})[0];
+    var estado = profile==="coordinador"?["crit","5 turnos sin cubrir","1 crítico está pasando ahora en UCI"]:
+                 profile==="subdireccion"?["warn","Sede en riesgo","5 brechas activas · 1 unidad crónica"]:
+                 profile==="administrador"?["good","Sistema operativo","2 configuraciones pendientes"]:
+                 ["warn","Tu unidad: en riesgo","Faltan 2 personas esta semana · 1 esta noche"];
+    return head("Inicio · "+p.rl.charAt(0)+p.rl.slice(1).toLowerCase(),"Qué necesita tu atención <span class='thin'>ahora</span>")+
+    guide("<b>"+estado[1]+"</b> — "+estado[2],"Resuelve lo marcado como <b>Ahora</b>.","Ir a la acción","Al cerrar, la dotación vuelve al verde.")+
+    '<div class="grid g2 reveal" style="grid-template-columns:1.1fr .9fr">'+
+      '<div class="card hover"><div style="display:flex;align-items:center;gap:16px"><span class="orb '+estado[0]+' lg"></span><div><div style="font-size:19px;font-weight:680;letter-spacing:-.01em">'+estado[1]+'</div><div style="font-size:12.5px;color:var(--ink2)">'+estado[2]+'</div></div><div style="margin-left:auto" class="ringwrap">'+ring(86,58,"12/14")+'</div></div></div>'+
+      '<div class="card kpi hover"><div class="lab">Tiempo medio de cobertura</div><div class="big">31<span class="u">min</span></div><div style="margin-top:8px;height:4px;border-radius:99px;background:var(--hairline);overflow:hidden"><div style="height:100%;width:64%;background:var(--grad)"></div></div></div></div>'+
+    '<div class="sect-lead">Acciones prioritarias</div>'+
+    actCard("ahora","crit","Turno con dotación insuficiente — UCI, hoy 22:00","Falta 1 enfermero/a · unidad crítica · turno en horas","Resolver")+
+    actCard("hoy","warn","3 permisos por responder","1 afecta el turno del jueves","Responder")+
+    actCard("semana","info","Turno sin cubrir — sábado 14:00","Hay tiempo para organizar","Resolver")+
+    '<div class="sect-lead">Mis indicadores</div>'+
+    '<div class="grid g4 reveal">'+kpi("Dotación","12/14","faltan 2")+kpi("Ausencias del día","3","")+kpi("Brechas sin resolver","2","1 crítica")+kpi("Reevaluaciones","2","por vencer")+'</div>';
+  }
+  function actCard(lvl,orb,t,w,cta){return '<div class="card hover reveal" style="margin-bottom:9px"><div class="acard"><span class="orb '+orb+'"></span><div><div style="display:flex;align-items:center;gap:8px"><span class="lvltag '+lvl+'">'+({ahora:"Ahora",hoy:"Hoy",semana:"Esta semana"}[lvl])+'</span><span class="t">'+t+'</span></div><div class="w">'+w+'</div></div><button class="btn '+(lvl==="ahora"?"prim":"ghost")+'">'+cta+'</button></div></div>';}
+  function kpi(l,v,u){return '<div class="card kpi hover"><div class="lab">'+l+'</div><div class="big">'+v+(u?'<span class="u">'+u+'</span>':'')+'</div></div>';}
+
+  function S_prog(){
+    var ppl=["Ana G.","Carla M.","Diego P.","Elena R.","Luis A."], sc=[["D","N","L","L","D","N","L"],["N","L","D","N","L","L","D"],["L","D","N","L","L","D","N"],["D","N","L","L","D","N","L"],["N","L","D","N","L","L","D"]];
+    var dias=["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
+    var head2='<div class="malla"><div></div>'+dias.map(function(d){return '<div class="mh">'+d+'</div>'}).join('');
+    var body=ppl.map(function(n,i){return '<div class="mn">'+n+'</div>'+sc[i].map(function(s){return '<div class="cell '+s+'">'+s+'</div>'}).join('');}).join('');
+    var cov='<div class="covrow"><div class="mn" style="font-size:10px;color:var(--ink3)">Cobertura</div>'+dias.map(function(d,i){var ok=i!==2&&i!==5;return '<div class="cov"><span class="orb '+(ok?'good':'crit')+'" style="width:9px;height:9px"></span>'+(ok?'ok':'1↓')+'</div>';}).join('')+'</div>';
+    return head("Programación","La malla del mes <span class='thin'>· cuarto turno</span>")+
+    guide("2 turnos quedarían bajo el mínimo esta semana.","Reasigna o abre cobertura en los turnos marcados en rojo.","Revisar huecos","Publicar congela la malla como fuente de verdad.")+
+    '<div class="card reveal"><div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap"><span class="chip acc">UCI</span><span class="chip">Largo 08–20</span><span class="chip">Noche 20–08</span><span class="chip">Libre</span><button class="btn ghost" style="margin-left:auto">Editar en panel →</button></div>'+head2+body+'</div>'+cov+'</div>';
+  }
+
+  function S_brechas(){
+    setPrio("Brecha crítica — UCI, hoy 22:00");
+    var gaps=[["crit","UCI · Noche · hoy","Falta 1 · 22 min abierta","Crítica"],["warn","Urgencias · Día · mañana","Falta 1 · turno inminente","Alta"],["warn","Pabellón · Tarde · hoy","Escalada del supervisor","Alta"],["info","Med. Interna · sáb","Faltan 2 · hay tiempo","Media"]];
+    return head("Brechas","Dónde falta dotación <span class='thin'>— ordenado por riesgo</span>")+
+    guide("Hay <b>1 brecha crítica</b> pasando ahora en UCI.","Ábrela y envía la oferta al candidato recomendado.","Resolver ahora","El Índice NEX ya tiene 5 candidatos listos.")+
+    gaps.map(function(g,i){return '<div class="card hover reveal" style="margin-bottom:9px"><div class="acard"><span class="orb '+g[0]+(i===0?' lg':'')+'"></span><div><div style="display:flex;align-items:center;gap:8px"><span class="chip '+g[0]+'">'+g[3]+'</span><span class="t">'+g[1]+'</span></div><div class="w">'+g[2]+'</div></div><button class="btn '+(i===0?"prim":"ghost")+'">Resolver</button></div></div>';}).join('');
+  }
+
+  function S_cob(){
+    setPrio("Enviar oferta a Carla M. (NEX 85)");
+    var cands=[["Carla M.","Equipo de apoyo · sin costo · habilitada UCI",85,true],["Diego P.","Reasignación · su unidad queda OK",82,false],["Elena R.","Reasignación · RCP por vencer",75,false],["Ana G.","Hora extra · ha cubierto mucho",64,false]];
+    return head("Coberturas","El mejor candidato <span class='thin'>y por qué</span>")+
+    guide("UCI · hoy 22:00 · falta 1. Ya hay candidatos elegibles.","Envía la oferta al #1 del Índice NEX.","Enviar oferta","Si rechaza, se ofrece al #2 (envío secuencial).")+
+    '<div class="banner reveal">🧭 <span>Solo candidatos elegibles. El <b>Índice NEX</b> ordena; no filtra.</span></div>'+
+    cands.map(function(c,i){return '<div class="card hover reveal" style="margin-bottom:9px"><div class="cand"><span class="scorepill" style="'+(i>0?'background:var(--glass-2);color:var(--ink2);box-shadow:none':'')+'">'+c[2]+'</span><div><div class="nm">'+c[0]+(c[3]?' <span class="chip acc" style="margin-left:4px">⭐ recomendado</span>':'')+'</div><div class="meta">'+c[1]+'</div></div>'+(i===0?'<button class="btn prim">Enviar oferta</button>':'<button class="btn ghost">Ofrecer</button>')+'</div></div>';}).join('');
+  }
+
+  function S_talento(){
+    setPrio("Validar habilitación de Paula (UCI)");
+    return head("Talento","Formar hoy <span class='thin'>para cubrir mañana</span>")+
+    guide("Paula está al 75% de habilitarse en UCI (capacidad frágil).","Revisa su evaluación final y valida la habilitación.","Ir al plan","Al validar, el pool de UCI sube de 5 a 6.")+
+    '<div class="grid g3 reveal">'+
+      '<div class="card hover"><div class="ch">Plan de Paula R.</div><div class="ringwrap" style="margin-top:6px">'+ring(75,66,"75%")+'<div><div style="font-weight:640">Habilitar en UCI</div><div style="font-size:11.5px;color:var(--ink2)">falta: evaluación VM/DVA</div></div></div></div>'+
+      '<div class="card hover"><div class="ch">Cobertura de competencias</div><div class="ringwrap" style="margin-top:6px">'+ring(78,66,"78%")+'<div><div style="font-weight:640">Críticas vigentes</div><div style="font-size:11.5px;color:var(--ink2)">meta 90%</div></div></div></div>'+
+      '<div class="card hover"><div class="ch">Capacidad ganada</div><div class="big" style="font-size:30px;font-weight:740;margin-top:10px;color:var(--accent-ink,var(--accent2))">+4</div><div style="font-size:11.5px;color:var(--ink2)">nuevos elegibles (mes)</div></div></div>'+
+    '<div class="sect-lead">El lazo de capacidad</div>'+
+    '<div class="card reveal"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-family:var(--font-mono);font-size:11.5px;color:var(--ink2)"><span class="chip">Analítica</span>▸<span class="chip">Necesidad</span>▸<span class="chip acc">Plan</span>▸<span class="chip">Habilitación</span>▸<span class="chip">Índice NEX</span>▸<span class="chip good">↓ brechas</span></div></div>';
+  }
+
+  function S_analitica(){
+    setPrio("Revisar UCI: brecha crónica (3ª vez)");
+    return head("Analítica · Subdirección","Cómo vamos, por qué <span class='thin'>y qué hacer</span>")+
+    guide("El ausentismo sube y las brechas crónicas crecen.","Prioriza recursos en UCI y Urgencias.","Ver unidades críticas","Las predicciones apoyan; no ejecutan cambios.")+
+    '<div class="banner reveal">◷ <span><b>Las predicciones apoyan decisiones; no ejecutan cambios.</b></span></div>'+
+    '<div class="grid g2 reveal">'+
+      '<div class="card"><div class="ch">Ausentismo · 6 meses</div>'+lineChart([6.2,6.8,7.1,7.9,8.4,9.1],12,"--c1")+'<div class="tcr"><b>Tendencia:</b> al alza (6,2→9,1%). <b>Causa:</b> licencias de invierno. <b>Recom.:</b> reforzar pool jul–ago.</div></div>'+
+      '<div class="card"><div class="ch">Costos de cobertura · por tipo</div><div class="legend"><span><span class="lgsw" style="background:var(--c1)"></span>Hora extra</span><span><span class="lgsw" style="background:var(--c2)"></span>Adicional</span><span><span class="lgsw" style="background:var(--c3)"></span>Externo</span></div>'+barsChart()+'<div class="tcr"><b>Tendencia:</b> el costo casi se duplicó. <b>Recom.:</b> invertir en pool baja el costo.</div></div></div>';
+  }
+
+  function S_admin(){
+    setPrio("3 usuarios sin rol asignado");
+    return head("Administración","El panel de control <span class='thin'>del sistema</span>")+
+    guide("Hay 2 configuraciones y 3 usuarios pendientes.","Asigna roles y ajusta las reglas.","Ir a usuarios","Cada cambio se audita y se propaga.")+
+    '<div class="grid g2 reveal">'+
+      '<div class="card"><div class="ch">Reglas · malla</div>'+
+        cfgRow("Máx. noches consecutivas","3","valida la malla")+cfgRow("Tope de horas / semana","44","valida pool elegible")+cfgRow("Umbral “por vencer”","30 días","recalcula reevaluaciones")+'</div>'+
+      '<div class="card"><div class="ch">Auditoría</div>'+
+        auditRow("08:55","Alta de usuario: p.ramirez","Supervisor · UCI")+auditRow("08:40","Umbral RCP: 30 → 45 días","propagó a alertas")+auditRow("08:22","Peso NEX Costo: 25 → 20","re-ordena recomendaciones")+'</div></div>'+
+    '<div class="sect-lead">Pesos del Índice NEX</div>'+
+    '<div class="card reveal">'+["Costo 25","Idoneidad 20","Disponibilidad 20","Equidad 15","Cercanía 10","Continuidad 10"].map(function(w){var p=parseInt(w.split(' ')[1]);return '<div style="display:flex;align-items:center;gap:12px;margin-bottom:9px"><span style="width:120px;font-size:12px;color:var(--ink2)">'+w.split(' ')[0]+'</span><div style="flex:1;height:8px;border-radius:99px;background:var(--hairline);overflow:hidden"><div style="height:100%;width:'+(p/40*100)+'%;background:var(--grad)"></div></div><span style="font-family:var(--font-mono);font-size:11px;color:var(--accent-ink,var(--accent2));font-weight:600">'+p+'</span></div>';}).join('')+'</div>';
+  }
+  function cfgRow(l,v,p){return '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--hairline)"><div><div style="font-size:13px">'+l+'</div><div style="font-family:var(--font-mono);font-size:10px;color:var(--accent-ink,var(--accent2))">→ '+p+'</div></div><span class="chip acc">'+v+'</span></div>';}
+  function auditRow(t,a,d){return '<div style="display:flex;gap:11px;padding:9px 0;border-bottom:1px solid var(--hairline)"><span class="orb good" style="width:8px;height:8px;margin-top:4px"></span><div><div style="font-size:12.5px;font-weight:540">'+a+'</div><div style="font-size:11px;color:var(--ink3)">'+d+' · hoy '+t+'</div></div></div>';}
+
+  function S_func(){
+    setPrio("Responder oferta — Urgencias, mañana 08:00");
+    var states=["Recibida","Aceptada","Pend. confirmación","Confirmada"];
+    return head("Inicio · Funcionario","Hola, Paula <span class='thin'>· tu día</span>")+
+    guide("Tienes 1 oferta por responder. Tu próximo turno: hoy 22:00 UCI.","Acepta o rechaza la oferta de cubrir un turno.","Responder oferta","Si aceptas, tu Supervisor confirma.")+
+    '<div class="grid g2 reveal" style="grid-template-columns:1.2fr .8fr">'+
+      '<div class="card hover"><div class="ch">Te pidieron cubrir un turno · Ahora</div><div style="font-size:16px;font-weight:660;margin:4px 0 2px">Urgencias · Largo 08:00–20:00 · mañana</div>'+
+        '<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin:12px 0">'+states.map(function(s,i){return '<span class="chip '+(i===0?'acc':'')+'">'+s+'</span>'+(i<states.length-1?'<span style="color:var(--ink3)">·</span>':'')}).join('')+'</div>'+
+        '<div style="display:flex;gap:9px;margin-top:6px"><button class="btn prim">Aceptar el turno</button><button class="btn ghost">Rechazar con motivo</button></div></div>'+
+      '<div class="card hover"><div class="ch">Mi desarrollo</div><div class="ringwrap" style="margin-top:6px">'+ring(75,64,"75%")+'<div><div style="font-weight:640">Habilitarme en UCI</div><div style="font-size:11.5px;color:var(--ink2)">falta 1 evaluación</div></div></div></div></div>'+
+    '<div class="sect-lead">Mis indicadores</div>'+
+    '<div class="grid g4 reveal">'+kpi("Mi próximo turno","22:00","hoy·UCI")+kpi("Turnos (semana)","4","")+kpi("Feriado legal","12","días")+kpi("Certificación","1","por vencer")+'</div>';
+  }
+
+  // charts
+  function lineChart(vals,yMax,colVar){var W=320,H=120,x0=6,x1=310,y0=8,y1=96,n=vals.length;function X(i){return x0+i*(x1-x0)/(n-1);}function Y(v){return y1-v/yMax*(y1-y0);}var g='';[0,.5,1].forEach(function(t){var y=y1-t*(y1-y0);g+='<line x1="'+x0+'" y1="'+y+'" x2="'+x1+'" y2="'+y+'" stroke="'+cv('--hairline')+'"/>';});
+    var d='';vals.forEach(function(v,i){d+=(i?'L':'M')+X(i)+' '+Y(v)+' ';});var area=d+'L'+X(n-1)+' '+y1+' L'+X(0)+' '+y1+' Z';
+    g+='<path d="'+area+'" fill="'+cv(colVar)+'" opacity=".10"/>';g+='<path d="'+d+'" fill="none" stroke="'+cv(colVar)+'" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
+    vals.forEach(function(v,i){g+='<circle cx="'+X(i)+'" cy="'+Y(v)+'" r="3" fill="'+cv(colVar)+'"/>';});
+    return '<svg class="chart" viewBox="0 0 '+W+' '+H+'">'+g+'</svg>';}
+  function barsChart(){var series=[[30,34,38,45,52,58],[8,9,9,10,11,12],[10,12,15,20,26,31]],cols=['--c1','--c2','--c3'],W=320,H=130,x0=6,x1=312,y0=6,y1=104,n=6,yMax=110;var bw=Math.min(30,(x1-x0)/n-8);var g='';[0,.5,1].forEach(function(t){var y=y1-t*(y1-y0);g+='<line x1="'+x0+'" y1="'+y+'" x2="'+x1+'" y2="'+y+'" stroke="'+cv('--hairline')+'"/>';});
+    for(var i=0;i<n;i++){var cx=x0+(i+.5)*(x1-x0)/n,acc=0;for(var s=0;s<3;s++){var v=series[s][i];var h=(v/yMax)*(y1-y0);var yTop=y1-acc-h;g+='<rect x="'+(cx-bw/2)+'" y="'+yTop+'" width="'+bw+'" height="'+Math.max(h-2,1)+'" rx="'+(s===2?3:2)+'" fill="'+cv(cols[s])+'"/>';acc+=h;}}
+    return '<svg class="chart" viewBox="0 0 '+W+' '+H+'">'+g+'</svg>';}
+
+  moveInd(); render();
+})();
+</script>
