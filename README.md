@@ -17,7 +17,48 @@ NEX Shift guía al usuario desde la **detección de una brecha** de dotación ha
 
 ## Estado del proyecto
 
-Fase actual: **Diseño de arquitectura** (funcional y técnica). Todavía no se construyen pantallas; primero definimos las bases sobre las que se construirá el sistema paso a paso.
+Fase actual: **Construcción — base técnica + módulo Inicio.** La arquitectura funcional y visual está completa (docs 01–23) y validada. La app web con el **Inicio funcionando** ya está en el repositorio.
+
+## Desarrollo (monorepo)
+
+Stack (doc 07): monorepo **pnpm**, frontend **React + TypeScript + Vite**, backend **NestJS + PostgreSQL (Prisma) + Redis** (Outbox/eventos), contratos compartidos.
+
+```
+apps/
+  web/         # Frontend React+TS+Vite — Inicio funcionando (Supervisor/Coordinador)
+  api/         # Backend NestJS (andamiaje: módulo Inicio + Outbox + Prisma)
+packages/
+  contracts/   # Tipos, DTOs y eventos de dominio (fuente única del contrato)
+infra/
+  docker-compose.yml   # PostgreSQL + Redis
+docs/
+  architecture/        # 23 documentos de arquitectura funcional, técnica y visual
+  prototipos/          # prototipos visuales navegables (HTML)
+  portada/             # portada navegable del sistema
+```
+
+### Ejecutar el frontend (Inicio)
+
+```bash
+pnpm install
+pnpm dev          # http://localhost:5173  → módulo Inicio
+pnpm build        # build de producción del frontend
+pnpm typecheck
+```
+
+Cambia de **perfil** (Supervisor / Coordinador) y de **tema** (claro/oscuro) desde la barra superior. La navegación funciona en **escritorio** (barra lateral) y **móvil** (barra inferior).
+
+### Backend e infraestructura (siguiente fase)
+
+```bash
+pnpm infra:up                              # PostgreSQL + Redis (Docker)
+pnpm --filter @nexshift/api install        # deps del backend
+cp apps/api/.env.example apps/api/.env
+pnpm --filter @nexshift/api prisma:generate
+pnpm api                                   # NestJS en http://localhost:4000/api
+```
+
+> El backend está **andamiado** (módulo Inicio que devuelve el mismo contrato `InicioResumen`, patrón Outbox y esquema Prisma inicial). Se completará módulo a módulo siguiendo el [roadmap](./docs/architecture/10-roadmap.md).
 
 ## Documentación de arquitectura
 

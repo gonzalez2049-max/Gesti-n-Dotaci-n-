@@ -1,0 +1,21 @@
+# Infraestructura local de NEX Shift (doc 07): PostgreSQL (SSOT) + Redis
+# (bus de eventos, colas, caché). Levantar con: docker compose -f infra/docker-compose.yml up -d
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: nexshift
+      POSTGRES_PASSWORD: nexshift
+      POSTGRES_DB: nexshift
+    ports:
+      - "5432:5432"
+    volumes:
+      - nexshift_pg:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  nexshift_pg:

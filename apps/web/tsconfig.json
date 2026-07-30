@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "useDefineForClassFields": true,
+    "noEmit": true,
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@nexshift/contracts": ["../../packages/contracts/src/index.ts"],
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src"]
+}

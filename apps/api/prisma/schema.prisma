@@ -1,0 +1,214 @@
+// NEX Shift — esquema inicial (doc 08, reconciliado con decisiones validadas:
+// cuarto turno, estados de habilitación, saldos vía RR.HH.).
+// Es un punto de partida para la fase de construcción del backend; se ampliará
+// módulo a módulo. Los datos derivados (Brecha, KPI) se calculan, no se editan.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TurnoTipo {
+  LARGO // 08–20 (cuarto turno)
+  NOCHE // 20–08
+  LIBRE
+}
+
+enum Semaforo {
+  EQUILIBRIO
+  RIESGO
+  CRITICO
+  EXCESO
+}
+
+enum EstadoHabilitacion {
+  VIGENTE
+  POR_VENCER
+  REEVALUACION_REQUERIDA
+  EN_PROCESO
+  VENCIDA
+  NO_HABILITADO
+}
+
+enum TipoReevaluacion {
+  ORIENTACION
+  EVALUACION_DESEMPENO
+  CERTIFICACION
+}
+
+enum EstadoAusencia {
+  SOLICITADA
+  EN_REVISION
+  APROBADA
+  RECHAZADA
+  ANULADA
+  REGISTRADA // imprevista (licencia médica): impacto inmediato
+}
+
+enum EstadoCobertura {
+  PROPUESTA
+  OFERTA_ENVIADA
+  ACEPTADA
+  CONFIRMADA
+  APLICADA
+  RECHAZADA
+  ANULADA
+  CERRADA
+  ESCALADA
+}
+
+model Organizacion {
+  id     String @id @default(uuid())
+  nombre String
+  sedes  Sede[]
+}
+
+model Sede {
+  id             String       @id @default(uuid())
+  nombre         String
+  organizacion   Organizacion @relation(fields: [organizacionId], references: [id])
+  organizacionId String
+  unidades       Unidad[]
+}
+
+model Unidad {
+  id         String        @id @default(uuid())
+  nombre     String
+  criticidad Int           @default(1) // alimenta severidad de brechas
+  sede       Sede          @relation(fields: [sedeId], references: [id])
+  sedeId     String
+  puestos    Puesto[]
+  funcionarios Funcionario[]
+}
+
+model Estamento {
+  id           String        @id @default(uuid())
+  nombre       String // Enfermero/a, TENS, Matrón/a...
+  funcionarios Funcionario[]
+}
+
+model Funcionario {
+  id             String         @id @default(uuid())
+  nombre         String
+  apellidos      String
+  estamento      Estamento      @relation(fields: [estamentoId], references: [id])
+  estamentoId    String
+  unidadBase     Unidad?        @relation(fields: [unidadBaseId], references: [id])
+  unidadBaseId   String?
+  habilitaciones Habilitacion[]
+  asignaciones   Asignacion[]
+  ausencias      Ausencia[]
+}
+
+model Competencia {
+  id             String         @id @default(uuid())
+  nombre         String
+  habilitaciones Habilitacion[]
+}
+
+model Habilitacion {
+  id             String             @id @default(uuid())
+  funcionario    Funcionario        @relation(fields: [funcionarioId], references: [id])
+  funcionarioId  String
+  competencia    Competencia        @relation(fields: [competenciaId], references: [id])
+  competenciaId  String
+  estado         EstadoHabilitacion @default(NO_HABILITADO)
+  tipoReeval     TipoReevaluacion?
+  vigenteHasta   DateTime?
+  actualizadoAt  DateTime           @updatedAt
+
+  @@unique([funcionarioId, competenciaId])
+}
+
+model Turno {
+  id      String    @id @default(uuid())
+  tipo    TurnoTipo
+  inicio  String // "08:00"
+  fin     String // "20:00"
+  puestos Puesto[]
+}
+
+model Puesto {
+  id           String       @id @default(uuid())
+  unidad       Unidad       @relation(fields: [unidadId], references: [id])
+  unidadId     String
+  turno        Turno        @relation(fields: [turnoId], references: [id])
+  turnoId      String
+  fecha        DateTime
+  requerido    Int
+  asignaciones Asignacion[]
+  brecha       Brecha?
+}
+
+model Asignacion {
+  id            String      @id @default(uuid())
+  puesto        Puesto      @relation(fields: [puestoId], references: [id])
+  puestoId      String
+  funcionario   Funcionario @relation(fields: [funcionarioId], references: [id])
+  funcionarioId String
+  origen        String      @default("malla") // malla | cobertura
+  creadoAt      DateTime    @default(now())
+}
+
+model Ausencia {
+  id            String         @id @default(uuid())
+  funcionario   Funcionario    @relation(fields: [funcionarioId], references: [id])
+  funcionarioId String
+  tipo          String // vacaciones | permiso | licencia_medica | capacitacion...
+  desde         DateTime
+  hasta         DateTime
+  estado        EstadoAusencia @default(SOLICITADA)
+  motivo        String?
+}
+
+/// Derivada — la calcula el motor (doc 05). No se edita a mano.
+model Brecha {
+  id         String   @id @default(uuid())
+  puesto     Puesto   @relation(fields: [puestoId], references: [id])
+  puestoId   String   @unique
+  deficit    Int
+  severidad  Int
+  semaforo   Semaforo
+  detectadaAt DateTime @default(now())
+  cerradaAt  DateTime?
+  coberturas Cobertura[]
+}
+
+model Cobertura {
+  id            String          @id @default(uuid())
+  brecha        Brecha          @relation(fields: [brechaId], references: [id])
+  brechaId      String
+  tipo          String // reasignacion | pool | cambioTurno | voluntario | horaExtra | externa
+  funcionarioId String?
+  estado        EstadoCobertura @default(PROPUESTA)
+  motivoRechazo String?
+  costoEstimado Float?
+  costoReal     Float?
+  creadaAt      DateTime        @default(now())
+}
+
+/// Patrón Outbox (doc 05 §5.4): evento + cambio en la misma transacción.
+model Outbox {
+  id          String    @id @default(uuid())
+  tipoEvento  String
+  payload     Json
+  ocurridoAt  DateTime  @default(now())
+  publicadoAt DateTime?
+
+  @@index([publicadoAt])
+}
+
+/// Auditoría append-only (docs 09, 21).
+model Auditoria {
+  id         String   @id @default(uuid())
+  actor      String
+  evento     String
+  entidad    String
+  entidadId  String
+  datos      Json
+  ocurridoAt DateTime @default(now())
+}

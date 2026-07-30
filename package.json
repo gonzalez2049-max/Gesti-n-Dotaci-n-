@@ -1,0 +1,22 @@
+{
+  "name": "nex-shift",
+  "private": true,
+  "version": "0.1.0",
+  "description": "NEX Shift — plataforma de inteligencia operativa para dotación, turnos, coberturas y talento clínico.",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @nexshift/web dev",
+    "build": "pnpm --filter @nexshift/web build",
+    "build:all": "pnpm -r build",
+    "typecheck": "pnpm --filter @nexshift/web typecheck",
+    "web": "pnpm --filter @nexshift/web dev",
+    "api": "pnpm --filter @nexshift/api start:dev",
+    "infra:up": "docker compose -f infra/docker-compose.yml up -d"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}
