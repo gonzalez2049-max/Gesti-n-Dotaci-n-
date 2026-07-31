@@ -20,7 +20,7 @@ import type { PlannerPersona, Turno } from "@nexshift/contracts";
 
 type Zoom = "mes" | "quincena" | "semana";
 type Vista = "borrador" | "publicada" | "comparar";
-const CW: Record<Zoom, number> = { mes: 21, quincena: 34, semana: 58 };
+const CW: Record<Zoom, number> = { mes: 30, quincena: 48, semana: 78 };
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 const cloneGrid = (g: Record<string, Turno[]>) => Object.fromEntries(Object.entries(g).map(([k, v]) => [k, [...v]]));
 
@@ -174,7 +174,17 @@ export function Programacion() {
         <SearchInput value={q} onChange={setQ} placeholder="Buscar funcionario…" />
       </div>
 
-      <div className="pl-wrap">
+      <div className="pl-stats">
+        <span className="plstat crit"><b>{deficitDias}</b> día{deficitDias === 1 ? "" : "s"} con déficit</span>
+        <span className="plstat"><b>{unitIds.length}</b> personas · {unidad}</span>
+        <span className={`plstat ${pub.current[monthKey] ? "good" : "warn"}`}>
+          {pub.current[monthKey] ? "● Malla publicada" : "● Borrador"}
+        </span>
+        <span style={{ flex: 1 }} />
+        <span className="plhint">Toca la cobertura en rojo para ver NEX</span>
+      </div>
+
+      <div className="pl-full">
         <div className="gridcard">
           <div className="gridscroll">
             <table className="pl">
@@ -270,40 +280,6 @@ export function Programacion() {
             {pubV > 0 && <span style={{ color: "var(--good)" }}>● Publicada disponible</span>}
           </div>
         </div>
-
-        <aside className="nexpanel">
-          <div className="eyebrow">Recomendaciones NEX · en tiempo real</div>
-          {!selDef && (
-            <div style={{ fontSize: 12.5, color: "var(--ink2)", marginTop: 10 }}>
-              Toca una celda de <b>cobertura en rojo</b> (déficit) para ver los mejores reemplazos, habilitados y con menor carga.
-              <div style={{ marginTop: 12, display: "grid", gap: 8 }}>
-                <MiniStat label="Días con déficit" value={String(deficitDias)} tone="crit" />
-                <MiniStat label="Personas en la unidad" value={String(unitIds.length)} tone="neutro" />
-                <MiniStat label="Estado de la malla" value={pub.current[monthKey] ? "Publicada" : "Borrador"} tone={pub.current[monthKey] ? "good" : "warn"} />
-              </div>
-            </div>
-          )}
-          {selDef && (
-            <div style={{ marginTop: 10 }}>
-              <div style={{ fontSize: 13.5, fontWeight: 640 }}>{unidad} · día {selDef.day + 1} · {selDef.turno === "largo" ? "Largo" : "Noche"}</div>
-              <div className="chip crit" style={{ marginTop: 6 }}>
-                Falta {Math.max(0, (selDef.turno === "largo" ? req.largo : req.noche) - (selDef.turno === "largo" ? coberturaDia(grid, unitIds, selDef.day, req).largo : coberturaDia(grid, unitIds, selDef.day, req).noche))}
-              </div>
-              <div className="sect" style={{ marginTop: 12 }}>Mejor reemplazo</div>
-              {recs.length === 0 && <div className="empty" style={{ padding: 16 }}>Sin personal habilitado y libre ese día.</div>}
-              {recs.map((r) => (
-                <div className="nexrec" key={r.id}>
-                  <span className={`rs${r.tipo === "horaExtra" ? " warn" : ""}`}>{r.score}</span>
-                  <div>
-                    <div style={{ fontSize: 12.5, fontWeight: 600 }}>{r.nombre}</div>
-                    <div style={{ fontSize: 10.5, color: "var(--ink2)" }}>{r.detalle}</div>
-                  </div>
-                  <button className="btn prim" style={{ padding: "6px 10px", fontSize: 11.5 }} onClick={() => { setCell(r.id, selDef.day, selDef.turno); toast(`${r.nombre.split(" ")[0]} asignado/a`); }} type="button">Asignar</button>
-                </div>
-              ))}
-            </div>
-          )}
-        </aside>
       </div>
 
       {/* editor popover */}
@@ -319,6 +295,34 @@ export function Programacion() {
           </div>
         </>
       )}
+
+      {/* NEX · reemplazos para el déficit seleccionado */}
+      <Drawer
+        open={!!selDef}
+        onClose={() => setSelDef(null)}
+        eyebrow="Recomendaciones NEX · tiempo real"
+        title={selDef ? `${unidad} · día ${selDef.day + 1} · ${selDef.turno === "largo" ? "Largo" : "Noche"}` : ""}
+      >
+        {selDef && (
+          <>
+            <div className="chip crit" style={{ marginTop: 4 }}>
+              Falta {Math.max(0, (selDef.turno === "largo" ? req.largo : req.noche) - (selDef.turno === "largo" ? coberturaDia(grid, unitIds, selDef.day, req).largo : coberturaDia(grid, unitIds, selDef.day, req).noche))}
+            </div>
+            <div className="sect" style={{ marginTop: 12 }}>Mejor reemplazo · Índice NEX</div>
+            {recs.length === 0 && <div className="empty" style={{ padding: 16 }}>Sin personal habilitado y libre ese día.</div>}
+            {recs.map((r) => (
+              <div className="nexrec" key={r.id}>
+                <span className={`rs${r.tipo === "horaExtra" ? " warn" : ""}`}>{r.score}</span>
+                <div>
+                  <div style={{ fontSize: 12.5, fontWeight: 600 }}>{r.nombre}</div>
+                  <div style={{ fontSize: 10.5, color: "var(--ink2)" }}>{r.detalle}</div>
+                </div>
+                <button className="btn prim" style={{ padding: "6px 10px", fontSize: 11.5 }} onClick={() => { setCell(r.id, selDef.day, selDef.turno); toast(`${r.nombre.split(" ")[0]} asignado/a`); }} type="button">Asignar</button>
+              </div>
+            ))}
+          </>
+        )}
+      </Drawer>
 
       {/* person detail */}
       <Drawer open={!!persona} onClose={() => setSelPersona(null)} eyebrow={persona?.estamento} title={persona?.nombre}>
