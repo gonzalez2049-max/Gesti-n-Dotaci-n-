@@ -8,6 +8,23 @@ import type { Tono } from "@/data/home";
 export type ReporteTipo = "cobertura" | "contactos" | "horasExtra" | "ausencias";
 export type ReporteEstado = "solicitado" | "preparando" | "enviado";
 
+/** Firma del reporte: quién lo valida y envía (Buenas Prácticas Clínicas). */
+export interface Firma {
+  nombre: string;
+  rol: string;
+  fecha: string;
+}
+
+/** Firmante por defecto: el/la Coordinador/a de Buenas Prácticas Clínicas. */
+export const FIRMANTE_BPC = {
+  nombre: "EU. Marcela Ortiz",
+  rol: "Coordinadora · Buenas Prácticas Clínicas · Subdirección",
+};
+
+export function fechaFirma(d = new Date()): string {
+  return d.toLocaleString("es-CL", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).replace(".", "");
+}
+
 export interface SolicitudReporte {
   id: string;
   tipo: ReporteTipo;
@@ -17,6 +34,7 @@ export interface SolicitudReporte {
   nota?: string;
   estado: ReporteEstado;
   fecha: string;
+  firma?: Firma;
 }
 
 export const TIPO_LABEL: Record<ReporteTipo, string> = {
@@ -118,7 +136,8 @@ export function generarContenido(tipo: ReporteTipo, periodo: string): ReporteCon
 
 /** Solicitudes de ejemplo en la bandeja de Gestión Central. */
 export const SOLICITUDES_SEED: SolicitudReporte[] = [
+  { id: "r0", tipo: "ausencias", periodo: "Este mes", jefatura: "José M.", unidad: "UCI", estado: "enviado", fecha: "lun 10:20", firma: { ...FIRMANTE_BPC, fecha: "28 jul, 10:20" } },
   { id: "r1", tipo: "cobertura", periodo: "Este mes", jefatura: "José M.", unidad: "UCI", nota: "Para la reunión de gestión del lunes.", estado: "solicitado", fecha: "hoy 09:12" },
   { id: "r2", tipo: "contactos", periodo: "Última semana", jefatura: "José M.", unidad: "UCI", estado: "preparando", fecha: "ayer 17:40" },
-  { id: "r3", tipo: "horasExtra", periodo: "Último trimestre", jefatura: "Ana T.", unidad: "Pabellón", estado: "enviado", fecha: "lun 11:05" },
+  { id: "r3", tipo: "horasExtra", periodo: "Último trimestre", jefatura: "Ana T.", unidad: "Pabellón", estado: "enviado", fecha: "lun 11:05", firma: { ...FIRMANTE_BPC, fecha: "29 jul, 11:05" } },
 ];

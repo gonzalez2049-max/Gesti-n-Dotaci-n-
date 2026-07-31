@@ -7,11 +7,14 @@ import { useToast } from "@/components/Toast";
 import {
   ESTADO_LABEL,
   ESTADO_TONO,
+  FIRMANTE_BPC,
   PERIODOS,
   SOLICITUDES_SEED,
   TIPO_ICON,
   TIPO_LABEL,
+  fechaFirma,
   generarContenido,
+  type Firma,
   type ReporteContenido,
   type ReporteEstado,
   type ReporteTipo,
@@ -20,6 +23,29 @@ import {
 import type { Tono } from "@/data/home";
 
 const toneStyle = (t: Tono) => ({ ["--tn" as string]: `var(--${t})` });
+
+function FirmaBlock({ f }: { f: Firma }) {
+  const inicial = f.nombre.replace(/^EU\.?\s*/, "").trim().charAt(0);
+  return (
+    <div className="firma">
+      <span className="firma-seal">
+        <Icon name="check" size={15} />
+      </span>
+      <div className="firma-body">
+        <div className="firma-label">Firmado y validado por</div>
+        <div className="firma-sign">
+          <span className="firma-mark">{inicial}</span>
+          <span className="firma-name">{f.nombre}</span>
+        </div>
+        <div className="firma-rol">{f.rol}</div>
+      </div>
+      <div className="firma-meta">
+        <span className="firma-chip"><Icon name="shield" size={11} /> Firma digital</span>
+        <span className="firma-fecha">{f.fecha}</span>
+      </div>
+    </div>
+  );
+}
 
 function Preview({ c }: { c: ReporteContenido }) {
   return (
@@ -57,8 +83,9 @@ function ReportesBPC() {
 
   const enviar = () => {
     if (!sel) return;
-    setItems((xs) => xs.map((x) => (x.id === sel.id ? { ...x, estado: "enviado" as ReporteEstado } : x)));
-    toast(`Reporte enviado a la Jefatura de ${sel.unidad}`);
+    const firma: Firma = { ...FIRMANTE_BPC, fecha: fechaFirma() };
+    setItems((xs) => xs.map((x) => (x.id === sel.id ? { ...x, estado: "enviado" as ReporteEstado, firma } : x)));
+    toast(`Reporte firmado y enviado a la Jefatura de ${sel.unidad}`);
   };
 
   const guia = {
@@ -113,11 +140,15 @@ function ReportesBPC() {
               <div className="td-meta">{sel.unidad} · Jefatura {sel.jefatura} · {sel.periodo}</div>
               {sel.nota && <div className="td-causa"><Icon name="user" size={13} /> "{sel.nota}"</div>}
               <Preview c={contenido} />
+              {sel.estado === "enviado" && sel.firma && <FirmaBlock f={sel.firma} />}
               <div className="td-actions">
                 {sel.estado === "enviado" ? (
-                  <div className="rep-sent"><Icon name="check" size={16} /> Enviado a la Jefatura de {sel.unidad}</div>
+                  <div className="rep-sent"><Icon name="check" size={16} /> Firmado y enviado a la Jefatura de {sel.unidad}</div>
                 ) : (
-                  <button className="btn prim" onClick={enviar} type="button"><Icon name="send" size={14} /> Enviar a la Jefatura</button>
+                  <>
+                    <div className="firma-hint"><Icon name="shield" size={13} /> Se firmará como {FIRMANTE_BPC.nombre} al enviar</div>
+                    <button className="btn prim" onClick={enviar} type="button"><Icon name="send" size={14} /> Firmar y enviar a la Jefatura</button>
+                  </>
                 )}
               </div>
             </>
@@ -218,6 +249,7 @@ function ReportesJefatura() {
                   {open && s.estado === "enviado" && (
                     <div className="panel" style={{ marginTop: 8, borderRadius: "var(--r)" }}>
                       <Preview c={generarContenido(s.tipo, s.periodo)} />
+                      {s.firma && <FirmaBlock f={s.firma} />}
                     </div>
                   )}
                 </div>

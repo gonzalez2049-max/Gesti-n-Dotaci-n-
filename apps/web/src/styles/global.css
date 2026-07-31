@@ -1440,3 +1440,24 @@ h1.title { font-weight: 760; letter-spacing: -0.025em; }
 .rep-field > span { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink3); }
 .rep-field select, .rep-field input { font-family: var(--font-sans); font-size: 13px; padding: 9px 11px; border: 1px solid var(--hairline); border-radius: 9px; background: var(--surface); color: var(--ink); }
 .rep-form > .btn { align-self: flex-start; }
+
+/* ---- firma del reporte (Buenas Prácticas Clínicas) ---- */
+.firma {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center;
+  margin-top: 14px; padding: 14px 16px; border-radius: var(--r);
+  background: linear-gradient(135deg, var(--accent-soft), transparent 60%), var(--glass-2);
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--hairline));
+  box-shadow: var(--e1), 0 1px 0 var(--hi) inset;
+}
+.firma-seal { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; color: #fff; background: var(--grad); box-shadow: 0 4px 12px var(--accent-glow); flex: 0 0 auto; }
+.firma-label { font-family: var(--font-mono); font-size: 8.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink3); }
+.firma-sign { display: flex; align-items: baseline; gap: 9px; margin: 3px 0 2px; padding-bottom: 3px; border-bottom: 1.5px solid color-mix(in srgb, var(--accent) 35%, transparent); }
+.firma-mark { font-family: var(--font-mono); font-size: 20px; font-weight: 800; color: var(--accent-ink); font-style: italic; }
+.firma-name { font-size: 17px; font-weight: 640; font-style: italic; letter-spacing: 0.01em; color: var(--ink); }
+.firma-rol { font-size: 11px; color: var(--ink3); }
+.firma-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.firma-chip { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--accent-ink); background: var(--accent-soft); padding: 4px 9px; border-radius: 99px; }
+.firma-fecha { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink3); }
+.firma-hint { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink3); margin-bottom: 2px; }
+.firma-hint svg { color: var(--accent); }
+@media (max-width: 540px) { .firma { grid-template-columns: auto 1fr; } .firma-meta { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; } }
