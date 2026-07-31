@@ -1,0 +1,104 @@
+import { useState } from "react";
+import { Icon } from "@/components/icons";
+import { Ring } from "@/components/Ring";
+import { useToast } from "@/components/Toast";
+import type { HomeFuncionario as T } from "@/data/home";
+import { NarrativaHead, Timeline, toneStyle } from "./parts";
+
+export function HomeFuncionario({ d }: { d: T }) {
+  const toast = useToast();
+  const [oferta, setOferta] = useState<"pend" | "ok" | "no">("pend");
+
+  return (
+    <div className="page home-fx">
+      <NarrativaHead n={d.narrativa} />
+
+      <div className="fx">
+        <section className="panel turno-hero" style={toneStyle("acc")}>
+          <div className="th-glow" aria-hidden="true" />
+          <div className="th-eyebrow">
+            <span className="th-pulse" /> Tu próximo turno
+          </div>
+          <div className="th-main">
+            <div className="th-when">
+              <span className="th-day">{d.proximoTurno.fecha}</span>
+              <span className="th-time">{d.proximoTurno.hora}</span>
+            </div>
+            <div className="th-info">
+              <span className="th-chip tipo">{d.proximoTurno.tipo}</span>
+              <span className="th-unit">
+                <Icon name="pulse" size={14} /> {d.proximoTurno.unidad}
+              </span>
+              <span className="th-horas">{d.proximoTurno.horas} h · {d.proximoTurno.en}</span>
+            </div>
+          </div>
+        </section>
+
+        {d.oferta && (
+          <section className="panel oferta" style={toneStyle("warn")}>
+            <div className="panel-h">
+              <Icon name="send" size={15} /> Oferta para ti
+            </div>
+            {oferta === "pend" ? (
+              <>
+                <div className="of-txt">{d.oferta.texto}</div>
+                <div className="of-tags">
+                  <span className="of-tag"><Icon name="clock" size={12} /> {d.oferta.plazo}</span>
+                  <span className="of-tag acc"><Icon name="sparkles" size={12} /> {d.oferta.incentivo}</span>
+                </div>
+                <div className="of-actions">
+                  <button className="btn prim" type="button" onClick={() => { setOferta("ok"); toast("Aceptaste · pendiente de confirmación de tu Jefatura"); }}>
+                    <Icon name="check" size={14} /> Aceptar
+                  </button>
+                  <button className="btn ghost" type="button" onClick={() => { setOferta("no"); toast("Oferta rechazada"); }}>
+                    Rechazar
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="of-done">
+                <span className={`of-badge ${oferta}`}>
+                  <Icon name={oferta === "ok" ? "check" : "arrow-right"} size={22} />
+                </span>
+                <div>{oferta === "ok" ? "Aceptada — tu Jefatura confirma en breve." : "Rechazada — gracias por responder."}</div>
+              </div>
+            )}
+          </section>
+        )}
+      </div>
+
+      <div className="focorow">
+        <section className="panel bienestar" style={toneStyle(d.bienestar.tono)}>
+          <div className="panel-h">
+            <Icon name="pulse" size={15} /> Tu carga este mes
+          </div>
+          <div className="bien">
+            <Ring pct={d.bienestar.carga} size={92} label={`${d.bienestar.turnosMes}`} />
+            <div className="bien-side">
+              <div className="bien-msg">{d.bienestar.mensaje}</div>
+              <div className="bien-stats">
+                <span><b>{d.bienestar.turnosMes}</b> turnos</span>
+                <span><b>{d.bienestar.noches}</b> noches</span>
+                <span><b>{d.bienestar.libres}</b> libres</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <Timeline eventos={d.timeline} titulo="Tu semana" />
+      </div>
+
+      <section className="panel desarrollo" style={toneStyle("info")}>
+        <div className="dev-row">
+          <span className="dev-ic"><Icon name="graduation" size={18} /></span>
+          <div className="dev-main">
+            <div className="dev-title">{d.desarrollo.plan}</div>
+            <div className="dev-note">{d.desarrollo.nota}</div>
+            <div className="dev-bar"><span style={{ width: `${d.desarrollo.progreso}%` }} /></div>
+          </div>
+          <b className="dev-pct">{d.desarrollo.progreso}%</b>
+        </div>
+      </section>
+    </div>
+  );
+}

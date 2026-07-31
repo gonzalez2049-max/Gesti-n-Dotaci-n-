@@ -20,7 +20,9 @@ interface AppState {
 const Ctx = createContext<AppState | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [profile, setProfile] = useState<Perfil>("jefatura");
+  const [profile, setProfile] = useState<Perfil>(
+    (import.meta.env.VITE_DEFAULT_PROFILE as Perfil) || "jefatura",
+  );
   const [theme, setTheme] = useState<Theme | null>(null);
 
   useEffect(() => {
