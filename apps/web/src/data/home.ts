@@ -195,7 +195,7 @@ const SUBDIRECCION: HomeSubdireccion = {
     chips: [
       { icon: "chart", texto: "Cobertura global 94%", tono: "good" },
       { icon: "arrow-up", texto: "Ausentismo +18% UCI", tono: "warn" },
-      { icon: "graduation", texto: "5 planes cerrados", tono: "info" },
+      { icon: "list", texto: "2 reportes por preparar", tono: "info" },
     ],
   },
   guia: {

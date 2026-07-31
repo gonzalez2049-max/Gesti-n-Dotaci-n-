@@ -25,19 +25,22 @@ const NAV_BY_PROFILE: Record<Perfil, NavItem[]> = {
     { key: "analitica", path: "/analitica", icon: "chart", label: "Analítica" },
     { key: "reportes", path: "/reportes", icon: "list", label: "Reportes" },
   ],
+  // Gestión Central: secretaría de dotación (depende de Subdirección) — solo
+  // ejecuta el contacto de coberturas.
   gestion: [
     { key: "inicio", path: "/", icon: "home", label: "Inicio" },
     { key: "cob", path: "/coberturas", icon: "swap", label: "Coberturas" },
     { key: "brechas", path: "/brechas", icon: "gap", label: "Brechas" },
-    { key: "reportes", path: "/reportes", icon: "list", label: "Reportes" },
     { key: "ausencias", path: "/ausencias", icon: "plane", label: "Ausencias" },
-    { key: "talento", path: "/talento", icon: "graduation", label: "Habilitación" },
   ],
+  // Subdirección incluye a Buenas Prácticas Clínicas (BPC): supervisa el flujo
+  // de gestión y administra reportes y calidad clínica (competencias/habilitación).
   subdireccion: [
     { key: "inicio", path: "/", icon: "home", label: "Inicio" },
     { key: "analitica", path: "/analitica", icon: "chart", label: "Analítica" },
-    { key: "prog", path: "/programacion", icon: "calendar", label: "Programación" },
-    { key: "talento", path: "/talento", icon: "graduation", label: "Talento" },
+    { key: "cob", path: "/coberturas", icon: "swap", label: "Coberturas" },
+    { key: "reportes", path: "/reportes", icon: "list", label: "Reportes" },
+    { key: "talento", path: "/talento", icon: "graduation", label: "Calidad clínica" },
     { key: "ausencias", path: "/ausencias", icon: "plane", label: "Ausencias" },
   ],
   funcionario: [

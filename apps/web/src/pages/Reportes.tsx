@@ -45,8 +45,8 @@ function Preview({ c }: { c: ReporteContenido }) {
   );
 }
 
-/* ---------------- Gestión Central: bandeja y envío ---------------- */
-function ReportesGestion() {
+/* ------------ Buenas Prácticas Clínicas (Subdirección): bandeja y envío ------------ */
+function ReportesBPC() {
   const toast = useToast();
   const [items, setItems] = useState<SolicitudReporte[]>(SOLICITUDES_SEED);
   const [selId, setSelId] = useState<string>(SOLICITUDES_SEED[0].id);
@@ -71,7 +71,7 @@ function ReportesGestion() {
 
   return (
     <div className="page">
-      <PageHead eyebrow="Reportes · Gestión Central" title={<>Solicitudes de las <span className="thin">jefaturas</span></>} />
+      <PageHead eyebrow="Reportes · Buenas Prácticas Clínicas" title={<>Solicitudes de las <span className="thin">jefaturas</span></>} />
       <GuiaNexBar g={guia} />
 
       <div className="pl-stats" style={{ marginTop: 12 }}>
@@ -151,20 +151,20 @@ function ReportesJefatura() {
     };
     setItems((xs) => [nuevo, ...xs]);
     setNota("");
-    toast("Solicitud enviada a Gestión Central");
+    toast("Solicitud enviada a Buenas Prácticas Clínicas");
   };
 
   const guia = {
-    ocurre: "Podés pedirle a Gestión Central el detalle de cómo se cubrió tu unidad.",
+    ocurre: "Podés pedirle a Buenas Prácticas Clínicas el detalle de cómo se cubrió tu unidad.",
     hacer: "Elegí el tipo de reporte y el período, y solicitalo.",
     recomienda: "Para la reunión de gestión, pedí 'Cobertura de brechas' del mes.",
     riesgo: "Sin reporte, no tenés evidencia del esfuerzo de cobertura.",
-    siguiente: "Gestión Central lo prepara y te lo envía acá.",
+    siguiente: "Buenas Prácticas Clínicas lo prepara y te lo envía acá.",
   };
 
   return (
     <div className="page">
-      <PageHead eyebrow="Reportes · Jefatura" title={<>Solicitá reportes a <span className="thin">Gestión Central</span></>} />
+      <PageHead eyebrow="Reportes · Jefatura" title={<>Solicitá reportes a <span className="thin">Buenas Prácticas Clínicas</span></>} />
       <GuiaNexBar g={guia} />
 
       <div className="triage" style={{ marginTop: 14 }}>
@@ -232,13 +232,13 @@ function ReportesJefatura() {
 
 export function Reportes() {
   const { profile } = useApp();
-  if (profile === "gestion") return <ReportesGestion />;
+  if (profile === "subdireccion") return <ReportesBPC />;
   if (profile === "jefatura") return <ReportesJefatura />;
   return (
     <div className="page">
       <PageHead eyebrow="Reportes" title="Reportes" />
       <div className="empty card" style={{ marginTop: 14 }}>
-        <div className="empty-w">Los reportes se intercambian entre la Jefatura y Gestión Central de Dotación.</div>
+        <div className="empty-w">Los reportes los administra Buenas Prácticas Clínicas (Subdirección); las jefaturas los solicitan.</div>
       </div>
     </div>
   );
