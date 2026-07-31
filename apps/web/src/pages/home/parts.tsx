@@ -3,8 +3,10 @@ import { Icon } from "@/components/icons";
 import { Ring } from "@/components/Ring";
 import { Sparkline } from "@/components/Charts";
 import { saludoHora } from "@/data/home";
-import type { EventoTL, GuiaNex, LiveStat, Narrativa as TNarrativa, NexInsight, Tono, UnidadEstado } from "@/data/home";
+import type { EventoTL, GuiaNex, Heatmap as THeatmap, LiveStat, Narrativa as TNarrativa, NexInsight, Tono, UnidadEstado } from "@/data/home";
 import type { IconName } from "@/components/icons";
+
+const semTono = (s: string): Tono => (s === "critico" ? "crit" : s === "riesgo" ? "warn" : s === "exceso" ? "info" : "good");
 
 const toneVar: Record<Tono, string> = {
   good: "--good",
@@ -137,11 +139,16 @@ export function NexPanel({ nex }: { nex: NexInsight }) {
 }
 
 /* ---------- timeline de eventos ---------- */
-export function Timeline({ eventos, titulo = "Línea de tiempo" }: { eventos: EventoTL[]; titulo?: string }) {
+export function Timeline({ eventos, titulo = "Línea de tiempo", live }: { eventos: EventoTL[]; titulo?: string; live?: boolean }) {
   return (
     <section className="tl-wrap" aria-label={titulo}>
       <div className="panel-h">
         <Icon name="pulse" size={15} /> {titulo}
+        {live && (
+          <span className="tl-live">
+            <i /> en vivo
+          </span>
+        )}
       </div>
       <ol className="tl">
         {eventos.map((e, i) => (
@@ -182,6 +189,84 @@ export function LiveStatRow({ stats }: { stats: LiveStat[] }) {
         </div>
       ))}
     </div>
+  );
+}
+
+/* ---------- heatmap de cobertura (unidad × día) ---------- */
+export function Heatmap({ data }: { data: THeatmap }) {
+  return (
+    <div className="hm-wrap">
+      <div className="hm" style={{ gridTemplateColumns: `40px repeat(${data.dias.length}, 1fr)` }}>
+        <div className="hm-corner" />
+        {data.dias.map((d, i) => (
+          <div className="hm-dh" key={i}>
+            {d}
+          </div>
+        ))}
+        {data.filas.map((f) => (
+          <div className="hm-row" key={f.sigla} style={{ display: "contents" }}>
+            <div className="hm-rh">{f.sigla}</div>
+            {f.celdas.map((cell, i) => (
+              <div className={`hm-cell tn-bg-${cell.tono}`} key={i} title={`${f.sigla} · ${data.dias[i]} · ${cell.txt}`}>
+                <span>{cell.txt}</span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div className="hm-legend">
+        <span><i className="tn-bg-good" /> Completo</span>
+        <span><i className="tn-bg-warn" /> Ajustado</span>
+        <span><i className="tn-bg-crit" /> Déficit</span>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- mapa de la red (nodos por unidad) ---------- */
+export function RedMap({ unidades }: { unidades: UnidadEstado[] }) {
+  const W = 520;
+  const H = 300;
+  const cx = W / 2;
+  const cy = H / 2;
+  const R = 108;
+  const n = unidades.length;
+  return (
+    <svg className="redmap" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Mapa de la red">
+      {unidades.map((u, i) => {
+        const a = (-90 + (i * 360) / n) * (Math.PI / 180);
+        const x = cx + R * Math.cos(a);
+        const y = cy + R * Math.sin(a);
+        const t = semTono(u.semaforo);
+        return <line key={`e${u.sigla}`} x1={cx} y1={cy} x2={x} y2={y} className={`rm-edge tn-${t}`} />;
+      })}
+      <circle cx={cx} cy={cy} r={30} className="rm-hub" />
+      <text x={cx} y={cy - 2} className="rm-hubt">
+        Sede
+      </text>
+      <text x={cx} y={cy + 10} className="rm-hubt sm">
+        Central
+      </text>
+      {unidades.map((u, i) => {
+        const a = (-90 + (i * 360) / n) * (Math.PI / 180);
+        const x = cx + R * Math.cos(a);
+        const y = cy + R * Math.sin(a);
+        const t = semTono(u.semaforo);
+        const r = 15 + Math.min(9, u.req / 2);
+        return (
+          <g key={u.sigla} className={`rm-node tn-${t} ${t !== "good" ? "alert" : ""}`}>
+            <title>{`${u.nombre} · ${u.disp}/${u.req}`}</title>
+            <circle cx={x} cy={y} r={r} className="rm-dot" />
+            <text x={x} y={y + 1} className="rm-sig">
+              {u.sigla}
+            </text>
+            <text x={x} y={y + r + 13} className="rm-lab">
+              {u.disp}/{u.req}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
   );
 }
 

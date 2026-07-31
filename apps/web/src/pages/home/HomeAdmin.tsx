@@ -31,7 +31,7 @@ export function HomeAdmin({ d }: { d: T }) {
         <NexPanel nex={d.nex} />
       </div>
 
-      <Timeline eventos={d.timeline} titulo="Actividad reciente · auditoría" />
+      <Timeline eventos={d.timeline} titulo="Actividad reciente · auditoría" live />
     </div>
   );
 }

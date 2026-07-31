@@ -71,11 +71,22 @@ export interface GuiaNex {
 }
 
 /* ------------------------------ JEFATURA ------------------------------ */
+export interface HeatCell {
+  tono: Tono;
+  txt: string; // ej "12/14"
+}
+export interface Heatmap {
+  dias: string[];
+  filas: { sigla: string; celdas: HeatCell[] }[];
+}
+const c = (tono: Tono, txt: string): HeatCell => ({ tono, txt });
+
 export interface HomeJefatura {
   tipo: "jefatura";
   narrativa: Narrativa;
   guia: GuiaNex;
   operacion: { semaforo: Semaforo; titulo: string; unidades: UnidadEstado[] };
+  heatmap: Heatmap;
   pulso: LiveStat[];
   foco: {
     titulo: string;
@@ -117,6 +128,15 @@ const JEFATURA: HomeJefatura = {
       { sigla: "URG", nombre: "Urgencias", req: 10, disp: 9, semaforo: "riesgo", nota: "ajustado", tendencia: "flat" },
       { sigla: "MED", nombre: "Medicina", req: 16, disp: 16, semaforo: "equilibrio", nota: "completo", tendencia: "up" },
       { sigla: "PAB", nombre: "Pabellón", req: 8, disp: 8, semaforo: "equilibrio", nota: "completo", tendencia: "flat" },
+    ],
+  },
+  heatmap: {
+    dias: ["Vie", "Sáb", "Dom", "Lun", "Mar", "Mié", "Jue"],
+    filas: [
+      { sigla: "UCI", celdas: [c("crit", "12/14"), c("warn", "13/14"), c("warn", "13/14"), c("good", "14/14"), c("good", "14/14"), c("warn", "13/14"), c("good", "14/14")] },
+      { sigla: "URG", celdas: [c("warn", "9/10"), c("warn", "9/10"), c("good", "10/10"), c("good", "10/10"), c("warn", "9/10"), c("good", "10/10"), c("good", "10/10")] },
+      { sigla: "MED", celdas: [c("good", "16/16"), c("good", "16/16"), c("good", "16/16"), c("warn", "15/16"), c("good", "16/16"), c("good", "16/16"), c("good", "16/16")] },
+      { sigla: "PAB", celdas: [c("good", "8/8"), c("good", "8/8"), c("warn", "7/8"), c("good", "8/8"), c("good", "8/8"), c("good", "8/8"), c("good", "8/8")] },
     ],
   },
   pulso: [
@@ -326,6 +346,55 @@ const ADMINISTRADOR: HomeAdmin = {
     { hora: "08:22", icon: "sparkles", texto: "Peso Costo NEX: 25 → 20", meta: "re-ordena recomendaciones", tono: "acc", cuando: "pasado" },
   ],
 };
+
+/* --------- NEX copiloto permanente (dock global en toda la app) -------- */
+export interface Copiloto {
+  estado: string; // etiqueta corta del foco actual
+  mensaje: string; // qué ocurre, una línea
+  sugerencia: string; // qué recomienda NEX
+  cta: string;
+  ruta: string;
+  tono: Tono;
+}
+
+const COPILOTO: Record<Perfil, Copiloto> = {
+  jefatura: {
+    estado: "1 brecha crítica",
+    mensaje: "La UCI abre la noche con 1 enfermera menos (22:00).",
+    sugerencia: "Asigná a Camila F. — apoyo habilitado, sin costo extra (NEX 92).",
+    cta: "Resolver ahora",
+    ruta: "/brechas",
+    tono: "crit",
+  },
+  subdireccion: {
+    estado: "Patrón detectado",
+    mensaje: "El ausentismo en UCI creció 18% por tercer mes.",
+    sugerencia: "Sumá 1 cupo estable a la malla: −40% hora extra proyectada.",
+    cta: "Ver análisis",
+    ruta: "/analitica",
+    tono: "warn",
+  },
+  funcionario: {
+    estado: "1 oferta pendiente",
+    mensaje: "Tenés un turno noche hoy 22:00 y una oferta esperando.",
+    sugerencia: "Aceptá dentro de 2 h para no perder el +1 libre compensatorio.",
+    cta: "Responder",
+    ruta: "/coberturas",
+    tono: "acc",
+  },
+  administrador: {
+    estado: "2 reglas propagándose",
+    mensaje: "Cambiaste el umbral de RCP (30 → 45 días).",
+    sugerencia: "Revisá 2 reevaluaciones que quedan “por vencer”.",
+    cta: "Revisar",
+    ruta: "/administracion",
+    tono: "info",
+  },
+};
+
+export function getCopiloto(perfil: Perfil): Copiloto {
+  return COPILOTO[perfil] ?? COPILOTO.jefatura;
+}
 
 export type HomeData = HomeJefatura | HomeSubdireccion | HomeFuncionario | HomeAdmin;
 
