@@ -1,173 +1,263 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCandidatos } from "@/api/api";
-import { GuideStrip } from "@/components/ui";
 import { PageHead, Skeleton } from "@/components/kit";
+import { Icon } from "@/components/icons";
+import { GuiaNexBar } from "@/pages/home/parts";
 import { useToast } from "@/components/Toast";
 import type { CandidatoNex } from "@nexshift/contracts";
 
-const REASONS = ["No disponible ese día", "Vengo saliendo de turno / descanso", "Motivo personal", "Distancia / traslado", "Prefiero otro turno"];
-type Phase = "select" | "waiting" | "accepted" | "confirmed" | "escalated";
-interface Ev { hora: string; titulo: string; detalle: string }
+type Phase = "contactar" | "contactando" | "aceptada" | "enJefatura" | "confirmada" | "sinCandidatos";
+type Tone = "good" | "warn" | "crit" | "info";
+const toneStyle = (t: Tone) => ({ ["--tn" as string]: `var(--${t})` });
 
+const RECHAZOS = ["No disponible ese día", "Vengo saliendo de turno / descanso", "Motivo personal", "Distancia / traslado"];
+const EVENTUALIDADES = ["En vacaciones esta semana", "Con licencia médica", "Ya tomó un extra esta semana", "Pide no ser considerado por ahora"];
+
+interface Ev { hora: string; actor: string; titulo: string; detalle: string; tono: Tone }
 function hm(min: number) {
   const base = 21 * 60 + 38 + min;
   return `${String(Math.floor(base / 60) % 24).padStart(2, "0")}:${String(base % 60).padStart(2, "0")}`;
 }
 
+const FLOW: { k: string; actor: string }[] = [
+  { k: "Solicita", actor: "Jefatura" },
+  { k: "Contacta", actor: "Gestión Central" },
+  { k: "Responde", actor: "Funcionario" },
+  { k: "Confirma", actor: "Jefatura" },
+  { k: "Cubierta", actor: "—" },
+];
+const phaseStep: Record<Phase, number> = { contactar: 1, contactando: 2, aceptada: 3, enJefatura: 3, confirmada: 4, sinCandidatos: 2 };
+
 export function Coberturas() {
   const toast = useToast();
   const { data, isLoading } = useQuery({ queryKey: ["cand", "b1"], queryFn: () => getCandidatos("b1") });
-  const [rejected, setRejected] = useState<Record<string, string>>({});
-  const [offered, setOffered] = useState<string | null>(null);
-  const [phase, setPhase] = useState<Phase>("select");
-  const [reason, setReason] = useState(REASONS[0]);
-  const [expanded, setExpanded] = useState<string | null>(null);
-  const [log, setLog] = useState<Ev[]>([{ hora: hm(0), titulo: "Brecha detectada", detalle: "UCI · Noche · falta 1" }]);
+  const [descartados, setDescartados] = useState<Record<string, string>>({});
+  const [contactado, setContactado] = useState<string | null>(null);
+  const [phase, setPhase] = useState<Phase>("contactar");
+  const [motivo, setMotivo] = useState(RECHAZOS[0]);
+  const [obs, setObs] = useState(EVENTUALIDADES[0]);
+  const [log, setLog] = useState<Ev[]>([
+    { hora: hm(0), actor: "Jefatura", titulo: "Solicitud de cobertura", detalle: "UCI · Noche · hoy 22:00 · falta 1", tono: "crit" },
+  ]);
 
-  const available = useMemo(() => (data ?? []).filter((c) => !rejected[c.id]), [data, rejected]);
-  const offeredCand = data?.find((c) => c.id === offered) ?? null;
-  const addLog = (e: Omit<Ev, "hora">) => setLog((l) => [...l, { ...e, hora: hm(l.length * 2) }]);
+  const disponibles = useMemo(() => (data ?? []).filter((c) => !descartados[c.id]), [data, descartados]);
+  const cand = data?.find((c) => c.id === contactado) ?? null;
+  const addLog = (e: Omit<Ev, "hora">) => setLog((l) => [{ ...e, hora: hm(l.length * 3) }, ...l]);
 
-  const send = (c: CandidatoNex) => {
-    setOffered(c.id);
-    setPhase("waiting");
-    addLog({ titulo: "Oferta enviada", detalle: `${c.nombre} · ${c.tipoCobertura}` });
+  const contactar = (c: CandidatoNex) => {
+    setContactado(c.id);
+    setPhase("contactando");
+    addLog({ actor: "Gestión Central", titulo: `Contacta a ${c.nombre}`, detalle: `${c.tipoCobertura} · llamado en curso`, tono: "warn" });
   };
-  const reject = () => {
-    if (!offeredCand) return;
-    setRejected((r) => ({ ...r, [offeredCand.id]: reason }));
-    addLog({ titulo: `${offeredCand.nombre} rechazó`, detalle: `Motivo: ${reason}` });
-    const next = available.filter((c) => c.id !== offeredCand.id);
-    setOffered(null);
-    if (next.length === 0) {
-      setPhase("escalated");
-      addLog({ titulo: "Escalada a Coordinación", detalle: "Sin candidatos viables" });
+  const siguiente = (tipo: "rechazo" | "evento", texto: string) => {
+    if (!cand) return;
+    setDescartados((r) => ({ ...r, [cand.id]: texto }));
+    addLog(
+      tipo === "rechazo"
+        ? { actor: "Funcionario", titulo: `${cand.nombre} rechazó`, detalle: `Motivo: ${texto}`, tono: "crit" }
+        : { actor: "Funcionario", titulo: `${cand.nombre}: otra eventualidad`, detalle: `${texto} · considerar a futuro`, tono: "info" },
+    );
+    const quedan = disponibles.filter((c) => c.id !== cand.id);
+    setContactado(null);
+    if (quedan.length === 0) {
+      setPhase("sinCandidatos");
+      addLog({ actor: "Gestión Central", titulo: "Escalada a Coordinación", detalle: "Sin candidatos elegibles disponibles", tono: "crit" });
     } else {
-      setPhase("select");
-      addLog({ titulo: "Nueva búsqueda", detalle: "Reordena candidatos elegibles" });
+      setPhase("contactar");
+      addLog({ actor: "Gestión Central", titulo: `Sigue con ${quedan[0].nombre}`, detalle: "Siguiente en el Índice NEX", tono: "warn" });
     }
-    toast("Oferta rechazada · motivo registrado");
+    toast(tipo === "rechazo" ? "Rechazo registrado · pasa al siguiente" : "Registrado para otra eventualidad");
   };
-  const accept = () => {
-    if (!offeredCand) return;
-    setPhase("accepted");
-    addLog({ titulo: `${offeredCand.nombre} aceptó`, detalle: "Pendiente de confirmación" });
-    toast("Oferta aceptada · esperando confirmación");
+  const acepta = () => {
+    if (!cand) return;
+    setPhase("aceptada");
+    addLog({ actor: "Funcionario", titulo: `${cand.nombre} aceptó`, detalle: "Disponible para el turno", tono: "good" });
+    toast("Aceptó · enviá a la Jefatura para confirmar");
   };
-  const confirm = () => {
-    if (!offeredCand) return;
-    setPhase("confirmed");
-    addLog({ titulo: "Confirmada por la Jefatura", detalle: "Asignación creada · brecha cerrada" });
+  const enviarAJefatura = () => {
+    if (!cand) return;
+    setPhase("enJefatura");
+    addLog({ actor: "Gestión Central", titulo: "Enviado a la Jefatura", detalle: `${cand.nombre} · pendiente de confirmación`, tono: "info" });
+    toast("Enviado a la Jefatura de UCI");
+  };
+  const confirmar = () => {
+    if (!cand) return;
+    setPhase("confirmada");
+    addLog({ actor: "Jefatura", titulo: "Confirmada por la Jefatura", detalle: `${cand.nombre} cubre el turno · brecha cerrada`, tono: "good" });
     toast("Cobertura confirmada · brecha cerrada");
   };
   const reset = () => {
-    setRejected({});
-    setOffered(null);
-    setPhase("select");
-    setLog([{ hora: hm(0), titulo: "Brecha detectada", detalle: "UCI · Noche · falta 1" }]);
+    setDescartados({});
+    setContactado(null);
+    setPhase("contactar");
+    setLog([{ hora: hm(0), actor: "Jefatura", titulo: "Solicitud de cobertura", detalle: "UCI · Noche · hoy 22:00 · falta 1", tono: "crit" }]);
+  };
+
+  const guia = {
+    ocurre: "La Jefatura de UCI solicitó cubrir el turno noche de hoy (22:00).",
+    hacer: "Contactá al #1 del Índice NEX y registrá su respuesta.",
+    recomienda: `Empezar por ${data?.[0]?.nombre ?? "el #1"} — apoyo habilitado y libre.`,
+    riesgo: "Si nadie acepta, se escala y la unidad abre bajo dotación.",
+    siguiente: "Si acepta, se envía a la Jefatura para su confirmación final.",
+    cta: "Ver Índice completo",
+    ruta: "/brechas",
   };
 
   return (
     <div className="page">
-      <PageHead eyebrow="Coberturas" title={<>El mejor candidato <span className="thin">y por qué</span></>} actions={<button className="btn ghost" onClick={reset} type="button">↺ Reiniciar</button>} />
-      <GuideStrip ocurre="UCI · hoy 22:00 · falta 1" hacer="Enviá la oferta al #1 del Índice NEX" siguiente="Si rechaza, va al #2 (secuencial)" />
-      <div className="banner" style={{ marginTop: 12 }}>🧭 <span>Solo candidatos elegibles. El <b>Índice NEX</b> ordena; no filtra.</span></div>
+      <PageHead
+        eyebrow="Coberturas · Gestión Central de Dotación"
+        title={<>Contactar y cubrir <span className="thin">— secuencial por NEX</span></>}
+        actions={<button className="btn ghost" onClick={reset} type="button"><Icon name="arrow-right" size={13} /> Reiniciar</button>}
+      />
+      <GuiaNexBar g={guia} />
 
-      <div className="grid g2" style={{ marginTop: 12, gridTemplateColumns: "1.5fr .9fr", alignItems: "start" }}>
-        <div>
-          {isLoading && [0, 1, 2].map((i) => <Skeleton key={i} h={70} style={{ marginBottom: 9 }} />)}
-
-          {phase === "select" &&
-            available.map((c, i) => (
-              <div key={c.id} className="card hoverable" style={{ marginBottom: 9 }}>
-                <div className="candrow">
-                  <span className={`score${i > 0 ? " dim" : ""}`}>{c.score}</span>
-                  <div>
-                    <div style={{ fontWeight: 640 }}>{c.nombre} {c.recomendado && <span className="chip acc" style={{ marginLeft: 4 }}>⭐ recomendado</span>}{c.alerta && <span className="chip warn" style={{ marginLeft: 4 }}>{c.alerta}</span>}</div>
-                    <div style={{ fontSize: 11.5, color: "var(--ink2)", marginTop: 1 }}>{c.tipoCobertura} · {c.razon} · <b>{c.costo}</b></div>
-                    {expanded === c.id && (
-                      <div style={{ marginTop: 10 }}>
-                        {c.factores.map((f) => (
-                          <div className="factorbar" key={f.clave}>
-                            <span className="bt">{f.etiqueta}</span>
-                            <span className="bar"><i style={{ width: `${f.valor}%` }} /></span>
-                            <span className="bv">{f.valor}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    <button className="btn ghost" style={{ marginTop: 8, padding: "5px 10px", fontSize: 11.5 }} onClick={() => setExpanded(expanded === c.id ? null : c.id)} type="button">
-                      {expanded === c.id ? "Ocultar desglose" : "Ver desglose por factor"}
-                    </button>
-                  </div>
-                  <button className={`btn ${i === 0 ? "prim" : "ghost"}`} onClick={() => send(c)} type="button">Enviar oferta</button>
-                </div>
-              </div>
-            ))}
-
-          {phase === "waiting" && offeredCand && (
-            <div className="card">
-              <div className="eyebrow">Esperando respuesta</div>
-              <div style={{ fontSize: 16, fontWeight: 640, margin: "6px 0 2px" }}>{offeredCand.nombre}</div>
-              <div style={{ fontSize: 12.5, color: "var(--ink2)" }}>Oferta enviada · UCI · hoy 22:00 · responde antes de 30 min</div>
-              <div style={{ marginTop: 14, borderTop: "1px dashed var(--hairline)", paddingTop: 14 }}>
-                <div className="eyebrow" style={{ marginBottom: 10 }}>Simular respuesta</div>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-                  <button className="btn prim" onClick={accept} type="button">Aceptar</button>
-                  <select className="field" style={{ padding: "8px 9px", margin: 0 }} value={reason} onChange={(e) => setReason(e.target.value)}>
-                    {REASONS.map((r) => <option key={r}>{r}</option>)}
-                  </select>
-                  <button className="btn ghost" onClick={reject} type="button">Rechazar</button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {phase === "accepted" && offeredCand && (
-            <div className="card">
-              <div className="tracker">
-                <span className="tstep done">Recibida</span>·<span className="tstep cur">Aceptada</span>·<span className="tstep">Pend. confirmación</span>·<span className="tstep">Confirmada</span>
-              </div>
-              <div style={{ fontSize: 15, fontWeight: 640 }}>{offeredCand.nombre} aceptó</div>
-              <div style={{ fontSize: 12.5, color: "var(--ink2)", margin: "2px 0 12px" }}>Pendiente de tu confirmación (validación humana).</div>
-              <button className="btn prim" onClick={confirm} type="button">Confirmar reemplazo</button>
-            </div>
-          )}
-
-          {phase === "confirmed" && offeredCand && (
-            <div className="card" style={{ textAlign: "center", padding: 22 }}>
-              <div style={{ fontSize: 30 }}>🎉</div>
-              <div style={{ fontSize: 16, fontWeight: 660, marginTop: 6 }}>Brecha cerrada</div>
-              <div style={{ fontSize: 12.5, color: "var(--ink2)" }}>{offeredCand.nombre} cubre el turno · dotación 5/5.</div>
-              <button className="btn ghost" style={{ marginTop: 12 }} onClick={reset} type="button">↺ Simular de nuevo</button>
-            </div>
-          )}
-
-          {phase === "escalated" && (
-            <div className="card" style={{ textAlign: "center", padding: 22 }}>
-              <div style={{ fontSize: 26 }}>↥</div>
-              <div style={{ fontSize: 16, fontWeight: 660, marginTop: 6 }}>Escalado a Coordinación</div>
-              <div style={{ fontSize: 12.5, color: "var(--ink2)" }}>Ningún candidato elegible aceptó.</div>
-              <button className="btn ghost" style={{ marginTop: 12 }} onClick={reset} type="button">↺ Reiniciar</button>
-            </div>
-          )}
+      {/* solicitud + flujo */}
+      <section className="panel sol" style={toneStyle("crit")}>
+        <div className="sol-head">
+          <span className="sol-tag">Solicitud de la Jefatura</span>
+          <span className="sol-title">UCI · Noche · hoy 22:00 · falta 1</span>
+          <span className="sol-from">de José M. · Jefatura UCI</span>
         </div>
+        <div className="flowbar">
+          {FLOW.map((f, i) => {
+            const step = phaseStep[phase];
+            const done = i < step || phase === "confirmada";
+            const cur = i === step && phase !== "confirmada";
+            return (
+              <div className={`flstep ${done ? "done" : ""} ${cur ? "cur" : ""}`} key={i}>
+                <span className="flnode">{done ? <Icon name="check" size={13} /> : i + 1}</span>
+                <span className="fltxt">
+                  <b>{f.k}</b>
+                  <small>{f.actor}</small>
+                </span>
+                {i < FLOW.length - 1 && <span className="flline" />}
+              </div>
+            );
+          })}
+        </div>
+      </section>
 
-        <aside className="card" style={{ position: "sticky", top: 14 }}>
-          <div className="eyebrow">Trazabilidad · COB-2048</div>
-          <div style={{ marginTop: 12 }}>
-            {log.map((e, i) => (
-              <div key={i} style={{ display: "grid", gridTemplateColumns: "14px 1fr", gap: 9, paddingBottom: 11 }}>
-                <span className="orb good" style={{ width: 9, height: 9, marginTop: 4 }} />
-                <div>
-                  <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--ink3)" }}>{e.hora}</div>
-                  <div style={{ fontSize: 12, fontWeight: 560 }}>{e.titulo}</div>
-                  <div style={{ fontSize: 11.5, color: "var(--ink2)" }}>{e.detalle}</div>
+      <div className="triage" style={{ marginTop: 14 }}>
+        {/* ---- consola de contacto ---- */}
+        <section className="panel">
+          <div className="panel-h">
+            <Icon name="sparkles" size={15} /> Índice NEX · contacto secuencial
+          </div>
+
+          {isLoading && <div style={{ display: "grid", gap: 8 }}>{[0, 1, 2].map((i) => <Skeleton key={i} h={64} />)}</div>}
+
+          {phase === "contactar" && (
+            <div className="foco-recos" style={{ margin: 0 }}>
+              {disponibles.map((c, i) => {
+                const t: Tone = c.score >= 80 ? "good" : "warn";
+                return (
+                  <div className={`cand ${i === 0 ? "best" : ""}`} key={c.id} style={toneStyle(t)}>
+                    <span className="cand-rank">{i + 1}</span>
+                    <div className="cand-info">
+                      <div className="cand-name">
+                        {c.nombre}
+                        {i === 0 && <span className="cand-badge">NEX recomienda</span>}
+                        {c.alerta && <span className="chip warn" style={{ marginLeft: 2 }}>{c.alerta}</span>}
+                      </div>
+                      <div className="cand-det">{c.tipoCobertura} · {c.razon} · {c.costo}</div>
+                    </div>
+                    <div className="cand-score" style={{ gap: 10 }}>
+                      <div className="cand-bar"><span style={{ width: `${c.score}%` }} /></div>
+                      <button className={`btn ${i === 0 ? "prim" : "ghost"}`} style={{ padding: "7px 12px", fontSize: 12 }} onClick={() => contactar(c)} type="button">
+                        <Icon name="send" size={13} /> Contactar
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {phase === "contactando" && cand && (
+            <div className="contact">
+              <div className="contact-live"><span className="sala-livedot" /> Llamando a</div>
+              <div className="contact-name">{cand.nombre}</div>
+              <div className="contact-sub">{cand.tipoCobertura} · UCI · hoy 22:00 · responde en ≤ 30 min</div>
+              <div className="contact-q">Registrá su respuesta:</div>
+              <div className="contact-actions">
+                <button className="btn prim" onClick={acepta} type="button"><Icon name="check" size={14} /> Acepta</button>
+                <div className="resp-group">
+                  <select className="field2" value={motivo} onChange={(e) => setMotivo(e.target.value)}>
+                    {RECHAZOS.map((r) => <option key={r}>{r}</option>)}
+                  </select>
+                  <button className="btn ghost" onClick={() => siguiente("rechazo", motivo)} type="button">Rechaza</button>
+                </div>
+                <div className="resp-group">
+                  <select className="field2" value={obs} onChange={(e) => setObs(e.target.value)}>
+                    {EVENTUALIDADES.map((r) => <option key={r}>{r}</option>)}
+                  </select>
+                  <button className="btn ghost" onClick={() => siguiente("evento", obs)} type="button">Otra eventualidad</button>
                 </div>
               </div>
-            ))}
+            </div>
+          )}
+
+          {phase === "aceptada" && cand && (
+            <div className="contact">
+              <div className="contact-badge good"><Icon name="check" size={22} /></div>
+              <div className="contact-name">{cand.nombre} aceptó</div>
+              <div className="contact-sub">Ahora se envía a la Jefatura de UCI para su confirmación final.</div>
+              <button className="btn prim" style={{ marginTop: 14 }} onClick={enviarAJefatura} type="button">
+                <Icon name="send" size={14} /> Enviar a la Jefatura
+              </button>
+            </div>
+          )}
+
+          {phase === "enJefatura" && cand && (
+            <div className="contact">
+              <div className="contact-live" style={{ color: "var(--info)" }}><span className="sala-livedot" style={{ background: "var(--info)", boxShadow: "0 0 0 3px var(--info-s)" }} /> En la Jefatura</div>
+              <div className="contact-name">Esperando confirmación</div>
+              <div className="contact-sub">{cand.nombre} quedó a la espera de que la Jefatura de UCI confirme.</div>
+              <button className="btn prim" style={{ marginTop: 14 }} onClick={confirmar} type="button">Simular: Jefatura confirma</button>
+            </div>
+          )}
+
+          {phase === "confirmada" && cand && (
+            <div className="contact center">
+              <div className="contact-badge good lg"><Icon name="check" size={26} /></div>
+              <div className="contact-name">Cobertura cubierta</div>
+              <div className="contact-sub">{cand.nombre} cubre el turno · dotación UCI 5/5.</div>
+              <button className="btn ghost" style={{ marginTop: 14 }} onClick={reset} type="button">Simular de nuevo</button>
+            </div>
+          )}
+
+          {phase === "sinCandidatos" && (
+            <div className="contact center">
+              <div className="contact-badge crit lg"><Icon name="arrow-up" size={24} /></div>
+              <div className="contact-name">Escalado a Coordinación</div>
+              <div className="contact-sub">Ningún candidato elegible aceptó. Se notifica a la Subdirección.</div>
+              <button className="btn ghost" style={{ marginTop: 14 }} onClick={reset} type="button">Reiniciar</button>
+            </div>
+          )}
+        </section>
+
+        {/* ---- trazabilidad ---- */}
+        <aside className="panel triage-detail">
+          <div className="panel-h">
+            <Icon name="list" size={15} /> Trazabilidad · COB-2048
           </div>
+          <ol className="trace">
+            {log.map((e, i) => (
+              <li className="trace-i" key={i} style={toneStyle(e.tono)}>
+                <span className="trace-node" />
+                <div className="trace-body">
+                  <div className="trace-top">
+                    <span className="trace-hora">{e.hora}</span>
+                    <span className="trace-actor">{e.actor}</span>
+                  </div>
+                  <div className="trace-titulo">{e.titulo}</div>
+                  <div className="trace-det">{e.detalle}</div>
+                </div>
+              </li>
+            ))}
+          </ol>
         </aside>
       </div>
     </div>

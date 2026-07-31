@@ -132,6 +132,16 @@
 
 /* acentos por perfil — misma identidad, aura propia.
    Jefatura usa el acento base (teal) definido en :root. */
+:root[data-profile="gestion"] {
+  --accent: #cf5c93;
+  --accent2: #a83d78;
+  --accent-ink: #b0416f;
+  --accent-soft: rgba(207, 92, 147, 0.14);
+  --accent-glow: rgba(207, 92, 147, 0.4);
+  --grad: linear-gradient(135deg, #de6ba1, #a83d78);
+  --aura-1: rgba(207, 92, 147, 0.17);
+}
+:root[data-theme="dark"][data-profile="gestion"] { --accent-ink: #f2a6c8; }
 :root[data-profile="subdireccion"] {
   --accent: #6f68ea;
   --accent2: #8a5cd8;

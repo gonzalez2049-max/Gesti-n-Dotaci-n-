@@ -1,6 +1,7 @@
 import { useApp } from "@/app/store";
 import { getHome } from "@/data/home";
 import { HomeJefatura } from "./home/HomeJefatura";
+import { HomeGestion } from "./home/HomeGestion";
 import { HomeSubdireccion } from "./home/HomeSubdireccion";
 import { HomeFuncionario } from "./home/HomeFuncionario";
 import { HomeAdmin } from "./home/HomeAdmin";
@@ -13,6 +14,8 @@ export function Inicio() {
   const { profile } = useApp();
   const d = getHome(profile);
   switch (d.tipo) {
+    case "gestion":
+      return <HomeGestion d={d} />;
     case "subdireccion":
       return <HomeSubdireccion d={d} />;
     case "funcionario":

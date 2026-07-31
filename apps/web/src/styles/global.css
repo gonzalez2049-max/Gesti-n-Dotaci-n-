@@ -1347,3 +1347,73 @@ h1.title { font-weight: 760; letter-spacing: -0.025em; }
   .triage { grid-template-columns: 1fr; }
   .triage-detail { position: static; }
 }
+
+/* ============================================================= */
+/* Gestión Central · cola, flujo de cobertura, contacto, traza   */
+/* ============================================================= */
+
+/* cola de solicitudes (Home Gestión) */
+.cola { display: flex; flex-direction: column; gap: 8px; }
+.cola-row {
+  display: grid; grid-template-columns: 1.1fr 1.6fr auto auto; gap: 14px; align-items: center;
+  text-align: left; width: 100%; cursor: pointer; padding: 12px 14px;
+  border-radius: var(--r); background: var(--surface-2); border: 1px solid var(--hairline);
+  border-left: 3px solid var(--rail); transition: transform var(--dur1) var(--ease);
+}
+.cola-row:hover { transform: translateX(2px); }
+.cola-unit { display: flex; flex-direction: column; min-width: 0; }
+.cola-sig { font-weight: 700; font-size: 13.5px; }
+.cola-turno { font-size: 11px; color: var(--ink3); font-family: var(--font-mono); }
+.cola-mid { display: flex; flex-direction: column; min-width: 0; gap: 2px; }
+.cola-estado { font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--tn); }
+.cola-det { font-size: 12px; color: var(--ink2); }
+.cola-jef { display: flex; flex-direction: column; align-items: flex-end; font-size: 12px; font-weight: 560; }
+.cola-jlabel { font-family: var(--font-mono); font-size: 8px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink4); }
+.cola-row > svg { color: var(--ink4); }
+
+/* solicitud + flujo */
+.sol { margin-top: 14px; }
+.sol-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.sol-tag { font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--crit); background: var(--crit-s); padding: 4px 9px; border-radius: 99px; }
+.sol-title { font-size: 16px; font-weight: 720; letter-spacing: -0.02em; }
+.sol-from { font-size: 12px; color: var(--ink3); font-family: var(--font-mono); margin-left: auto; }
+.flowbar { display: flex; align-items: flex-start; }
+.flstep { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 7px; text-align: center; }
+.flnode { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--ink3); background: var(--surface-2); border: 1.5px solid var(--hairline); z-index: 1; }
+.flstep.done .flnode { color: #fff; background: var(--good); border-color: transparent; box-shadow: 0 3px 10px var(--good-glow); }
+.flstep.cur .flnode { color: var(--accent-ink); background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 40%, transparent); animation: orbpulse 1.8s var(--ease) infinite; }
+.fltxt { display: flex; flex-direction: column; line-height: 1.25; }
+.fltxt b { font-size: 12px; letter-spacing: -0.01em; }
+.fltxt small { font-family: var(--font-mono); font-size: 9px; color: var(--ink3); }
+.flline { position: absolute; top: 15px; left: 50%; width: 100%; height: 2px; background: var(--hairline); z-index: 0; }
+.flstep.done .flline { background: var(--good); }
+@media (max-width: 640px) { .flstep .fltxt small { display: none; } .sol-from { margin-left: 0; } }
+
+/* consola de contacto */
+.contact { display: flex; flex-direction: column; padding: 8px 2px; }
+.contact.center { align-items: center; text-align: center; padding: 24px 8px; }
+.contact-live { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--warn); }
+.contact-name { font-size: 20px; font-weight: 740; letter-spacing: -0.02em; margin-top: 8px; }
+.contact-sub { font-size: 13px; color: var(--ink2); margin-top: 4px; max-width: 46ch; }
+.contact-q { font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink3); margin: 18px 0 10px; }
+.contact-actions { display: flex; flex-direction: column; gap: 9px; max-width: 460px; }
+.contact-actions > .btn { align-self: flex-start; }
+.resp-group { display: flex; gap: 8px; }
+.resp-group .btn { flex: 0 0 auto; }
+.field2 { flex: 1; min-width: 0; font-family: var(--font-sans); font-size: 12.5px; padding: 8px 10px; border: 1px solid var(--hairline); border-radius: 9px; background: var(--surface); color: var(--ink); }
+.contact-badge { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 13px; color: #fff; }
+.contact-badge.lg { width: 56px; height: 56px; border-radius: 16px; }
+.contact-badge.good { background: var(--good); box-shadow: 0 6px 18px var(--good-glow); }
+.contact-badge.crit { background: var(--crit); box-shadow: 0 6px 18px var(--crit-glow); }
+
+/* trazabilidad */
+.trace { list-style: none; margin: 0; padding: 2px 0 0; position: relative; }
+.trace::before { content: ""; position: absolute; left: 5px; top: 8px; bottom: 8px; width: 2px; background: var(--hairline); }
+.trace-i { --tn: var(--ink3); position: relative; display: grid; grid-template-columns: 20px 1fr; gap: 8px; padding: 6px 0; }
+.trace-node { width: 12px; height: 12px; border-radius: 50%; margin-top: 3px; background: var(--tn); box-shadow: 0 0 0 3px color-mix(in srgb, var(--tn) 18%, transparent); z-index: 1; }
+.trace-top { display: flex; align-items: center; gap: 8px; }
+.trace-hora { font-family: var(--font-mono); font-size: 10px; color: var(--ink3); }
+.trace-actor { font-family: var(--font-mono); font-size: 8.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--tn); background: color-mix(in srgb, var(--tn) 13%, transparent); padding: 1px 6px; border-radius: 99px; }
+.trace-titulo { font-size: 12.5px; font-weight: 600; margin-top: 2px; }
+.trace-det { font-size: 11.5px; color: var(--ink2); }
+@media (max-width: 900px) { .cola-row { grid-template-columns: 1fr auto; } .cola-mid, .cola-jef { grid-column: 1 / -1; align-items: flex-start; } }

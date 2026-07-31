@@ -347,6 +347,77 @@ const ADMINISTRADOR: HomeAdmin = {
   ],
 };
 
+/* --------------------------- GESTIÓN CENTRAL -------------------------- */
+export interface ColaItem {
+  unidad: string;
+  turno: string;
+  fecha: string;
+  jefatura: string;
+  estado: string; // etiqueta del paso actual
+  detalle: string;
+  tono: Tono;
+}
+export interface HomeGestion {
+  tipo: "gestion";
+  narrativa: Narrativa;
+  guia: GuiaNex;
+  cola: ColaItem[];
+  pulso: LiveStat[];
+  timeline: EventoTL[];
+  nex: NexInsight;
+}
+
+const GESTION: HomeGestion = {
+  tipo: "gestion",
+  narrativa: {
+    nombre: "Nadia",
+    contexto: "Gestión Central de Dotación",
+    frase: "Tenés 3 solicitudes de cobertura en cola; 1 es de UCI para esta noche.",
+    foco: "NEX ya ordenó a quién contactar primero.",
+    chips: [
+      { icon: "swap", texto: "3 en cola", tono: "crit" },
+      { icon: "clock", texto: "1 esperando Jefatura", tono: "warn" },
+      { icon: "check", texto: "Tasa aceptación 72%", tono: "good" },
+    ],
+  },
+  guia: {
+    ocurre: "La Jefatura de UCI solicitó cubrir el turno noche de hoy (22:00).",
+    hacer: "Contactá al #1 del Índice NEX y registrá su respuesta.",
+    recomienda: "Camila F. — apoyo habilitado, libre y sin costo extra.",
+    riesgo: "Si nadie acepta, la brecha se escala y la unidad abre bajo dotación.",
+    siguiente: "Si acepta, se envía a la Jefatura para su confirmación final.",
+    cta: "Abrir cobertura",
+    ruta: "/coberturas",
+  },
+  cola: [
+    { unidad: "UCI", turno: "Noche · hoy 22:00", fecha: "falta 1", jefatura: "José M.", estado: "Por contactar", detalle: "NEX sugiere a Camila F. (#1)", tono: "crit" },
+    { unidad: "Urgencias", turno: "Largo · mañana 08:00", fecha: "falta 1", jefatura: "José M.", estado: "Contactando", detalle: "Rodrigo P. · llamado en curso (2/4)", tono: "warn" },
+    { unidad: "Pabellón", turno: "Largo · sábado", fecha: "falta 1", jefatura: "Ana T.", estado: "Esperando Jefatura", detalle: "Sofía D. aceptó · pendiente confirmación", tono: "info" },
+  ],
+  pulso: [
+    { icon: "swap", label: "Solicitudes en cola", valor: "3", tono: "crit", spark: [1, 2, 2, 3, 2, 3] },
+    { icon: "send", label: "Contactos hoy", valor: "14", tono: "info", spark: [6, 9, 11, 12, 13, 14] },
+    { icon: "check", label: "Tasa aceptación", valor: "72", unidad: "%", tono: "good", spark: [64, 66, 69, 70, 71, 72] },
+    { icon: "clock", label: "Tiempo medio", valor: "31", unidad: "min", tono: "good", spark: [45, 41, 37, 34, 32, 31] },
+  ],
+  timeline: [
+    { hora: "ahora", icon: "swap", texto: "Nueva solicitud · UCI noche", meta: "de Jefatura José M.", tono: "crit", cuando: "ahora" },
+    { hora: "21:20", icon: "send", texto: "Llamado a Rodrigo P. · Urgencias", meta: "sin respuesta aún", tono: "warn", cuando: "pasado" },
+    { hora: "21:05", icon: "check", texto: "Sofía D. aceptó · Pabellón", meta: "enviado a Jefatura", tono: "good", cuando: "pasado" },
+    { hora: "20:40", icon: "user", texto: "Marta R. pidió 'otra eventualidad'", meta: "en vacaciones esta semana", tono: "info", cuando: "pasado" },
+  ],
+  nex: {
+    titulo: "Contactá a Camila F. para la UCI",
+    razon:
+      "Es la #1 del Índice NEX para este turno: personal de apoyo habilitado en UCI, libre esta noche y sin costo de hora extra. Si rechaza, seguí con Rodrigo P. (#2).",
+    confianza: 92,
+    accion: "Abrir y contactar",
+    ruta: "/coberturas",
+    impacto: ["Cubre la brecha crítica", "Sin hora extra", "Trazabilidad del contacto"],
+    alternativas: "el ranking completo",
+  },
+};
+
 /* --------- NEX copiloto permanente (dock global en toda la app) -------- */
 export interface Copiloto {
   estado: string; // etiqueta corta del foco actual
@@ -364,6 +435,14 @@ const COPILOTO: Record<Perfil, Copiloto> = {
     sugerencia: "Asigná a Camila F. — apoyo habilitado, sin costo extra (NEX 92).",
     cta: "Resolver ahora",
     ruta: "/brechas",
+    tono: "crit",
+  },
+  gestion: {
+    estado: "3 solicitudes en cola",
+    mensaje: "La Jefatura de UCI pidió cubrir el turno noche de hoy (22:00).",
+    sugerencia: "Contactá a Camila F. — #1 del Índice NEX, apoyo habilitado y libre.",
+    cta: "Abrir cobertura",
+    ruta: "/coberturas",
     tono: "crit",
   },
   subdireccion: {
@@ -396,10 +475,12 @@ export function getCopiloto(perfil: Perfil): Copiloto {
   return COPILOTO[perfil] ?? COPILOTO.jefatura;
 }
 
-export type HomeData = HomeJefatura | HomeSubdireccion | HomeFuncionario | HomeAdmin;
+export type HomeData = HomeJefatura | HomeGestion | HomeSubdireccion | HomeFuncionario | HomeAdmin;
 
 export function getHome(perfil: Perfil): HomeData {
   switch (perfil) {
+    case "gestion":
+      return GESTION;
     case "subdireccion":
       return SUBDIRECCION;
     case "funcionario":

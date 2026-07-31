@@ -13,6 +13,7 @@ import { z } from "zod";
 export const Perfil = z.enum([
   "administrador",
   "subdireccion",
+  "gestion", // Gestión Central de Dotación: hub que contacta funcionarios para cubrir
   "jefatura", // jefatura de unidad (fusiona Supervisor/a y Coordinador/a: 1 sola jefatura)
   "funcionario",
 ]);

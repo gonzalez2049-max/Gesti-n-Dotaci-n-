@@ -24,6 +24,13 @@ const NAV_BY_PROFILE: Record<Perfil, NavItem[]> = {
     { key: "talento", path: "/talento", icon: "graduation", label: "Talento" },
     { key: "analitica", path: "/analitica", icon: "chart", label: "Analítica" },
   ],
+  gestion: [
+    { key: "inicio", path: "/", icon: "home", label: "Inicio" },
+    { key: "cob", path: "/coberturas", icon: "swap", label: "Coberturas" },
+    { key: "brechas", path: "/brechas", icon: "gap", label: "Brechas" },
+    { key: "ausencias", path: "/ausencias", icon: "plane", label: "Ausencias" },
+    { key: "talento", path: "/talento", icon: "graduation", label: "Habilitación" },
+  ],
   subdireccion: [
     { key: "inicio", path: "/", icon: "home", label: "Inicio" },
     { key: "analitica", path: "/analitica", icon: "chart", label: "Analítica" },

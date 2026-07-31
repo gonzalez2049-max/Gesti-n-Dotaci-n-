@@ -7,7 +7,7 @@ import { GuiaNexBar, NarrativaHead, Timeline, toneStyle } from "./parts";
 
 export function HomeFuncionario({ d }: { d: T }) {
   const toast = useToast();
-  const [oferta, setOferta] = useState<"pend" | "ok" | "no">("pend");
+  const [oferta, setOferta] = useState<"pend" | "ok" | "no" | "evt">("pend");
 
   return (
     <div className="page home-fx">
@@ -38,7 +38,7 @@ export function HomeFuncionario({ d }: { d: T }) {
         {d.oferta && (
           <section className="panel oferta" style={toneStyle("warn")}>
             <div className="panel-h">
-              <Icon name="send" size={15} /> Oferta para ti
+              <Icon name="send" size={15} /> Oferta de Gestión Central
             </div>
             {oferta === "pend" ? (
               <>
@@ -48,20 +48,29 @@ export function HomeFuncionario({ d }: { d: T }) {
                   <span className="of-tag acc"><Icon name="sparkles" size={12} /> {d.oferta.incentivo}</span>
                 </div>
                 <div className="of-actions">
-                  <button className="btn prim" type="button" onClick={() => { setOferta("ok"); toast("Aceptaste · pendiente de confirmación de tu Jefatura"); }}>
+                  <button className="btn prim" type="button" onClick={() => { setOferta("ok"); toast("Aceptaste · vuelve a Gestión Central para confirmar con tu Jefatura"); }}>
                     <Icon name="check" size={14} /> Aceptar
                   </button>
-                  <button className="btn ghost" type="button" onClick={() => { setOferta("no"); toast("Oferta rechazada"); }}>
+                  <button className="btn ghost" type="button" onClick={() => { setOferta("no"); toast("Rechazada · Gestión Central sigue con el siguiente"); }}>
                     Rechazar
+                  </button>
+                  <button className="btn ghost" type="button" onClick={() => { setOferta("evt"); toast("Registrado · te consideran para otra eventualidad"); }}>
+                    Otra eventualidad
                   </button>
                 </div>
               </>
             ) : (
               <div className="of-done">
-                <span className={`of-badge ${oferta}`}>
+                <span className={`of-badge ${oferta === "ok" ? "ok" : "no"}`}>
                   <Icon name={oferta === "ok" ? "check" : "arrow-right"} size={22} />
                 </span>
-                <div>{oferta === "ok" ? "Aceptada — tu Jefatura confirma en breve." : "Rechazada — gracias por responder."}</div>
+                <div>
+                  {oferta === "ok"
+                    ? "Aceptada — Gestión Central la envía a tu Jefatura para confirmar."
+                    : oferta === "evt"
+                      ? "Registrado — te consideran para una próxima eventualidad."
+                      : "Rechazada — gracias por responder."}
+                </div>
               </div>
             )}
           </section>
