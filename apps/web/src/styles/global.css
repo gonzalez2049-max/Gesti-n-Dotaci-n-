@@ -1417,3 +1417,26 @@ h1.title { font-weight: 760; letter-spacing: -0.025em; }
 .trace-titulo { font-size: 12.5px; font-weight: 600; margin-top: 2px; }
 .trace-det { font-size: 11.5px; color: var(--ink2); }
 @media (max-width: 900px) { .cola-row { grid-template-columns: 1fr auto; } .cola-mid, .cola-jef { grid-column: 1 / -1; align-items: flex-start; } }
+
+/* ============================================================= */
+/* Reportes · canal Jefatura ⇄ Gestión Central                   */
+/* ============================================================= */
+.rep-preview { margin-top: 14px; }
+.rep-resumen { font-size: 13px; color: var(--ink2); line-height: 1.5; background: var(--glass-2); border: 1px solid var(--hairline); border-radius: var(--r-sm); padding: 11px 13px; }
+.rep-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 11px; }
+.rep-metric { --tn: var(--accent); padding: 11px 13px; border-radius: var(--r); background: var(--surface-2); border: 1px solid var(--hairline); border-left: 3px solid var(--tn); }
+.rep-mv { font-size: 21px; font-weight: 740; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: var(--tn); }
+.rep-mu { font-size: 11px; color: var(--ink3); font-weight: 500; }
+.rep-ml { font-size: 11px; color: var(--ink3); margin-top: 1px; }
+.rep-filas { margin-top: 12px; display: flex; flex-direction: column; }
+.rep-fila { --tn: var(--ink3); display: flex; justify-content: space-between; gap: 12px; padding: 9px 2px; border-bottom: 1px solid var(--hairline); font-size: 12.5px; }
+.rep-fila:last-child { border-bottom: 0; }
+.rep-fk { color: var(--ink3); }
+.rep-fv { color: var(--ink); font-weight: 560; text-align: right; }
+.rep-fv.ton { color: var(--tn); }
+.rep-sent { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--good); background: var(--good-s); border-radius: var(--r-sm); padding: 10px 14px; }
+.rep-form { display: flex; flex-direction: column; gap: 12px; max-width: 460px; }
+.rep-field { display: flex; flex-direction: column; gap: 6px; }
+.rep-field > span { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink3); }
+.rep-field select, .rep-field input { font-family: var(--font-sans); font-size: 13px; padding: 9px 11px; border: 1px solid var(--hairline); border-radius: 9px; background: var(--surface); color: var(--ink); }
+.rep-form > .btn { align-self: flex-start; }

@@ -8,6 +8,7 @@ import { Ausencias } from "@/pages/Ausencias";
 import { Talento } from "@/pages/Talento";
 import { Analitica } from "@/pages/Analitica";
 import { Administracion } from "@/pages/Administracion";
+import { Reportes } from "@/pages/Reportes";
 import { Funcionario } from "@/pages/Funcionario";
 
 export default function App() {
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="ausencias" element={<Ausencias />} />
         <Route path="talento" element={<Talento />} />
         <Route path="analitica" element={<Analitica />} />
+        <Route path="reportes" element={<Reportes />} />
         <Route path="administracion" element={<Administracion />} />
         <Route path="administracion/:sec" element={<Administracion />} />
         <Route path="mi-espacio" element={<Funcionario />} />
