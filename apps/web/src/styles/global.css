@@ -1317,3 +1317,33 @@ h1.title { font-weight: 760; letter-spacing: -0.025em; }
 @media (prefers-reduced-motion: reduce) {
   .sala-livedot, .tl-live i, .rm-node.alert .rm-dot, .cop-fab-orb, .cop-fab-ping, .cop-orb, .cop-live i, .cop-dot, .cop-panel { animation: none !important; }
 }
+
+/* ============================================================= */
+/* Brechas · consola de triage                                   */
+/* ============================================================= */
+.triage { display: grid; grid-template-columns: 1.15fr 1fr; gap: 14px; align-items: start; margin-top: 14px; }
+.triage-detail { position: sticky; top: 82px; }
+.brlist { display: flex; flex-direction: column; gap: 8px; }
+.brow {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
+  text-align: left; width: 100%; cursor: pointer; padding: 11px 13px;
+  border-radius: var(--r); background: var(--surface-2); border: 1px solid var(--hairline);
+  border-left: 3px solid var(--rail); transition: transform var(--dur1) var(--ease), border-color var(--dur1) var(--ease), background var(--dur1) var(--ease);
+}
+.brow:hover { transform: translateX(2px); }
+.brow.on { background: color-mix(in srgb, var(--rail-s), var(--surface-2)); border-color: color-mix(in srgb, var(--rail) 36%, transparent); border-left-width: 4px; }
+.brow-orb { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; font-family: var(--font-mono); font-weight: 700; font-size: 14px; color: var(--tn); background: color-mix(in srgb, var(--tn) 15%, transparent); flex: 0 0 auto; }
+.brow-body { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.brow-top { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.brow-t { font-size: 13.5px; font-weight: 620; letter-spacing: -0.01em; }
+.brow-w { font-size: 11.5px; color: var(--ink3); font-family: var(--font-mono); }
+.brow > svg { color: var(--ink4); }
+.td-title { font-size: 17px; font-weight: 720; letter-spacing: -0.02em; }
+.td-meta { font-size: 12.5px; color: var(--ink2); margin-top: 3px; }
+.td-causa { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--warn); background: var(--warn-s); border-radius: var(--r-sm); padding: 8px 11px; margin-top: 12px; }
+.td-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+.td-actions .btn { width: 100%; }
+@media (max-width: 900px) {
+  .triage { grid-template-columns: 1fr; }
+  .triage-detail { position: static; }
+}
