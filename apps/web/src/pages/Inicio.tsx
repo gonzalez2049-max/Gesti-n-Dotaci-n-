@@ -1,7 +1,10 @@
+import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useApp } from "@/app/store";
-import { getInicioResumen } from "@/data/inicio";
+import { getInicio } from "@/api/api";
 import { Ring } from "@/components/Ring";
 import { GuideStrip, Orb, PriorityBar, orbClass } from "@/components/ui";
+import { Skeleton } from "@/components/kit";
 import type { AccionPrioritaria } from "@nexshift/contracts";
 
 const NIVEL_LABEL: Record<string, string> = {
@@ -11,7 +14,7 @@ const NIVEL_LABEL: Record<string, string> = {
   revisar: "Para revisar",
 };
 
-function ActionRow({ a }: { a: AccionPrioritaria }) {
+function ActionRow({ a, onGo }: { a: AccionPrioritaria; onGo: () => void }) {
   const primary = a.nivel === "ahora";
   return (
     <div className="card hoverable" style={{ marginBottom: 8 }}>
@@ -24,7 +27,7 @@ function ActionRow({ a }: { a: AccionPrioritaria }) {
           </div>
           <div className="w">{a.porque}</div>
         </div>
-        <button className={`btn ${primary ? "prim" : "ghost"}`} type="button">
+        <button className={`btn ${primary ? "prim" : "ghost"}`} type="button" onClick={onGo}>
           {a.ctaLabel}
         </button>
       </div>
@@ -34,12 +37,33 @@ function ActionRow({ a }: { a: AccionPrioritaria }) {
 
 export function Inicio() {
   const { profile } = useApp();
-  const data = getInicioResumen(profile);
+  const navigate = useNavigate();
+  const { data, isLoading } = useQuery({
+    queryKey: ["inicio", profile],
+    queryFn: () => getInicio(profile),
+  });
+
+  if (isLoading || !data) {
+    return (
+      <div className="page">
+        <div className="eyebrow">Inicio</div>
+        <h1 className="title">Cargando tu día…</h1>
+        <div style={{ display: "grid", gap: 10, marginTop: 16 }}>
+          <Skeleton h={72} />
+          <Skeleton h={64} />
+          <Skeleton h={64} />
+        </div>
+      </div>
+    );
+  }
+
   const { estado } = data;
   const pct = Math.round((estado.disponible / estado.requerido) * 100);
+  const go = (a: AccionPrioritaria) =>
+    navigate(a.tipo === "cobertura" ? "/brechas" : a.tipo === "solicitud" ? "/ausencias" : "/brechas");
 
   return (
-    <>
+    <div className="page">
       <div className="eyebrow">Inicio</div>
       <h1 className="title">
         Qué necesita tu atención <span className="thin">ahora</span>
@@ -50,6 +74,7 @@ export function Inicio() {
         hacer={data.guia.queHacer}
         siguiente={data.guia.siguiente}
         cta={data.guia.cta}
+        onCta={() => navigate("/brechas")}
       />
 
       <div className="hero2" style={{ marginTop: 12 }}>
@@ -70,15 +95,7 @@ export function Inicio() {
           <div className="big">
             31<span className="u">min</span>
           </div>
-          <div
-            style={{
-              marginTop: 8,
-              height: 4,
-              borderRadius: 99,
-              background: "var(--hairline)",
-              overflow: "hidden",
-            }}
-          >
+          <div style={{ marginTop: 8, height: 4, borderRadius: 99, background: "var(--hairline)", overflow: "hidden" }}>
             <div style={{ height: "100%", width: "62%", background: "var(--grad)" }} />
           </div>
         </div>
@@ -86,7 +103,7 @@ export function Inicio() {
 
       <div className="sect">Acciones prioritarias</div>
       {data.accionesPrioritarias.map((a) => (
-        <ActionRow key={a.id} a={a} />
+        <ActionRow key={a.id} a={a} onGo={() => go(a)} />
       ))}
 
       <div className="sect">Mis indicadores</div>
@@ -102,7 +119,7 @@ export function Inicio() {
         ))}
       </div>
 
-      <PriorityBar text={data.accionPrioritaria} />
-    </>
+      <PriorityBar text={data.accionPrioritaria} onResolve={() => navigate("/brechas")} />
+    </div>
   );
 }

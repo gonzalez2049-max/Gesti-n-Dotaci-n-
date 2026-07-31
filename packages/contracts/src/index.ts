@@ -173,4 +173,128 @@ export type DomainEvent<TPayload = Record<string, unknown>> = Omit<
   "payload"
 > & { payload: TPayload };
 
+/* ------------------------------------------------------------------ */
+/* Modelos de lectura por módulo (read models)                         */
+/* Tipos que consumen las pantallas. Los sirve el mock hoy y el backend */
+/* mañana, sin cambiar la interfaz.                                     */
+/* ------------------------------------------------------------------ */
+
+export interface Unidad {
+  id: string;
+  nombre: string;
+  criticidad: "alta" | "media" | "baja";
+}
+
+/** Brecha (read model, doc 13/14). */
+export interface Brecha {
+  id: string;
+  unidad: string;
+  turno: "Largo" | "Noche";
+  fecha: string; // "hoy" | "mañana" | "sábado"
+  rol: string;
+  severidad: SeveridadBrecha;
+  semaforo: Semaforo;
+  deficit: number;
+  minutosAbierta: number;
+  estado: "detectada" | "enGestion" | "resuelta" | "cerrada" | "escalada";
+  causa: string;
+}
+
+/** Candidato del Índice NEX (doc 18). */
+export interface CandidatoNex {
+  id: string;
+  nombre: string;
+  tipoCobertura: string; // "Equipo de apoyo" | "Reasignación" | "Hora extra"...
+  razon: string;
+  costo: string;
+  costoTono: "good" | "warn" | "neutro";
+  score: number; // 0–100
+  recomendado: boolean;
+  alerta?: string;
+  factores: { clave: string; etiqueta: string; valor: number }[];
+}
+
+export interface EventoTrazabilidad {
+  hora: string;
+  titulo: string;
+  detalle: string;
+  tono: "sys" | "ok" | "rej" | "neutro";
+}
+
+/** Programación / Malla (doc 15). */
+export interface MallaPersona {
+  id: string;
+  nombre: string;
+  celdas: Turno[]; // 7 días
+  turnosSemana: number;
+}
+export interface MallaSemana {
+  unidad: string;
+  dias: string[];
+  requerido: { largo: number; noche: number };
+  personas: MallaPersona[];
+  estado: "borrador" | "publicada";
+}
+
+/** Ausencias (doc 16). */
+export interface ImpactoDotacion {
+  turno: string;
+  resultado: string; // "1/2"
+  tono: "good" | "warn" | "crit";
+}
+export interface SolicitudAusencia {
+  id: string;
+  funcionario: string;
+  tipo: "Vacaciones" | "Permiso administrativo" | "Capacitación" | "Licencia médica";
+  rango: string;
+  saldo: string;
+  impacto: ImpactoDotacion[];
+  generaBrechas: number;
+  estado: "pendiente" | "aprobada" | "rechazada";
+}
+
+/** Talento / Desarrollo (doc 20). */
+export interface CompetenciaPersona {
+  nombre: string;
+  estados: Record<string, EstadoHabilitacion>; // competencia -> estado
+}
+export interface AccionPlan {
+  id: string;
+  tipo: "Orientación" | "Entrenamiento" | "Evaluación" | "Certificación" | "Recertificación";
+  nombre: string;
+  responsable: string;
+  estado: "done" | "curso" | "pend";
+}
+export interface PlanDesarrollo {
+  funcionario: string;
+  objetivo: string;
+  progreso: number;
+  acciones: AccionPlan[];
+}
+
+/** Analítica (doc 19). */
+export interface Serie {
+  labels: string[];
+  series: { nombre: string; colorVar: string; valores: number[] }[];
+  unidad?: string;
+}
+
+/** Administración (doc 21). */
+export interface ConfigRegla {
+  clave: string;
+  etiqueta: string;
+  valor: number;
+  unidad: string;
+  propaga: string;
+}
+export interface AuditEntry {
+  hora: string;
+  area: string;
+  accion: string;
+  detalle: string;
+}
+
+/** Funcionario (doc 22). */
+export type EstadoOferta = "recibida" | "aceptada" | "confirmada" | "rechazada";
+
 export const CONTRACTS_VERSION = "0.1.0";
