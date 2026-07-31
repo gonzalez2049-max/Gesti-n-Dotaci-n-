@@ -1,114 +1,173 @@
-/* NEX Shift · tokens del sistema visual (doc 23, dirección validada)
-   Vidrio + profundidad + degradados con glow moderado, alto contraste,
-   densidad media, tarjetas compactas. */
+/* NEX Shift · sistema visual v2 — "Centro de Comando"
+   Profundidad por capas, glass refinado, iluminación sutil, gradientes elegantes.
+   Referencias: Linear · Vercel · Stripe · Arc · Raycast · Apple HIG. */
 
 :root {
-  --bg: #edf0f5;
-  --ink: #0b131f;
-  --ink2: #3b4a5e;
-  --ink3: #697a8d;
+  /* ground */
+  --bg: #e9edf5;
+  --bg-2: #eef1f7;
+  --aura-1: rgba(14, 158, 150, 0.16);
+  --aura-2: rgba(80, 110, 220, 0.12);
+  --grid-line: rgba(15, 25, 45, 0.035);
+
+  /* ink */
+  --ink: #0a1120;
+  --ink2: #3a4a60;
+  --ink3: #6a7b90;
+  --ink4: #9aa8bb;
+
+  /* surfaces / glass */
   --surface: #ffffff;
-  --surface-2: #f1f4f8;
-  --card: rgba(255, 255, 255, 0.94);
-  --card-brd: rgba(15, 25, 40, 0.1);
-  --glass-brd: rgba(15, 25, 40, 0.12);
-  --hairline: rgba(15, 25, 40, 0.09);
-  --shadow: 0 1px 2px rgba(20, 30, 50, 0.05), 0 6px 18px rgba(20, 30, 50, 0.07);
-  --shadow-lg: 0 16px 44px rgba(20, 30, 50, 0.16);
+  --surface-2: #eef2f8;
+  --surface-3: #e4eaf2;
+  --glass: rgba(255, 255, 255, 0.72);
+  --glass-2: rgba(255, 255, 255, 0.55);
+  --glass-strong: rgba(255, 255, 255, 0.88);
+  --glass-brd: rgba(255, 255, 255, 0.85);
+  --card: rgba(255, 255, 255, 0.82);
+  --card-brd: rgba(15, 25, 45, 0.08);
+  --hairline: rgba(15, 25, 45, 0.08);
+  --hi: rgba(255, 255, 255, 0.9); /* inner top light */
+  --blur: 18px;
 
+  /* elevation — layered soft shadows */
+  --e1: 0 1px 2px rgba(16, 26, 45, 0.05), 0 2px 6px rgba(16, 26, 45, 0.05);
+  --e2: 0 2px 6px rgba(16, 26, 45, 0.06), 0 10px 24px rgba(16, 26, 45, 0.09);
+  --e3: 0 8px 20px rgba(16, 26, 45, 0.1), 0 24px 60px rgba(16, 26, 45, 0.16);
+  --shadow: var(--e2);
+  --shadow-lg: var(--e3);
+  --ring: 0 0 0 3px color-mix(in srgb, var(--accent) 32%, transparent);
+
+  /* status */
   --good: #12925c;
-  --warn: #b57612;
-  --crit: #d2343b;
-  --info: #2e6fb8;
-  --good-s: rgba(18, 146, 92, 0.14);
-  --warn-s: rgba(181, 118, 18, 0.14);
-  --crit-s: rgba(210, 52, 59, 0.14);
-  --info-s: rgba(46, 111, 184, 0.14);
+  --warn: #b5760f;
+  --crit: #d5343b;
+  --info: #2c6fca;
+  --good-s: rgba(18, 146, 92, 0.13);
+  --warn-s: rgba(181, 118, 15, 0.14);
+  --crit-s: rgba(213, 52, 59, 0.13);
+  --info-s: rgba(44, 111, 202, 0.13);
+  --good-glow: rgba(18, 146, 92, 0.5);
+  --warn-glow: rgba(181, 118, 15, 0.5);
+  --crit-glow: rgba(213, 52, 59, 0.55);
 
-  /* paleta de series (validada CVD/contraste, doc 19) */
+  /* dataviz (validado) */
   --c1: #0a8f84;
   --c2: #3457c8;
   --c3: #b83a79;
 
-  /* acento por defecto (Supervisor) */
+  /* accent (Supervisor) */
   --accent: #0e9e96;
   --accent2: #0a6e7a;
   --accent-ink: #0a6e76;
-  --accent-soft: rgba(14, 158, 150, 0.12);
-  --grad: linear-gradient(135deg, #12aba2, #0a7280);
+  --accent-soft: rgba(14, 158, 150, 0.13);
+  --accent-glow: rgba(14, 158, 150, 0.4);
+  --grad: linear-gradient(135deg, #16bdb1, #0a7280);
+  --grad-soft: linear-gradient(135deg, rgba(22, 189, 177, 0.16), rgba(10, 114, 128, 0.1));
 
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
-  --r: 13px;
-  --r-sm: 9px;
+  /* type */
+  --font-sans: "Geist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", "Roboto Mono", Menlo, monospace;
+
+  /* motion */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+  --dur1: 0.14s;
+  --dur2: 0.24s;
+  --dur3: 0.4s;
+
+  --r: 14px;
+  --r-sm: 10px;
+  --r-lg: 20px;
 }
 
 :root[data-theme="dark"] {
-  --bg: #0a0e16;
-  --ink: #eaf0f7;
-  --ink2: #aab9c9;
-  --ink3: #738698;
-  --surface: #131b27;
-  --surface-2: #1a2431;
-  --card: rgba(22, 30, 43, 0.96);
-  --card-brd: rgba(255, 255, 255, 0.1);
-  --glass-brd: rgba(255, 255, 255, 0.12);
-  --hairline: rgba(255, 255, 255, 0.09);
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 22px rgba(0, 0, 0, 0.42);
-  --shadow-lg: 0 18px 50px rgba(0, 0, 0, 0.6);
-  --good: #2cbe7e;
-  --warn: #dfa03a;
-  --crit: #f05a60;
-  --info: #5a9be6;
-  --good-s: rgba(44, 190, 126, 0.16);
-  --warn-s: rgba(223, 160, 58, 0.16);
-  --crit-s: rgba(240, 90, 96, 0.18);
-  --info-s: rgba(90, 155, 230, 0.16);
+  --bg: #070a11;
+  --bg-2: #0a0e17;
+  --aura-1: rgba(20, 200, 188, 0.16);
+  --aura-2: rgba(90, 110, 240, 0.14);
+  --grid-line: rgba(255, 255, 255, 0.03);
+
+  --ink: #eaf0f8;
+  --ink2: #a8b7c8;
+  --ink3: #72859a;
+  --ink4: #4f6178;
+
+  --surface: #111925;
+  --surface-2: #172131;
+  --surface-3: #1e2a3c;
+  --glass: rgba(20, 29, 43, 0.66);
+  --glass-2: rgba(18, 26, 40, 0.5);
+  --glass-strong: rgba(22, 32, 48, 0.86);
+  --glass-brd: rgba(255, 255, 255, 0.1);
+  --card: rgba(22, 31, 46, 0.72);
+  --card-brd: rgba(255, 255, 255, 0.09);
+  --hairline: rgba(255, 255, 255, 0.08);
+  --hi: rgba(255, 255, 255, 0.06);
+
+  --e1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.4);
+  --e2: 0 4px 14px rgba(0, 0, 0, 0.44), 0 12px 34px rgba(0, 0, 0, 0.5);
+  --e3: 0 12px 30px rgba(0, 0, 0, 0.55), 0 30px 70px rgba(0, 0, 0, 0.62);
+
+  --good: #2fc283;
+  --warn: #e0a53f;
+  --crit: #f25a60;
+  --info: #5a9be8;
+  --good-s: rgba(47, 194, 131, 0.16);
+  --warn-s: rgba(224, 165, 63, 0.16);
+  --crit-s: rgba(242, 90, 96, 0.18);
+  --info-s: rgba(90, 155, 232, 0.16);
+  --good-glow: rgba(47, 194, 131, 0.55);
+  --warn-glow: rgba(224, 165, 63, 0.55);
+  --crit-glow: rgba(242, 90, 96, 0.6);
+
   --accent: #1cbab0;
   --accent2: #0e8f86;
-  --accent-ink: #5bd6cc;
-  --accent-soft: rgba(28, 186, 176, 0.14);
-  --grad: linear-gradient(135deg, #1cc2b7, #0e8f86);
+  --accent-ink: #57d8ce;
+  --accent-soft: rgba(28, 186, 176, 0.15);
+  --accent-glow: rgba(28, 186, 176, 0.45);
+  --grad: linear-gradient(135deg, #1fc7bb, #0e948b);
+  --grad-soft: linear-gradient(135deg, rgba(31, 199, 187, 0.18), rgba(14, 148, 139, 0.1));
 }
 
-/* acentos por perfil — misma identidad, distinto aura */
+/* acentos por perfil — misma identidad, aura propia */
 :root[data-profile="coordinador"] {
-  --accent: #2c8fd6;
-  --accent2: #2c5fc8;
-  --accent-ink: #2c6fb8;
-  --accent-soft: rgba(44, 143, 214, 0.12);
-  --grad: linear-gradient(135deg, #2c9ce6, #2c5fc8);
+  --accent: #2f8fe0;
+  --accent2: #2b5fd0;
+  --accent-ink: #2c6fc4;
+  --accent-soft: rgba(47, 143, 224, 0.13);
+  --accent-glow: rgba(47, 143, 224, 0.4);
+  --grad: linear-gradient(135deg, #35a3ee, #2b5ad6);
+  --aura-1: rgba(47, 143, 224, 0.17);
 }
-:root[data-theme="dark"][data-profile="coordinador"] {
-  --accent-ink: #7db6f0;
-}
+:root[data-theme="dark"][data-profile="coordinador"] { --accent-ink: #7fbcf5; }
 :root[data-profile="subdireccion"] {
-  --accent: #6f68e6;
-  --accent2: #8a5cd6;
+  --accent: #6f68ea;
+  --accent2: #8a5cd8;
   --accent-ink: #6f68d6;
-  --accent-soft: rgba(111, 104, 230, 0.14);
-  --grad: linear-gradient(135deg, #7e7cf2, #9a5ad8);
+  --accent-soft: rgba(111, 104, 234, 0.15);
+  --accent-glow: rgba(111, 104, 234, 0.42);
+  --grad: linear-gradient(135deg, #8180f6, #9a5ada);
+  --aura-1: rgba(111, 104, 234, 0.18);
 }
-:root[data-theme="dark"][data-profile="subdireccion"] {
-  --accent-ink: #a9a6f5;
-}
+:root[data-theme="dark"][data-profile="subdireccion"] { --accent-ink: #aca9f7; }
 :root[data-profile="administrador"] {
-  --accent: #3fa6b8;
-  --accent2: #2e6e8a;
-  --accent-ink: #2e7e96;
-  --accent-soft: rgba(63, 166, 184, 0.14);
-  --grad: linear-gradient(135deg, #46b4c6, #2e6e8a);
+  --accent: #3aa6bb;
+  --accent2: #2e6e8c;
+  --accent-ink: #2e7e98;
+  --accent-soft: rgba(58, 166, 187, 0.14);
+  --accent-glow: rgba(58, 166, 187, 0.4);
+  --grad: linear-gradient(135deg, #43b7ca, #2e6e8c);
+  --aura-1: rgba(58, 166, 187, 0.16);
 }
-:root[data-theme="dark"][data-profile="administrador"] {
-  --accent-ink: #6fc8d6;
-}
+:root[data-theme="dark"][data-profile="administrador"] { --accent-ink: #6fccdb; }
 :root[data-profile="funcionario"] {
-  --accent: #159a76;
-  --accent2: #0e8f76;
-  --accent-ink: #0e8f70;
-  --accent-soft: rgba(21, 154, 118, 0.14);
-  --grad: linear-gradient(135deg, #1fb58a, #0e8f76);
+  --accent: #159a78;
+  --accent2: #0e8f78;
+  --accent-ink: #0e8f72;
+  --accent-soft: rgba(21, 154, 120, 0.14);
+  --accent-glow: rgba(21, 154, 120, 0.4);
+  --grad: linear-gradient(135deg, #22b58c, #0e8f78);
+  --aura-1: rgba(21, 154, 120, 0.16);
 }
-:root[data-theme="dark"][data-profile="funcionario"] {
-  --accent-ink: #4fd6ac;
-}
+:root[data-theme="dark"][data-profile="funcionario"] { --accent-ink: #4fdcb0; }
