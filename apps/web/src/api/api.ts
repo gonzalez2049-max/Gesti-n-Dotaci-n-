@@ -5,6 +5,8 @@ import type {
   MallaSemana,
   Perfil,
   PlanDesarrollo,
+  PlannerPersona,
+  PlannerRequerido,
   SolicitudAusencia,
 } from "@nexshift/contracts";
 import { db } from "./mockDb";
@@ -92,6 +94,17 @@ export function rotarCelda(personaId: string, dia: number): Promise<void> {
   }
   return wait(undefined, 60);
 }
+
+/* ---- Programación · planner mensual ---- */
+export interface PlannerData {
+  personas: PlannerPersona[];
+  requerido: Record<string, PlannerRequerido>;
+}
+export const getPlanner = (): Promise<PlannerData> =>
+  wait({
+    personas: db.planner.personas as PlannerPersona[],
+    requerido: db.planner.requerido,
+  });
 
 /* ---- Ausencias ---- */
 export const getSolicitudes = (): Promise<SolicitudAusencia[]> => wait(db.solicitudes);

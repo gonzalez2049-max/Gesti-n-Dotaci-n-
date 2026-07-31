@@ -156,6 +156,29 @@ export const db = {
     { usuario: "admin", rol: "Administrador", alcance: "Global", estado: "Activo" },
   ],
 
+  planner: {
+    requerido: {
+      UCI: { largo: 2, noche: 2 },
+      Urgencias: { largo: 3, noche: 2 },
+      "Pabellón": { largo: 2, noche: 1 },
+    } as Record<string, { largo: number; noche: number }>,
+    personas: [
+      { id: "f1", nombre: "Ana González", iniciales: "AG", estamento: "Enfermero/a", unidad: "UCI", equipo: "Equipo A", patronOffset: 0, habilitado: true },
+      { id: "f2", nombre: "Carla Muñoz", iniciales: "CM", estamento: "Enfermero/a", unidad: "UCI", equipo: "Equipo A", patronOffset: 1, habilitado: true },
+      { id: "f3", nombre: "Diego Pérez", iniciales: "DP", estamento: "Enfermero/a", unidad: "UCI", equipo: "Equipo B", patronOffset: 2, habilitado: true },
+      { id: "f4", nombre: "Elena Rojas", iniciales: "ER", estamento: "Enfermero/a", unidad: "UCI", equipo: "Equipo B", patronOffset: 3, habilitado: true },
+      { id: "f5", nombre: "Luis Araya", iniciales: "LA", estamento: "TENS", unidad: "UCI", equipo: "Equipo A", patronOffset: 0, habilitado: true },
+      { id: "f6", nombre: "Paula Reyes", iniciales: "PR", estamento: "Enfermero/a", unidad: "UCI", equipo: "Apoyo", patronOffset: 2, habilitado: false },
+      { id: "f7", nombre: "Sofía Díaz", iniciales: "SD", estamento: "TENS", unidad: "UCI", equipo: "Equipo B", patronOffset: 1, habilitado: true },
+      { id: "f8", nombre: "Tomás Vega", iniciales: "TV", estamento: "Enfermero/a", unidad: "UCI", equipo: "Apoyo", patronOffset: 3, habilitado: true },
+      { id: "f9", nombre: "Rocío Silva", iniciales: "RS", estamento: "Enfermero/a", unidad: "Urgencias", equipo: "Equipo A", patronOffset: 0, habilitado: true },
+      { id: "f10", nombre: "Mateo Fuentes", iniciales: "MF", estamento: "TENS", unidad: "Urgencias", equipo: "Equipo A", patronOffset: 2, habilitado: true },
+      { id: "f11", nombre: "Javiera Soto", iniciales: "JS", estamento: "Enfermero/a", unidad: "Urgencias", equipo: "Equipo B", patronOffset: 1, habilitado: true },
+      { id: "f12", nombre: "Camila Torres", iniciales: "CT", estamento: "Matrón/a", unidad: "Pabellón", equipo: "Equipo A", patronOffset: 0, habilitado: true },
+      { id: "f13", nombre: "Ignacio Bravo", iniciales: "IB", estamento: "Enfermero/a", unidad: "Pabellón", equipo: "Equipo B", patronOffset: 2, habilitado: true },
+    ],
+  },
+
   analitica: {
     kpis: [
       { clave: "cobertura", etiqueta: "Cobertura de dotación", valor: "91", unidad: "%", delta: "▼ 3 pts", tono: "warn", spark: [95, 94, 93, 93, 92, 91] },

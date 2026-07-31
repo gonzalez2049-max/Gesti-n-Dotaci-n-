@@ -297,4 +297,28 @@ export interface AuditEntry {
 /** Funcionario (doc 22). */
 export type EstadoOferta = "recibida" | "aceptada" | "confirmada" | "rechazada";
 
+/** Programación · planner mensual (doc 15, rediseño). */
+export interface PlannerPersona {
+  id: string;
+  nombre: string;
+  iniciales: string;
+  estamento: "Enfermero/a" | "TENS" | "Matrón/a";
+  unidad: string;
+  equipo: "Equipo A" | "Equipo B" | "Apoyo";
+  patronOffset: number; // desfase del ciclo de cuarto turno
+  habilitado: boolean; // habilitado y vigente para la unidad
+}
+export interface PlannerRequerido {
+  largo: number;
+  noche: number;
+}
+export interface NexRec {
+  id: string;
+  tipo: "reemplazo" | "horaExtra" | "reasignacion";
+  nombre: string;
+  detalle: string;
+  score: number;
+  costoTono: "good" | "warn" | "neutro";
+}
+
 export const CONTRACTS_VERSION = "0.1.0";
