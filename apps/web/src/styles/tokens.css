@@ -56,7 +56,7 @@
   --c2: #3457c8;
   --c3: #b83a79;
 
-  /* accent (Supervisor) */
+  /* accent (Jefatura — perfil por defecto) */
   --accent: #0e9e96;
   --accent2: #0a6e7a;
   --accent-ink: #0a6e76;
@@ -130,17 +130,8 @@
   --grad-soft: linear-gradient(135deg, rgba(31, 199, 187, 0.18), rgba(14, 148, 139, 0.1));
 }
 
-/* acentos por perfil — misma identidad, aura propia */
-:root[data-profile="coordinador"] {
-  --accent: #2f8fe0;
-  --accent2: #2b5fd0;
-  --accent-ink: #2c6fc4;
-  --accent-soft: rgba(47, 143, 224, 0.13);
-  --accent-glow: rgba(47, 143, 224, 0.4);
-  --grad: linear-gradient(135deg, #35a3ee, #2b5ad6);
-  --aura-1: rgba(47, 143, 224, 0.17);
-}
-:root[data-theme="dark"][data-profile="coordinador"] { --accent-ink: #7fbcf5; }
+/* acentos por perfil — misma identidad, aura propia.
+   Jefatura usa el acento base (teal) definido en :root. */
 :root[data-profile="subdireccion"] {
   --accent: #6f68ea;
   --accent2: #8a5cd8;

@@ -30,7 +30,7 @@ export function Funcionario() {
   return (
     <div className="page">
       <PageHead eyebrow="Mi espacio" title={<>Hola, Paula <span className="thin">· tu día</span></>} />
-      <GuideStrip ocurre="Tienes 1 oferta por responder · próximo turno hoy 22:00" hacer="Acepta o rechaza la oferta de cubrir un turno" siguiente="Si aceptas, tu Supervisor confirma" />
+      <GuideStrip ocurre="Tienes 1 oferta por responder · próximo turno hoy 22:00" hacer="Acepta o rechaza la oferta de cubrir un turno" siguiente="Si aceptas, tu Jefatura confirma" />
 
       <div className="grid g2" style={{ marginTop: 12, gridTemplateColumns: "1.2fr .8fr", alignItems: "start" }}>
         <div className="card">
@@ -51,8 +51,8 @@ export function Funcionario() {
           )}
           {oferta === "aceptada" && (
             <div>
-              <div style={{ fontSize: 13, color: "var(--ink2)", marginBottom: 10 }}>✓ Aceptaste · pendiente de confirmación de tu Supervisor.</div>
-              <button className="btn ghost" onClick={() => { setOferta("confirmada"); toast("Cobertura confirmada · el turno es tuyo"); }} type="button">Simular: tu Supervisor confirma</button>
+              <div style={{ fontSize: 13, color: "var(--ink2)", marginBottom: 10 }}>✓ Aceptaste · pendiente de confirmación de tu Jefatura.</div>
+              <button className="btn ghost" onClick={() => { setOferta("confirmada"); toast("Cobertura confirmada · el turno es tuyo"); }} type="button">Simular: tu Jefatura confirma</button>
             </div>
           )}
           {oferta === "confirmada" && <div className="banner">🎉 <span><b>Confirmada · el turno es tuyo.</b> Ya aparece en tu calendario.</span></div>}

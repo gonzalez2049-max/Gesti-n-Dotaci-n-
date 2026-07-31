@@ -58,7 +58,7 @@ export function Coberturas() {
   const confirm = () => {
     if (!offeredCand) return;
     setPhase("confirmed");
-    addLog({ titulo: "Confirmada por el Supervisor", detalle: "Asignación creada · brecha cerrada" });
+    addLog({ titulo: "Confirmada por la Jefatura", detalle: "Asignación creada · brecha cerrada" });
     toast("Cobertura confirmada · brecha cerrada");
   };
   const reset = () => {

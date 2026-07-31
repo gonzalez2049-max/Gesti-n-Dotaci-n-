@@ -55,7 +55,7 @@ export const db = {
       deficit: 1,
       minutosAbierta: 45,
       estado: "escalada",
-      causa: "Escalada: el supervisor no encontró reemplazo interno",
+      causa: "Escalada a Subdirección: la jefatura no encontró reemplazo interno",
     },
     {
       id: "b4",
@@ -118,7 +118,7 @@ export const db = {
     objetivo: "Habilitar en UCI",
     progreso: 25,
     acciones: [
-      { id: "pa1", tipo: "Orientación", nombre: "Orientación a UCI", responsable: "José M. · Supervisor UCI", estado: "done" },
+      { id: "pa1", tipo: "Orientación", nombre: "Orientación a UCI", responsable: "José M. · Jefatura UCI", estado: "done" },
       { id: "pa2", tipo: "Entrenamiento", nombre: "Entrenamiento: Ventilación mecánica", responsable: "Formación Clínica", estado: "curso" },
       { id: "pa3", tipo: "Entrenamiento", nombre: "Entrenamiento: Drogas vasoactivas", responsable: "Formación Clínica", estado: "pend" },
       { id: "pa4", tipo: "Evaluación", nombre: "Evaluación de desempeño (VM + DVA)", responsable: "Enf. Clínica · evaluadora", estado: "pend" },
@@ -144,15 +144,15 @@ export const db = {
   ],
 
   auditoria: [
-    { hora: "08:55", area: "Estructura", accion: "Alta de usuario: p.ramirez", detalle: "Supervisor · UCI" },
+    { hora: "08:55", area: "Estructura", accion: "Alta de usuario: p.ramirez", detalle: "Jefatura · UCI" },
     { hora: "08:40", area: "Reglas", accion: "Umbral RCP: 30 → 45 días", detalle: "propagó a alertas de reevaluación" },
     { hora: "08:22", area: "Pesos NEX", accion: "Peso Costo: 25 → 20", detalle: "re-ordena recomendaciones" },
   ] as AuditEntry[],
 
   usuarios: [
-    { usuario: "j.morales", rol: "Supervisor", alcance: "UCI", estado: "Activo" },
-    { usuario: "m.lagos", rol: "Coordinador", alcance: "Sede Central", estado: "Activo" },
-    { usuario: "p.ramirez", rol: "Supervisor", alcance: "UCI", estado: "Activo" },
+    { usuario: "j.morales", rol: "Jefatura", alcance: "UCI", estado: "Activo" },
+    { usuario: "m.lagos", rol: "Jefatura", alcance: "Sede Central", estado: "Activo" },
+    { usuario: "p.ramirez", rol: "Jefatura", alcance: "UCI", estado: "Activo" },
     { usuario: "admin", rol: "Administrador", alcance: "Global", estado: "Activo" },
   ],
 

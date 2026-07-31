@@ -5,8 +5,8 @@ import type { InicioResumen, Perfil } from "@nexshift/contracts";
  * backend (módulo Notificaciones/Bandeja + Brechas), pero la forma es la misma
  * (contrato `InicioResumen`). Sirve para tener el Inicio "funcionando" ya.
  */
-const SUPERVISOR: InicioResumen = {
-  perfil: "supervisor",
+const JEFATURA: InicioResumen = {
+  perfil: "jefatura",
   saludo: "Hola, José",
   contexto: "Sede Central · UCI",
   estado: {
@@ -64,65 +64,9 @@ const SUPERVISOR: InicioResumen = {
   ],
 };
 
-const COORDINADOR: InicioResumen = {
-  perfil: "coordinador",
-  saludo: "Hola, Marta",
-  contexto: "Sede Central · Todas las unidades",
-  estado: {
-    unidad: "Sede Central",
-    requerido: 75,
-    disponible: 68,
-    semaforo: "critico",
-    titular: "5 turnos sin cubrir",
-    detalle: "1 crítico está pasando ahora en UCI",
-  },
-  guia: {
-    queOcurre: "1 brecha crítica pasando en UCI.",
-    queHacer: "Abrila y enviá la oferta al recomendado",
-    siguiente: "El Índice NEX ya tiene 5 candidatos",
-    cta: "Resolver ahora",
-  },
-  accionPrioritaria: "Brecha crítica — UCI, 22 min abierta",
-  accionesPrioritarias: [
-    {
-      id: "c1",
-      nivel: "ahora",
-      tipo: "cobertura",
-      titulo: "UCI · hoy 22:00 · falta 1",
-      porque: "22 min abierta · 3 reemplazos habilitados",
-      ctaLabel: "Resolver",
-      semaforo: "critico",
-      nueva: true,
-    },
-    {
-      id: "c2",
-      nivel: "ahora",
-      tipo: "cobertura",
-      titulo: "Urgencias · mañana 08:00 · falta 1",
-      porque: "Turno inminente · 2 del equipo de apoyo",
-      ctaLabel: "Resolver",
-      semaforo: "critico",
-      nueva: true,
-    },
-    {
-      id: "c3",
-      nivel: "hoy",
-      tipo: "oferta",
-      titulo: "2 ofertas enviadas sin respuesta",
-      porque: "Esperan hace 40 min · quizá reofrecer",
-      ctaLabel: "Ver",
-      semaforo: "riesgo",
-      nueva: false,
-    },
-  ],
-  indicadores: [
-    { clave: "dotacion", etiqueta: "Dotación", valor: "68/75", unidad: "faltan 7", tono: "warn" },
-    { clave: "ausencias", etiqueta: "Ausencias del día", valor: "11", tono: "neutro" },
-    { clave: "brechas", etiqueta: "Brechas sin resolver", valor: "5", unidad: "1 crítica", tono: "crit" },
-    { clave: "ofertas", etiqueta: "Ofertas sin respuesta", valor: "2", tono: "warn" },
-  ],
-};
-
-export function getInicioResumen(perfil: Perfil): InicioResumen {
-  return perfil === "coordinador" ? COORDINADOR : SUPERVISOR;
+// Supervisor/a y Coordinador/a se unificaron en una sola Jefatura, por lo que
+// el Inicio de la jefatura es único. Los demás perfiles reutilizan esta base
+// hasta tener su propio resumen (Subdirección → Analítica, Funcionario → Mi espacio).
+export function getInicioResumen(_perfil: Perfil): InicioResumen {
+  return JEFATURA;
 }

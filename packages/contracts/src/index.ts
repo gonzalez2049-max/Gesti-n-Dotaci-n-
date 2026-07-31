@@ -13,8 +13,7 @@ import { z } from "zod";
 export const Perfil = z.enum([
   "administrador",
   "subdireccion",
-  "supervisor",
-  "coordinador",
+  "jefatura", // jefatura de unidad (fusiona Supervisor/a y Coordinador/a: 1 sola jefatura)
   "funcionario",
 ]);
 export type Perfil = z.infer<typeof Perfil>;

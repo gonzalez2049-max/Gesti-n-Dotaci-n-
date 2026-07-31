@@ -8,33 +8,10 @@ import type { InicioResumen, Perfil } from "@nexshift/contracts";
  */
 @Injectable()
 export class InicioService {
-  resumen(perfil: Perfil): InicioResumen {
-    if (perfil === "coordinador") {
-      return {
-        perfil,
-        saludo: "Hola, Marta",
-        contexto: "Sede Central · Todas las unidades",
-        estado: {
-          unidad: "Sede Central",
-          requerido: 75,
-          disponible: 68,
-          semaforo: "critico",
-          titular: "5 turnos sin cubrir",
-          detalle: "1 crítico está pasando ahora en UCI",
-        },
-        guia: {
-          queOcurre: "1 brecha crítica pasando en UCI.",
-          queHacer: "Abrila y enviá la oferta al recomendado",
-          siguiente: "El Índice NEX ya tiene 5 candidatos",
-          cta: "Resolver ahora",
-        },
-        accionPrioritaria: "Brecha crítica — UCI, 22 min abierta",
-        accionesPrioritarias: [],
-        indicadores: [],
-      };
-    }
+  resumen(_perfil: Perfil): InicioResumen {
+    // Supervisor/a y Coordinador/a se unificaron en una sola Jefatura.
     return {
-      perfil: "supervisor",
+      perfil: "jefatura",
       saludo: "Hola, José",
       contexto: "Sede Central · UCI",
       estado: {

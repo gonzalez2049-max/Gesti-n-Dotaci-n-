@@ -100,7 +100,7 @@ export function Talento() {
                     Completar siguiente acción
                   </button>
                 ) : (
-                  <div className="banner" style={{ marginTop: 14 }}>✔ <span><b>Plan completo.</b> Falta la validación final del Supervisor para habilitar en UCI.</span></div>
+                  <div className="banner" style={{ marginTop: 14 }}>✔ <span><b>Plan completo.</b> Falta la validación final de la Jefatura para habilitar en UCI.</span></div>
                 )}
               </div>
               <aside className="card" style={{ textAlign: "center" }}>

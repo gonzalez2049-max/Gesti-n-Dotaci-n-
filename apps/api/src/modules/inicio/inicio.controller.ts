@@ -6,10 +6,10 @@ import { InicioService } from "./inicio.service";
 export class InicioController {
   constructor(private readonly inicio: InicioService) {}
 
-  /** GET /api/inicio?perfil=supervisor */
+  /** GET /api/inicio?perfil=jefatura */
   @Get()
   resumen(@Query("perfil") perfilRaw?: string): InicioResumen {
-    const perfil: Perfil = Perfil.catch("supervisor").parse(perfilRaw);
+    const perfil: Perfil = Perfil.catch("jefatura").parse(perfilRaw);
     return this.inicio.resumen(perfil);
   }
 }

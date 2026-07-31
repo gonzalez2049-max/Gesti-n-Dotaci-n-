@@ -20,7 +20,7 @@ interface AppState {
 const Ctx = createContext<AppState | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [profile, setProfile] = useState<Perfil>("supervisor");
+  const [profile, setProfile] = useState<Perfil>("jefatura");
   const [theme, setTheme] = useState<Theme | null>(null);
 
   useEffect(() => {
