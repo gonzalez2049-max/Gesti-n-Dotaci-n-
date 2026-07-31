@@ -1,12 +1,13 @@
 import { Icon } from "@/components/icons";
 import { Sparkline } from "@/components/Charts";
 import type { HomeSubdireccion as T } from "@/data/home";
-import { NarrativaHead, NexPanel, Timeline, UnitTiles, toneStyle } from "./parts";
+import { GuiaNexBar, NarrativaHead, NexPanel, Timeline, UnitTiles, toneStyle } from "./parts";
 
 export function HomeSubdireccion({ d }: { d: T }) {
   return (
     <div className="page home-sub">
       <NarrativaHead n={d.narrativa} />
+      <GuiaNexBar g={d.guia} />
 
       <div className="strat">
         <section className="panel strat-ind">

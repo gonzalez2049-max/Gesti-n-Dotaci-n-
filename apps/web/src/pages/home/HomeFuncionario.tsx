@@ -3,7 +3,7 @@ import { Icon } from "@/components/icons";
 import { Ring } from "@/components/Ring";
 import { useToast } from "@/components/Toast";
 import type { HomeFuncionario as T } from "@/data/home";
-import { NarrativaHead, Timeline, toneStyle } from "./parts";
+import { GuiaNexBar, NarrativaHead, Timeline, toneStyle } from "./parts";
 
 export function HomeFuncionario({ d }: { d: T }) {
   const toast = useToast();
@@ -12,6 +12,7 @@ export function HomeFuncionario({ d }: { d: T }) {
   return (
     <div className="page home-fx">
       <NarrativaHead n={d.narrativa} />
+      <GuiaNexBar g={d.guia} />
 
       <div className="fx">
         <section className="panel turno-hero" style={toneStyle("acc")}>

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@/components/icons";
 import type { HomeJefatura as T } from "@/data/home";
-import { LiveStatRow, NarrativaHead, NexPanel, PulseLine, Timeline, UnitTiles, toneStyle } from "./parts";
+import { GuiaNexBar, LiveStatRow, NarrativaHead, NexPanel, PulseLine, Timeline, UnitTiles, toneStyle } from "./parts";
 
 const semTone = (s: string) => (s === "critico" ? "crit" : s === "riesgo" ? "warn" : s === "exceso" ? "info" : "good");
 const semLabel: Record<string, string> = { critico: "Crítico", riesgo: "En riesgo", exceso: "Sobredotado", equilibrio: "Estable" };
@@ -12,6 +12,7 @@ export function HomeJefatura({ d }: { d: T }) {
   return (
     <div className="page home-jef">
       <NarrativaHead n={d.narrativa} />
+      <GuiaNexBar g={d.guia} />
 
       <div className="ops">
         <section className="panel ops-live" style={toneStyle(opTone as never)}>

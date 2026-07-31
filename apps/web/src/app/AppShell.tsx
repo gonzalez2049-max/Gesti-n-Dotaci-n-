@@ -1,21 +1,24 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { NAV, NAV_MOBILE } from "@/data/nav";
+import { navFor, navMobileFor } from "@/data/nav";
 import { PROFILES, profileByKey } from "@/data/profiles";
+import { Icon } from "@/components/icons";
 import { useApp } from "@/app/store";
 
 export function AppShell() {
   const { profile, setProfile, toggleTheme } = useApp();
   const p = profileByKey(profile);
+  const nav = navFor(profile);
+  const navMobile = navMobileFor(profile);
   const navRef = useRef<HTMLDivElement>(null);
   const indRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
   const positionIndicator = () => {
-    const nav = navRef.current;
+    const el = navRef.current;
     const ind = indRef.current;
-    if (!nav || !ind) return;
-    const active = nav.querySelector<HTMLElement>('a[aria-current="page"]');
+    if (!el || !ind) return;
+    const active = el.querySelector<HTMLElement>('a[aria-current="page"]');
     if (active) {
       ind.style.top = `${active.offsetTop}px`;
       ind.style.height = `${active.offsetHeight}px`;
@@ -25,7 +28,7 @@ export function AppShell() {
     }
   };
 
-  useLayoutEffect(positionIndicator, [location.pathname]);
+  useLayoutEffect(positionIndicator, [location.pathname, profile]);
   useEffect(() => {
     window.addEventListener("resize", positionIndicator);
     return () => window.removeEventListener("resize", positionIndicator);
@@ -40,7 +43,7 @@ export function AppShell() {
         </div>
         <span className="ctx">
           <span className="d" />
-          {p.rol === "COORDINADORA" ? "Sede Central" : "Sede Central · UCI"}
+          {p.ctx}
         </span>
         <span className="spacer" />
         <div className="seg" role="group" aria-label="Perfil">
@@ -64,9 +67,11 @@ export function AppShell() {
       <aside className="side">
         <nav className="nav" ref={navRef} aria-label="Navegación principal">
           <div className="navind" ref={indRef} />
-          {NAV.map((n) => (
+          {nav.map((n) => (
             <NavLink key={n.key} to={n.path} end={n.path === "/"} className="navbtn">
-              <span className="ic">{n.icon}</span>
+              <span className="ic">
+                <Icon name={n.icon} size={17} />
+              </span>
               {n.label}
             </NavLink>
           ))}
@@ -85,9 +90,11 @@ export function AppShell() {
       </main>
 
       <nav className="botnav" aria-label="Navegación">
-        {NAV_MOBILE.map((n) => (
+        {navMobile.map((n) => (
           <NavLink key={n.key} to={n.path} end={n.path === "/"}>
-            <span className="ic">{n.icon}</span>
+            <span className="ic">
+              <Icon name={n.icon} size={18} />
+            </span>
             {n.label}
           </NavLink>
         ))}

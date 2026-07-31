@@ -31,6 +31,11 @@ export type IconName =
   | "graduation"
   | "settings"
   | "chevron-right"
+  | "home"
+  | "user"
+  | "link"
+  | "list"
+  | "layers"
   | "dot";
 
 const P: Record<IconName, JSX.Element> = {
@@ -108,6 +113,22 @@ const P: Record<IconName, JSX.Element> = {
     </>
   ),
   "chevron-right": <path d="M9 5l7 7-7 7" />,
+  home: (
+    <>
+      <path d="M3 11 12 3l9 8" />
+      <path d="M5 9.5V20h14V9.5" />
+      <path d="M10 20v-6h4v6" />
+    </>
+  ),
+  user: (
+    <>
+      <circle cx="12" cy="8" r="3.4" />
+      <path d="M5.5 20a6.5 6.5 0 0 1 13 0" />
+    </>
+  ),
+  link: <path d="M10 14a4 4 0 0 1 0-5.7l1.8-1.8a4 4 0 0 1 5.7 5.7l-1 1M14 10a4 4 0 0 1 0 5.7l-1.8 1.8a4 4 0 0 1-5.7-5.7l1-1" />,
+  list: <path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" />,
+  layers: <path d="M12 3 3 8l9 5 9-5-9-5ZM3 13l9 5 9-5M3 18l9 5 9-5" />,
   dot: <circle cx="12" cy="12" r="3.5" />,
 };
 

@@ -22,6 +22,7 @@ export default function App() {
         <Route path="talento" element={<Talento />} />
         <Route path="analitica" element={<Analitica />} />
         <Route path="administracion" element={<Administracion />} />
+        <Route path="administracion/:sec" element={<Administracion />} />
         <Route path="mi-espacio" element={<Funcionario />} />
       </Route>
     </Routes>

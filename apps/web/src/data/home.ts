@@ -59,10 +59,22 @@ export interface LiveStat {
   spark?: number[];
 }
 
+/** Marco NEX: las 5 preguntas que toda pantalla debe responder. */
+export interface GuiaNex {
+  ocurre: string; // ¿qué ocurre?
+  hacer: string; // ¿qué debo hacer?
+  recomienda: string; // ¿qué recomienda NEX?
+  riesgo: string; // ¿qué pasa si no actúo?
+  siguiente: string; // ¿cuál es el siguiente paso?
+  cta?: string;
+  ruta?: string;
+}
+
 /* ------------------------------ JEFATURA ------------------------------ */
 export interface HomeJefatura {
   tipo: "jefatura";
   narrativa: Narrativa;
+  guia: GuiaNex;
   operacion: { semaforo: Semaforo; titulo: string; unidades: UnidadEstado[] };
   pulso: LiveStat[];
   foco: {
@@ -87,6 +99,15 @@ const JEFATURA: HomeJefatura = {
       { icon: "calendar", texto: "3 permisos por responder", tono: "warn" },
       { icon: "shield", texto: "2 reevaluaciones por vencer", tono: "info" },
     ],
+  },
+  guia: {
+    ocurre: "La UCI queda con 1 enfermera menos en el turno noche (22:00).",
+    hacer: "Enviá la oferta al candidato recomendado.",
+    recomienda: "Camila F. — apoyo habilitado, sin costo extra (Índice NEX 92).",
+    riesgo: "Si no actuás, la UCI abre la noche en dotación crítica.",
+    siguiente: "Camila confirma y la dotación vuelve a verde.",
+    cta: "Resolver brecha",
+    ruta: "/brechas",
   },
   operacion: {
     semaforo: "riesgo",
@@ -137,6 +158,7 @@ const JEFATURA: HomeJefatura = {
 export interface HomeSubdireccion {
   tipo: "subdireccion";
   narrativa: Narrativa;
+  guia: GuiaNex;
   indicadores: { label: string; valor: string; unidad?: string; delta: string; tono: Tono; dir: "up" | "down" | "flat"; spark: number[] }[];
   red: UnidadEstado[];
   nex: NexInsight;
@@ -155,6 +177,15 @@ const SUBDIRECCION: HomeSubdireccion = {
       { icon: "arrow-up", texto: "Ausentismo +18% UCI", tono: "warn" },
       { icon: "graduation", texto: "5 planes cerrados", tono: "info" },
     ],
+  },
+  guia: {
+    ocurre: "El ausentismo en UCI creció 18% por tercer mes consecutivo.",
+    hacer: "Revisá la malla de UCI antes de la próxima publicación.",
+    recomienda: "Sumar 1 cupo estable reduce ~40% la hora extra proyectada.",
+    riesgo: "Si no se ajusta, sube la hora extra y el riesgo de brechas nocturnas.",
+    siguiente: "Se simula la nueva malla y se valida con la Jefatura.",
+    cta: "Ver análisis de UCI",
+    ruta: "/analitica",
   },
   indicadores: [
     { label: "Cobertura global", valor: "94", unidad: "%", delta: "+2,1", tono: "good", dir: "up", spark: [89, 90, 91, 92, 93, 94] },
@@ -190,6 +221,7 @@ const SUBDIRECCION: HomeSubdireccion = {
 export interface HomeFuncionario {
   tipo: "funcionario";
   narrativa: Narrativa;
+  guia: GuiaNex;
   proximoTurno: { fecha: string; hora: string; unidad: string; tipo: string; horas: number; en: string };
   oferta?: { texto: string; plazo: string; incentivo: string };
   bienestar: { turnosMes: number; noches: number; libres: number; carga: number; mensaje: string; tono: Tono };
@@ -209,6 +241,15 @@ const FUNCIONARIO: HomeFuncionario = {
       { icon: "send", texto: "1 oferta pendiente", tono: "warn" },
       { icon: "graduation", texto: "Habilitación 75%", tono: "info" },
     ],
+  },
+  guia: {
+    ocurre: "Tenés un turno noche hoy 22:00 y 1 oferta de cobertura pendiente.",
+    hacer: "Respondé la oferta: aceptar o rechazar.",
+    recomienda: "Aceptar suma +1 libre compensatorio y tu carga sigue equilibrada.",
+    riesgo: "Si no respondés en 2 h, la oferta pasa al siguiente candidato.",
+    siguiente: "Si aceptás, tu Jefatura confirma el turno.",
+    cta: "Responder oferta",
+    ruta: "/coberturas",
   },
   proximoTurno: { fecha: "Hoy", hora: "22:00", unidad: "UCI", tipo: "Noche", horas: 12, en: "empieza en 6 h" },
   oferta: {
@@ -237,6 +278,7 @@ const FUNCIONARIO: HomeFuncionario = {
 export interface HomeAdmin {
   tipo: "administrador";
   narrativa: Narrativa;
+  guia: GuiaNex;
   salud: { icon: IconName; label: string; valor: string; estado: Tono; nota: string }[];
   nex: NexInsight;
   timeline: EventoTL[];
@@ -254,6 +296,15 @@ const ADMINISTRADOR: HomeAdmin = {
       { icon: "settings", texto: "2 reglas propagándose", tono: "info" },
       { icon: "users", texto: "48 usuarios activos", tono: "acc" },
     ],
+  },
+  guia: {
+    ocurre: "Cambiaste el umbral de RCP (30 → 45 días); se está propagando.",
+    hacer: "Revisá las reevaluaciones afectadas por el cambio.",
+    recomienda: "2 personas quedan “por vencer”: conviene avisar a sus jefaturas.",
+    riesgo: "Si no se revisa, podrían caducar habilitaciones sin aviso.",
+    siguiente: "Se notifica a las jefaturas y se recalculan las alertas.",
+    cta: "Ver reevaluaciones",
+    ruta: "/administracion",
   },
   salud: [
     { icon: "settings", label: "Reglas activas", valor: "12", estado: "good", nota: "2 propagándose" },
