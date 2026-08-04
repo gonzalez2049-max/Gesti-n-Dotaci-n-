@@ -35,10 +35,11 @@ const NAV_BY_PROFILE: Record<Perfil, NavItem[]> = {
   ],
   // Subdirección incluye a Buenas Prácticas Clínicas (BPC): supervisa el flujo
   // de gestión y administra reportes y calidad clínica (competencias/habilitación).
+  // Subdirección: módulo de solo-datos (observatorio para decidir dónde
+  // intervenir). Sin acciones operativas; entrega evidencia vía Reportes.
   subdireccion: [
     { key: "inicio", path: "/", icon: "home", label: "Inicio" },
     { key: "analitica", path: "/analitica", icon: "chart", label: "Analítica" },
-    { key: "cob", path: "/coberturas", icon: "swap", label: "Coberturas" },
     { key: "reportes", path: "/reportes", icon: "list", label: "Reportes" },
     { key: "talento", path: "/talento", icon: "graduation", label: "Calidad clínica" },
     { key: "ausencias", path: "/ausencias", icon: "plane", label: "Ausencias" },
