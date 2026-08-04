@@ -1,114 +1,131 @@
 import { useState } from "react";
-import { GuideStrip, Orb } from "@/components/ui";
 import { PageHead } from "@/components/kit";
 import { DonutGrad } from "@/components/Charts";
+import { Icon } from "@/components/icons";
+import { GuiaNexBar, toneStyle } from "@/pages/home/parts";
 import { useToast } from "@/components/Toast";
-import type { EstadoOferta } from "@nexshift/contracts";
 
-const REASONS = ["No disponible ese día", "Vengo saliendo de turno / descanso", "Motivo personal", "Distancia / traslado", "Prefiero otro turno"];
-const WEEK: [string, "largo" | "noche" | "libre"][] = [["Lun", "noche"], ["Mar", "libre"], ["Mié", "libre"], ["Jue", "largo"], ["Vie", "noche"], ["Sáb", "libre"], ["Dom", "largo"]];
-const SHORT = { largo: "D", noche: "N", libre: "L" };
+type Oferta = "recibida" | "aceptada" | "confirmada" | "rechazada" | "evento";
+const RECHAZOS = ["No disponible ese día", "Vengo saliendo de turno / descanso", "Motivo personal", "Distancia / traslado"];
+const EVENTUALIDADES = ["Estoy en vacaciones", "Con licencia médica", "Ya tomé un extra esta semana"];
+const WEEK: [string, string][] = [["Lun", "N"], ["Mar", ""], ["Mié", ""], ["Jue", "L"], ["Vie", "N"], ["Sáb", ""], ["Dom", "L"]];
+const CLS: Record<string, string> = { L: "largo", N: "noche", "": "libre" };
 
 export function Funcionario() {
   const toast = useToast();
-  const [oferta, setOferta] = useState<EstadoOferta | null>("recibida");
-  const [reason, setReason] = useState(REASONS[0]);
+  const [oferta, setOferta] = useState<Oferta>("recibida");
+  const [reason, setReason] = useState(RECHAZOS[0]);
+  const [obs, setObs] = useState(EVENTUALIDADES[0]);
   const [avail, setAvail] = useState<Record<string, boolean>>({});
 
-  const tracker = (state: EstadoOferta) => {
-    const steps: [string, string][] = state === "rechazada" ? [["Recibida", ""], ["Rechazada", "rej"]] : [["Recibida", ""], ["Aceptada", ""], ["Pend. confirmación", ""], ["Confirmada", ""]];
-    const idx = { recibida: 0, aceptada: 2, confirmada: 3, rechazada: 1 }[state];
-    return (
-      <div className="tracker">
-        {steps.map(([lbl], i) => (
-          <span key={lbl} className={`tstep ${i < idx ? "done" : i === idx ? (state === "rechazada" ? "rej" : "cur") : ""}`}>{lbl}</span>
-        ))}
-      </div>
-    );
+  const guia = {
+    ocurre: "Tenés 1 oferta de cobertura por responder y tu próximo turno es hoy 22:00.",
+    hacer: "Aceptá, rechazá o pedí que te consideren para otra eventualidad.",
+    recomienda: "Aceptar suma +1 libre compensatorio y tu carga sigue equilibrada.",
+    riesgo: "Si no respondés en 2 h, Gestión Central sigue con el siguiente.",
+    siguiente: "Si aceptás, Gestión Central lo envía a tu Jefatura para confirmar.",
   };
+
+  const stepIdx = { recibida: 0, aceptada: 1, confirmada: 3, rechazada: 0, evento: 0 }[oferta];
 
   return (
     <div className="page">
       <PageHead eyebrow="Mi espacio" title={<>Hola, Paula <span className="thin">· tu día</span></>} />
-      <GuideStrip ocurre="Tienes 1 oferta por responder · próximo turno hoy 22:00" hacer="Acepta o rechaza la oferta de cubrir un turno" siguiente="Si aceptas, tu Jefatura confirma" />
+      <GuiaNexBar g={guia} />
 
-      <div className="grid g2" style={{ marginTop: 12, gridTemplateColumns: "1.2fr .8fr", alignItems: "start" }}>
-        <div className="card">
-          <div className="eyebrow">Te pidieron cubrir un turno · Ahora</div>
-          <div style={{ fontSize: 16, fontWeight: 660, margin: "4px 0 2px" }}>Urgencias · Largo 08:00–20:00 · mañana</div>
-          {oferta && tracker(oferta)}
+      <div className="fx" style={{ marginTop: 14 }}>
+        <section className="panel oferta" style={toneStyle("warn")}>
+          <div className="panel-h"><Icon name="send" size={15} /> Oferta de Gestión Central</div>
+          <div className="of-txt">Urgencias · Largo 08:00–20:00 · mañana</div>
+          <div className="of-tags" style={{ marginTop: 8 }}>
+            <span className="of-tag"><Icon name="clock" size={12} /> Responde en 2 h</span>
+            <span className="of-tag acc"><Icon name="sparkles" size={12} /> +1 libre compensatorio</span>
+          </div>
+
+          <div className="flowbar" style={{ margin: "16px 0" }}>
+            {["Recibida", "Aceptada", "A Jefatura", "Confirmada"].map((k, i) => (
+              <div className={`flstep ${i < stepIdx || oferta === "confirmada" ? "done" : ""} ${i === stepIdx && oferta !== "confirmada" && oferta !== "rechazada" ? "cur" : ""}`} key={i}>
+                <span className="flnode">{i < stepIdx || oferta === "confirmada" ? <Icon name="check" size={12} /> : i + 1}</span>
+                <span className="fltxt"><b>{k}</b></span>
+                {i < 3 && <span className="flline" />}
+              </div>
+            ))}
+          </div>
+
           {oferta === "recibida" && (
-            <>
-              <div style={{ background: "var(--surface-2)", borderRadius: 8, padding: "9px 11px", fontSize: 12.5, color: "var(--ink2)", margin: "4px 0 12px" }}>
-                <b style={{ color: "var(--ink)" }}>Por qué te llega:</b> eres elegible (habilitada en Urgencias) y estás disponible.
+            <div className="contact-actions">
+              <button className="btn prim" onClick={() => { setOferta("aceptada"); toast("Aceptaste · Gestión Central lo envía a tu Jefatura"); }} type="button"><Icon name="check" size={14} /> Aceptar el turno</button>
+              <div className="resp-group">
+                <select className="field2" value={reason} onChange={(e) => setReason(e.target.value)}>{RECHAZOS.map((r) => <option key={r}>{r}</option>)}</select>
+                <button className="btn ghost" onClick={() => { setOferta("rechazada"); toast("Rechazada · motivo registrado"); }} type="button">Rechazar</button>
               </div>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-                <button className="btn prim" onClick={() => { setOferta("aceptada"); toast("Oferta aceptada · esperando confirmación"); }} type="button">Aceptar el turno</button>
-                <select className="field" style={{ margin: 0, padding: "8px 9px" }} value={reason} onChange={(e) => setReason(e.target.value)}>{REASONS.map((r) => <option key={r}>{r}</option>)}</select>
-                <button className="btn ghost" onClick={() => { setOferta("rechazada"); toast("Oferta rechazada · motivo registrado"); }} type="button">Rechazar</button>
+              <div className="resp-group">
+                <select className="field2" value={obs} onChange={(e) => setObs(e.target.value)}>{EVENTUALIDADES.map((r) => <option key={r}>{r}</option>)}</select>
+                <button className="btn ghost" onClick={() => { setOferta("evento"); toast("Registrado · te consideran para otra eventualidad"); }} type="button">Otra eventualidad</button>
               </div>
-            </>
-          )}
-          {oferta === "aceptada" && (
-            <div>
-              <div style={{ fontSize: 13, color: "var(--ink2)", marginBottom: 10 }}>✓ Aceptaste · pendiente de confirmación de tu Jefatura.</div>
-              <button className="btn ghost" onClick={() => { setOferta("confirmada"); toast("Cobertura confirmada · el turno es tuyo"); }} type="button">Simular: tu Jefatura confirma</button>
             </div>
           )}
-          {oferta === "confirmada" && <div className="banner">🎉 <span><b>Confirmada · el turno es tuyo.</b> Ya aparece en tu calendario.</span></div>}
-          {oferta === "rechazada" && <div style={{ fontSize: 13, color: "var(--ink2)" }}>Tu motivo quedó registrado. Se ofrecerá a otra persona.</div>}
-        </div>
+          {oferta === "aceptada" && (
+            <>
+              <div className="aus-verdict good"><Icon name="check" size={15} /> Aceptaste · pendiente de confirmación de tu Jefatura.</div>
+              <button className="btn ghost" style={{ marginTop: 10 }} onClick={() => { setOferta("confirmada"); toast("Confirmada · el turno es tuyo"); }} type="button">Simular: tu Jefatura confirma</button>
+            </>
+          )}
+          {oferta === "confirmada" && <div className="aus-verdict good"><Icon name="check" size={15} /> Confirmada · el turno es tuyo. Ya aparece en tu calendario.</div>}
+          {oferta === "rechazada" && <div className="firma-hint"><Icon name="arrow-right" size={13} /> Tu motivo quedó registrado. Gestión Central sigue con el siguiente.</div>}
+          {oferta === "evento" && <div className="firma-hint"><Icon name="user" size={13} /> Registrado · te consideran para una próxima eventualidad.</div>}
+        </section>
 
-        <aside className="card" style={{ textAlign: "center" }}>
-          <div className="eyebrow">Mi desarrollo</div>
-          <div style={{ display: "flex", justifyContent: "center", margin: "12px 0" }}><DonutGrad pct={75} size={96} label="75%" /></div>
-          <div style={{ fontSize: 13, fontWeight: 600 }}>Habilitarme en UCI</div>
-          <div style={{ fontSize: 11.5, color: "var(--ink2)" }}>falta 1 evaluación</div>
-        </aside>
+        <section className="panel bienestar" style={{ textAlign: "center" }}>
+          <div className="panel-h" style={{ justifyContent: "center" }}><Icon name="graduation" size={15} /> Mi desarrollo</div>
+          <div style={{ display: "flex", justifyContent: "center", margin: "8px 0 6px" }}><DonutGrad pct={75} size={104} label="75%" /></div>
+          <div style={{ fontSize: 13.5, fontWeight: 640 }}>Habilitarme en UCI</div>
+          <div style={{ fontSize: 11.5, color: "var(--ink2)" }}>falta 1 evaluación · valida tu Jefatura</div>
+        </section>
       </div>
 
-      <div className="sect">Mi semana</div>
-      <div className="card">
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 5 }}>
+      <section className="panel" style={{ marginTop: 14 }}>
+        <div className="panel-h"><Icon name="calendar" size={15} /> Mi semana</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 6 }}>
           {WEEK.map(([d, t], i) => (
             <div key={d} style={{ textAlign: "center" }}>
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: i === 4 ? "var(--accent-ink)" : "var(--ink3)", marginBottom: 3, fontWeight: i === 4 ? 700 : 400 }}>{d}</div>
-              <div className={`cell ${t}`} style={i === 4 ? { outline: "2px solid var(--accent)", outlineOffset: 1 } : undefined}>{SHORT[t]}</div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 9.5, color: i === 4 ? "var(--accent-ink)" : "var(--ink3)", marginBottom: 4, fontWeight: i === 4 ? 700 : 400 }}>{d}</div>
+              <div className={`plcell ${CLS[t]}`} style={{ height: 46, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, ...(i === 4 ? { outline: "2px solid var(--accent)", outlineOffset: 1 } : {}) }}>{t}</div>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      <div className="grid g4" style={{ marginTop: 12 }}>
-        {[["Mi próximo turno", "22:00", "hoy·UCI"], ["Turnos (semana)", "4", ""], ["Feriado legal", "12", "días"], ["Certificación", "1", "por vencer"]].map(([l, v, u]) => (
-          <div className="card hoverable kpi" key={l}><div className="lab">{l}</div><div className="big">{v}{u && <span className="u"> {u}</span>}</div></div>
+      <div className="lsr" style={{ marginTop: 14 }}>
+        {[["clock", "Mi próximo turno", "22:00", "hoy · UCI"], ["pulse", "Turnos (semana)", "4", ""], ["plane", "Feriado legal", "12", "días"], ["shield", "Certificación", "1", "por vencer"]].map(([ic, l, v, u]) => (
+          <div className="ls" key={l} style={toneStyle("acc")}>
+            <span className="ls-ic"><Icon name={ic as never} size={14} /></span>
+            <div className="ls-main">
+              <div className="ls-lab">{l}</div>
+              <div className="ls-val">{v}{u && <span className="ls-u"> {u}</span>}</div>
+            </div>
+          </div>
         ))}
       </div>
 
-      <div className="sect">Ofrecer disponibilidad</div>
-      <div className="card">
-        <div style={{ fontSize: 12.5, color: "var(--ink2)", marginBottom: 10 }}>Elige <b>día y turno</b>. Mejora tus opciones cuando surja una brecha compatible.</div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+      <section className="panel" style={{ marginTop: 14 }}>
+        <div className="panel-h"><Icon name="sparkles" size={15} /> Ofrecer disponibilidad</div>
+        <div style={{ fontSize: 12.5, color: "var(--ink2)", marginBottom: 12 }}>Elegí <b>día y turno</b>. Mejora tus opciones cuando surja una brecha compatible.</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {["Sáb", "Dom", "Lun próx."].map((d) => (
-            <div key={d} style={{ display: "flex", alignItems: "center", gap: 7 }}>
-              <span style={{ width: 62, fontSize: 12, color: "var(--ink2)" }}>{d}</span>
+            <div key={d} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ width: 68, fontSize: 12.5, color: "var(--ink2)" }}>{d}</span>
               {["Largo", "Noche"].map((t) => {
                 const k = `${d}|${t}`;
-                return <button key={t} className={`btn ${avail[k] ? "prim" : "ghost"}`} style={{ padding: "6px 11px", fontSize: 12 }} onClick={() => setAvail((a) => ({ ...a, [k]: !a[k] }))} type="button">{t}</button>;
+                return <button key={t} className={`btn ${avail[k] ? "prim" : "ghost"}`} style={{ padding: "7px 13px", fontSize: 12 }} onClick={() => setAvail((a) => ({ ...a, [k]: !a[k] }))} type="button">{t}</button>;
               })}
             </div>
           ))}
         </div>
-        <button className="btn prim" style={{ marginTop: 12 }} onClick={() => { const s = Object.keys(avail).filter((k) => avail[k]); toast(s.length ? `Disponibilidad registrada: ${s.map((k) => k.replace("|", " ")).join(" · ")}` : "Elige al menos un día y turno"); }} type="button">
-          Ofrecer disponibilidad
+        <button className="btn prim" style={{ marginTop: 14 }} onClick={() => { const s = Object.keys(avail).filter((k) => avail[k]); toast(s.length ? `Disponibilidad registrada: ${s.map((k) => k.replace("|", " ")).join(" · ")}` : "Elegí al menos un día y turno"); }} type="button">
+          <Icon name="check" size={14} /> Ofrecer disponibilidad
         </button>
-      </div>
-
-      <div className="prio">
-        <span className="pl">◉ Prioritario</span>
-        <span className="pt">Responder oferta — Urgencias, mañana 08:00</span>
-        <button className="btn prim" onClick={() => { setOferta("aceptada"); toast("Oferta aceptada"); }} type="button"><Orb tone="good" /> Aceptar</button>
-      </div>
+      </section>
     </div>
   );
 }

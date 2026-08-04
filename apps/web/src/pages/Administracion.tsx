@@ -1,14 +1,38 @@
-import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 import { getConfig, setPesoNex, setRegla } from "@/api/api";
-import { GuideStrip } from "@/components/ui";
-import { PageHead, Skeleton, Tabs } from "@/components/kit";
+import { PageHead, Skeleton } from "@/components/kit";
+import { Icon, type IconName } from "@/components/icons";
+import { GuiaNexBar } from "@/pages/home/parts";
 import { useToast } from "@/components/Toast";
 
-type Tab = "reglas" | "nex" | "usuarios" | "auditoria";
+const SEC_TITLE: Record<string, { eyebrow: string; title: string; icon: IconName }> = {
+  usuarios: { eyebrow: "Administración · Usuarios", title: "Usuarios y acceso", icon: "users" },
+  permisos: { eyebrow: "Administración · Permisos", title: "Permisos por rol", icon: "shield" },
+  config: { eyebrow: "Administración · Configuración", title: "Reglas y pesos NEX", icon: "settings" },
+  auditoria: { eyebrow: "Administración · Auditoría", title: "Registro de actividad", icon: "list" },
+  integraciones: { eyebrow: "Administración · Integraciones", title: "Servicios conectados", icon: "link" },
+};
+
+const CAPS = ["Ver malla", "Editar malla", "Contactar coberturas", "Aprobar permisos", "Ver reportes", "Configurar"];
+const PERMISOS: { rol: string; caps: boolean[] }[] = [
+  { rol: "Jefatura", caps: [true, true, false, true, true, false] },
+  { rol: "Gestión Central", caps: [true, false, true, false, false, false] },
+  { rol: "Subdirección · BPC", caps: [true, false, false, false, true, false] },
+  { rol: "Funcionario", caps: [true, false, false, false, false, false] },
+  { rol: "Administrador", caps: [false, false, false, false, false, true] },
+];
+const INTEGRACIONES: { icon: IconName; nombre: string; estado: string; nota: string; tono: string }[] = [
+  { icon: "users", nombre: "RRHH · dotación", estado: "En línea", nota: "última sync 08:00", tono: "good" },
+  { icon: "shield", nombre: "Firma digital", estado: "Activa", nota: "reportes BPC", tono: "good" },
+  { icon: "bell", nombre: "Notificaciones", estado: "Activa", nota: "push + correo", tono: "good" },
+  { icon: "link", nombre: "Directorio clínico", estado: "Degradado", nota: "reintenta en 10 min", tono: "warn" },
+];
 
 export function Administracion() {
-  const [tab, setTab] = useState<Tab>("reglas");
+  const { sec } = useParams();
+  const key = sec && SEC_TITLE[sec] ? sec : "usuarios";
+  const meta = SEC_TITLE[key];
   const toast = useToast();
   const qc = useQueryClient();
   const { data, isLoading } = useQuery({ queryKey: ["config"], queryFn: getConfig });
@@ -22,51 +46,25 @@ export function Administracion() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["config"] }); qc.invalidateQueries({ queryKey: ["cand"] }); },
   });
 
+  const guia = {
+    ocurre: "2 cambios de reglas propagándose; sin incidencias abiertas.",
+    hacer: "Gestioná usuarios, permisos y configuración; todo queda auditado.",
+    recomienda: "Revisá el umbral de RCP: deja 2 reevaluaciones por vencer.",
+    riesgo: "Un cambio mal configurado se propaga a todos los módulos.",
+    siguiente: "Cada cambio queda en la auditoría append-only.",
+  };
+
   return (
     <div className="page">
-      <PageHead eyebrow="Administración" title={<>El panel de control <span className="thin">del sistema</span></>} actions={<span className="chip acc">Sesión: Administrador</span>} />
-      <GuideStrip ocurre="Hay 2 configuraciones y 3 usuarios pendientes" hacer="Ajustá reglas y pesos; todo queda auditado" siguiente="Cada cambio se propaga a los módulos" />
+      <PageHead eyebrow={meta.eyebrow} title={<>{meta.title}</>} actions={<span className="chip acc">Sesión: Administrador</span>} />
+      <GuiaNexBar g={guia} />
 
-      <Tabs value={tab} onChange={setTab} tabs={[{ value: "reglas", label: "Reglas" }, { value: "nex", label: "Pesos NEX" }, { value: "usuarios", label: "Usuarios" }, { value: "auditoria", label: "Auditoría" }]} />
-
-      {isLoading && <Skeleton h={200} />}
+      {isLoading && <Skeleton h={200} style={{ marginTop: 14 }} />}
       {data && (
-        <>
-          {tab === "reglas" && (
-            <div className="card">
-              {data.reglas.map((r) => (
-                <div key={r.clave} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "10px 0", borderBottom: "1px solid var(--hairline)" }}>
-                  <div>
-                    <div style={{ fontSize: 13 }}>{r.etiqueta}</div>
-                    <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--accent-ink)" }}>→ {r.propaga}</div>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <input type="number" defaultValue={r.valor} style={{ width: 76, textAlign: "right", fontFamily: "var(--font-mono)", fontSize: 13, padding: "7px 9px", border: "1px solid var(--hairline)", borderRadius: 8, background: "var(--surface)", color: "var(--ink)" }}
-                      onBlur={(e) => { const v = Number(e.target.value); if (v !== r.valor) regla.mutate({ clave: r.clave, valor: v }); }} />
-                    <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--ink3)" }}>{r.unidad}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+        <section className="panel" style={{ marginTop: 14 }}>
+          <div className="panel-h"><Icon name={meta.icon} size={15} /> {meta.title}</div>
 
-          {tab === "nex" && (
-            <div className="card">
-              <div style={{ fontSize: 12.5, color: "var(--ink2)", marginBottom: 12 }}>Cambiar los pesos re-ordena las recomendaciones de cobertura (no cambia la elegibilidad).</div>
-              {data.pesosNex.map((p) => (
-                <div key={p.clave} style={{ marginBottom: 12 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12.5, marginBottom: 3 }}>
-                    <span>{p.clave}</span>
-                    <span style={{ fontFamily: "var(--font-mono)", color: "var(--accent-ink)", fontWeight: 600 }}>{p.valor}</span>
-                  </div>
-                  <input className="range" type="range" min={0} max={40} defaultValue={p.valor}
-                    onChange={(e) => peso.mutate({ clave: p.clave, valor: Number(e.target.value) })} />
-                </div>
-              ))}
-            </div>
-          )}
-
-          {tab === "usuarios" && (
+          {key === "usuarios" && (
             <div className="tablewrap">
               <table className="tbl">
                 <thead><tr><th>Usuario</th><th>Rol</th><th>Alcance</th><th>Estado</th></tr></thead>
@@ -79,19 +77,94 @@ export function Administracion() {
             </div>
           )}
 
-          {tab === "auditoria" && (
-            <div className="card">
+          {key === "permisos" && (
+            <div className="tablewrap">
+              <table className="matriz">
+                <thead>
+                  <tr>
+                    <th style={{ textAlign: "left" }}>Rol</th>
+                    {CAPS.map((c) => <th key={c} title={c}>{c.split(" ").map((w) => w[0]).join("").toUpperCase()}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {PERMISOS.map((r) => (
+                    <tr key={r.rol}>
+                      <td className="nm">{r.rol}</td>
+                      {r.caps.map((ok, i) => <td key={i}><span className={`cc ${ok ? "vigente" : "noHabilitado"}`}>{ok ? "✓" : "—"}</span></td>)}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="matriz-leg" style={{ marginTop: 12 }}>{CAPS.map((c, i) => <span key={c}><b className="mono">{c.split(" ").map((w) => w[0]).join("").toUpperCase()}</b> {c}{i < CAPS.length - 1 ? "" : ""}</span>)}</div>
+            </div>
+          )}
+
+          {key === "config" && (
+            <>
+              <div className="foco-recolab">Reglas</div>
+              <div style={{ marginTop: 8 }}>
+                {data.reglas.map((r) => (
+                  <div key={r.clave} className="adm-rule">
+                    <div>
+                      <div style={{ fontSize: 13 }}>{r.etiqueta}</div>
+                      <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--accent-ink)" }}>→ {r.propaga}</div>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <input type="number" defaultValue={r.valor} className="adm-input"
+                        onBlur={(e) => { const v = Number(e.target.value); if (v !== r.valor) regla.mutate({ clave: r.clave, valor: v }); }} />
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--ink3)" }}>{r.unidad}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="foco-recolab" style={{ marginTop: 18 }}>Pesos del Índice NEX</div>
+              <div style={{ fontSize: 12, color: "var(--ink3)", margin: "6px 0 10px" }}>Re-ordenan las recomendaciones de cobertura; no cambian la elegibilidad.</div>
+              {data.pesosNex.map((p) => (
+                <div key={p.clave} style={{ marginBottom: 12 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12.5, marginBottom: 3 }}>
+                    <span>{p.clave}</span>
+                    <span style={{ fontFamily: "var(--font-mono)", color: "var(--accent-ink)", fontWeight: 600 }}>{p.valor}</span>
+                  </div>
+                  <input className="range" type="range" min={0} max={40} defaultValue={p.valor} onChange={(e) => peso.mutate({ clave: p.clave, valor: Number(e.target.value) })} />
+                </div>
+              ))}
+            </>
+          )}
+
+          {key === "auditoria" && (
+            <>
               <div style={{ fontSize: 12, color: "var(--ink3)", marginBottom: 12 }}>Registro append-only. Subdirección puede leerlo; no configurar.</div>
-              {data.auditoria.map((a, i) => (
-                <div key={i} style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: 11, padding: "10px 0", borderBottom: "1px solid var(--hairline)", alignItems: "start" }}>
-                  <span className="orb good" style={{ width: 8, height: 8, marginTop: 5 }} />
-                  <div><div style={{ fontSize: 12.5, fontWeight: 540 }}>{a.accion}</div><div style={{ fontSize: 11, color: "var(--ink3)" }}>{a.detalle} · <span className="chip acc" style={{ padding: "1px 6px" }}>{a.area}</span></div></div>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--ink3)" }}>hoy {a.hora}</span>
+              <ol className="trace">
+                {data.auditoria.map((a, i) => (
+                  <li className="trace-i" key={i} style={{ ["--tn" as string]: "var(--good)" }}>
+                    <span className="trace-node" />
+                    <div className="trace-body">
+                      <div className="trace-top"><span className="trace-hora">hoy {a.hora}</span><span className="trace-actor">{a.area}</span></div>
+                      <div className="trace-titulo">{a.accion}</div>
+                      <div className="trace-det">{a.detalle}</div>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </>
+          )}
+
+          {key === "integraciones" && (
+            <div className="salud-grid">
+              {INTEGRACIONES.map((s, i) => (
+                <div className="sh" key={i} style={{ ["--tn" as string]: `var(--${s.tono})` }}>
+                  <span className="sh-ic"><Icon name={s.icon} size={16} /></span>
+                  <div className="sh-main">
+                    <div className="sh-lab">{s.nombre}</div>
+                    <div className="sh-val">{s.estado}</div>
+                    <div className="sh-note">{s.nota}</div>
+                  </div>
+                  <span className="sh-led" />
                 </div>
               ))}
             </div>
           )}
-        </>
+        </section>
       )}
     </div>
   );

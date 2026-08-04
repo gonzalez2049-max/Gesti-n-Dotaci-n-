@@ -69,7 +69,7 @@ export function AppShell() {
         <nav className="nav" ref={navRef} aria-label="Navegación principal">
           <div className="navind" ref={indRef} />
           {nav.map((n) => (
-            <NavLink key={n.key} to={n.path} end={n.path === "/"} className="navbtn">
+            <NavLink key={n.key} to={n.path} end className="navbtn">
               <span className="ic">
                 <Icon name={n.icon} size={17} />
               </span>
@@ -94,7 +94,7 @@ export function AppShell() {
 
       <nav className="botnav" aria-label="Navegación">
         {navMobile.map((n) => (
-          <NavLink key={n.key} to={n.path} end={n.path === "/"}>
+          <NavLink key={n.key} to={n.path} end>
             <span className="ic">
               <Icon name={n.icon} size={18} />
             </span>
