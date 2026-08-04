@@ -1532,3 +1532,14 @@ h1.title { font-weight: 760; letter-spacing: -0.025em; }
 .interv-bar > span { display: block; height: 100%; background: var(--rail); border-radius: 99px; }
 .interv-risk b { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 15px; width: 26px; text-align: right; color: var(--rail); }
 @media (max-width: 640px) { .interv { grid-template-columns: auto 1fr; } .interv-risk { grid-column: 2; justify-self: start; } .interv-bar { width: 90px; } }
+
+/* Ausencias · impacto */
+.aus-impacto { margin: 14px 0; padding: 12px 13px; border-radius: var(--r); background: var(--surface-2); border: 1px solid var(--hairline); }
+.aus-verdict { display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 560; padding: 10px 13px; border-radius: var(--r-sm); }
+.aus-verdict.good { color: var(--good); background: var(--good-s); }
+.aus-verdict.warn { color: var(--crit); background: var(--crit-s); }
+
+/* Talento/Calidad · leyenda de matriz */
+.matriz-leg { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; font-size: 11.5px; color: var(--ink2); align-items: center; }
+.matriz-leg span { display: inline-flex; align-items: center; gap: 6px; }
+.matriz-leg .cc { width: 20px; height: 20px; font-size: 11px; }
