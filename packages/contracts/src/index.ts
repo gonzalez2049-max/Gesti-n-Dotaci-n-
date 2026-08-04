@@ -31,8 +31,17 @@ export type NivelPrioridad = z.infer<typeof NivelPrioridad>;
 export const Semaforo = z.enum(["equilibrio", "riesgo", "critico", "exceso"]);
 export type Semaforo = z.infer<typeof Semaforo>;
 
-/** Turnos base: sistema de cuarto turno (doc 15). */
-export const Turno = z.enum(["largo", "noche", "libre"]);
+/** Estados de celda de la malla: turnos + ausencias/permisos (doc 15).
+ *  largo/noche cuentan como dotación; el resto son no-trabajados. */
+export const Turno = z.enum([
+  "largo",
+  "noche",
+  "libre",
+  "cambio", // cambio de turno
+  "feriado", // feriado legal
+  "permiso", // permiso administrativo
+  "descanso", // descanso compensatorio
+]);
 export type Turno = z.infer<typeof Turno>;
 
 export const SeveridadBrecha = z.enum(["critica", "alta", "media", "baja"]);

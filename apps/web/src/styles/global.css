@@ -1461,3 +1461,47 @@ h1.title { font-weight: 760; letter-spacing: -0.025em; }
 .firma-hint { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink3); margin-bottom: 2px; }
 .firma-hint svg { color: var(--accent); }
 @media (max-width: 540px) { .firma { grid-template-columns: auto 1fr; } .firma-meta { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; } }
+
+/* ============================================================= */
+/* Programación · tipos de turno ampliados + malla protagonista  */
+/* ============================================================= */
+
+/* colores de celda por tipo (estables, no dependen del acento de perfil) */
+.plcell.cambio { background: rgba(111, 104, 234, 0.16); color: #6f68ea; }
+.plcell.feriado { background: var(--warn-s); color: var(--warn); }
+.plcell.permiso { background: rgba(194, 86, 143, 0.16); color: #c2568f; }
+.plcell.descanso { background: var(--good-s); color: var(--good); }
+:root[data-theme="dark"] .plcell.cambio { color: #a9a6f7; }
+:root[data-theme="dark"] .plcell.permiso { color: #e893bd; }
+
+/* swatches de leyenda / editor */
+.pl-legend .sw.largo { background: var(--accent-soft); color: var(--accent-ink); }
+.pl-legend .sw.noche, .pop-turno .sw.noche { background: var(--info-s); color: var(--info); }
+.sw.largo { background: var(--accent-soft); color: var(--accent-ink); }
+.sw.noche { background: var(--info-s); color: var(--info); }
+.sw.cambio { background: rgba(111, 104, 234, 0.18); color: #6f68ea; }
+.sw.feriado { background: var(--warn-s); color: var(--warn); }
+.sw.permiso { background: rgba(194, 86, 143, 0.18); color: #c2568f; }
+.sw.descanso { background: var(--good-s); color: var(--good); }
+.sw.libre { background: var(--surface-2); color: var(--ink4); }
+.pl-legend-sep { width: 1px; height: 16px; background: var(--hairline); margin: 0 2px; }
+
+/* editor de celda como paleta */
+.popover-grid { flex-direction: column; gap: 3px; width: 224px; padding: 7px; }
+.pop-turno { display: flex !important; align-items: center; gap: 10px; justify-content: flex-start !important; width: 100%; text-align: left; font-size: 12.5px !important; padding: 8px 10px !important; }
+.pop-turno .sw { width: 26px; min-width: 26px; height: 20px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-weight: 700; font-size: 10px; flex: 0 0 auto; }
+
+/* la malla es el foco: ocupa el alto disponible, sin ventana en blanco */
+.pl-full { width: 100%; }
+.gridcard { display: flex; flex-direction: column; max-height: calc(100vh - 210px); }
+.gridscroll { flex: 1 1 auto; min-height: 0; max-height: none; }
+.pl-legend { flex: 0 0 auto; }
+@media (max-width: 760px) {
+  .gridcard { max-height: none; }
+  .gridscroll { max-height: 66vh; }
+}
+
+/* malla: alto según contenido, con tope de scroll (sin hueco interno) */
+.gridcard { display: block; max-height: none; }
+.gridscroll { flex: none; max-height: calc(100vh - 250px); min-height: 0; }
+@media (max-width: 760px) { .gridscroll { max-height: 66vh; } }

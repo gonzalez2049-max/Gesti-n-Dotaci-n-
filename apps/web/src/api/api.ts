@@ -8,6 +8,7 @@ import type {
   PlannerPersona,
   PlannerRequerido,
   SolicitudAusencia,
+  Turno,
 } from "@nexshift/contracts";
 import { db } from "./mockDb";
 import { getInicioResumen } from "@/data/inicio";
@@ -85,11 +86,19 @@ export function publicarMalla(): Promise<void> {
   return wait(undefined);
 }
 export function rotarCelda(personaId: string, dia: number): Promise<void> {
-  const cycle = { largo: "noche", noche: "libre", libre: "largo" } as const;
+  const cycle: Record<Turno, Turno> = {
+    largo: "noche",
+    noche: "libre",
+    libre: "largo",
+    cambio: "libre",
+    feriado: "libre",
+    permiso: "libre",
+    descanso: "libre",
+  };
   const p = db.malla.personas.find((x) => x.id === personaId);
   if (p) {
     p.celdas[dia] = cycle[p.celdas[dia]];
-    p.turnosSemana = p.celdas.filter((c) => c !== "libre").length;
+    p.turnosSemana = p.celdas.filter((c) => c === "largo" || c === "noche").length;
     db.malla.estado = "borrador";
   }
   return wait(undefined, 60);

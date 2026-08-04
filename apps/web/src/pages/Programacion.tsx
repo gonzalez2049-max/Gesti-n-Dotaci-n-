@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getPlanner } from "@/api/api";
-import { GuideStrip } from "@/components/ui";
 import { PageHead, SearchInput, Segmented } from "@/components/kit";
 import { Drawer } from "@/components/Drawer";
 import { useToast } from "@/components/Toast";
@@ -9,6 +8,8 @@ import {
   MESES,
   DOW,
   SHORT,
+  TURNO_LABEL,
+  TURNOS_EDIT,
   coberturaDia,
   diasDelMes,
   generarGrid,
@@ -142,12 +143,6 @@ export function Programacion() {
           <button className="btn prim" onClick={publicar} disabled={!editable} type="button">Publicar malla</button>
         }
       />
-      <GuideStrip
-        ocurre={`${deficitDias} día${deficitDias === 1 ? "" : "s"} con déficit este mes en ${unidad}`}
-        hacer="Toca una celda para editar · arrastra para mover · toca la cobertura roja para ver NEX"
-        siguiente="Publicar congela la malla; Comparar muestra los cambios"
-      />
-
       <div className="pltoolbar">
         <div className="monthnav">
           <button className="navbtn2" onClick={() => nextMonth(-1)} aria-label="Mes anterior" type="button">‹</button>
@@ -181,7 +176,7 @@ export function Programacion() {
           {pub.current[monthKey] ? "● Malla publicada" : "● Borrador"}
         </span>
         <span style={{ flex: 1 }} />
-        <span className="plhint">Toca la cobertura en rojo para ver NEX</span>
+        <span className="plhint">Toca una celda para editar · arrastra para mover · toca la cobertura roja para ver NEX</span>
       </div>
 
       <div className="pl-full">
@@ -270,10 +265,15 @@ export function Programacion() {
               </tfoot>
             </table>
           </div>
-          <div className="pl-legend" style={{ padding: "8px 12px" }}>
-            <span><span className="sw" style={{ background: "var(--accent-soft)", color: "var(--accent-ink)" }}>D</span> Largo</span>
-            <span><span className="sw" style={{ background: "var(--info-s)", color: "var(--info)" }}>N</span> Noche</span>
-            <span><span className="sw" style={{ background: "var(--surface-2)" }}></span> Libre</span>
+          <div className="pl-legend" style={{ padding: "10px 12px" }}>
+            <span><span className="sw largo">L</span> Largo</span>
+            <span><span className="sw noche">N</span> Noche</span>
+            <span><span className="sw cambio">CT</span> Cambio de turno</span>
+            <span><span className="sw descanso">DC</span> Descanso comp.</span>
+            <span><span className="sw permiso">PA</span> Permiso adm.</span>
+            <span><span className="sw feriado">FL</span> Feriado legal</span>
+            <span><span className="sw libre"></span> Libre</span>
+            <span className="pl-legend-sep" />
             <span><span className="sw" style={{ background: "var(--crit-s)", color: "var(--crit)" }}>!</span> Déficit</span>
             <span><span className="sw" style={{ background: "var(--info-s)", color: "var(--info)" }}>+</span> Exceso</span>
             {vista === "comparar" && <span><span className="sw" style={{ boxShadow: "inset 0 0 0 2px var(--warn)" }}></span> Cambiado</span>}
@@ -286,10 +286,11 @@ export function Programacion() {
       {edit && (
         <>
           <div style={{ position: "fixed", inset: 0, zIndex: 65 }} onClick={() => setEdit(null)} />
-          <div className="popover" style={{ left: Math.min(edit.x, window.innerWidth - 220), top: Math.min(edit.y, window.innerHeight - 60) }}>
-            {(["largo", "noche", "libre"] as Turno[]).map((t) => (
-              <button key={t} onClick={() => { setCell(edit.p, edit.d, t); setEdit(null); }} type="button">
-                {t === "largo" ? "Largo" : t === "noche" ? "Noche" : "Libre"}
+          <div className="popover popover-grid" style={{ left: Math.min(edit.x, window.innerWidth - 232), top: Math.min(edit.y, window.innerHeight - 250) }}>
+            {TURNOS_EDIT.map((t) => (
+              <button key={t} className={`pop-turno ${t}`} onClick={() => { setCell(edit.p, edit.d, t); setEdit(null); }} type="button">
+                <span className={`sw ${t}`}>{SHORT[t] || "—"}</span>
+                {TURNO_LABEL[t]}
               </button>
             ))}
           </div>
