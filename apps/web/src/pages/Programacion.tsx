@@ -179,7 +179,7 @@ export function Programacion() {
         <span className="plhint">Toca una celda para editar · arrastra para mover · toca la cobertura roja para ver NEX</span>
       </div>
 
-      <div className="pl-full">
+      <div className="pl-console">
         <div className="gridcard">
           <div className="gridscroll">
             <table className="pl">
@@ -280,6 +280,35 @@ export function Programacion() {
             {pubV > 0 && <span style={{ color: "var(--good)" }}>● Publicada disponible</span>}
           </div>
         </div>
+
+        {selDef && (
+          <aside className="pl-nex">
+            <div className="pl-nex-head">
+              <div>
+                <div className="eyebrow">NEX · reemplazos</div>
+                <div className="pl-nex-t">{unidad} · día {selDef.day + 1} · {selDef.turno === "largo" ? "Largo" : "Noche"}</div>
+              </div>
+              <button className="dclose" onClick={() => setSelDef(null)} aria-label="Cerrar" type="button">✕</button>
+            </div>
+            <span className="chip crit">Falta {Math.max(0, (selDef.turno === "largo" ? req.largo : req.noche) - (selDef.turno === "largo" ? coberturaDia(grid, unitIds, selDef.day, req).largo : coberturaDia(grid, unitIds, selDef.day, req).noche))}</span>
+            {recs.length === 0 ? (
+              <div className="pl-nex-empty">Sin personal habilitado y libre ese día. Probá otro día o revisá la habilitación.</div>
+            ) : (
+              <div className="pl-nex-list">
+                {recs.map((r) => (
+                  <div className="nexrec" key={r.id}>
+                    <span className={`rs${r.tipo === "horaExtra" ? " warn" : ""}`}>{r.score}</span>
+                    <div>
+                      <div style={{ fontSize: 12.5, fontWeight: 600 }}>{r.nombre}</div>
+                      <div style={{ fontSize: 10.5, color: "var(--ink2)" }}>{r.detalle}</div>
+                    </div>
+                    <button className="btn prim" style={{ padding: "6px 10px", fontSize: 11.5 }} onClick={() => { setCell(r.id, selDef.day, selDef.turno); toast(`${r.nombre.split(" ")[0]} asignado/a`); }} type="button">Asignar</button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </aside>
+        )}
       </div>
 
       {/* editor popover */}
@@ -296,34 +325,6 @@ export function Programacion() {
           </div>
         </>
       )}
-
-      {/* NEX · reemplazos para el déficit seleccionado */}
-      <Drawer
-        open={!!selDef}
-        onClose={() => setSelDef(null)}
-        eyebrow="Recomendaciones NEX · tiempo real"
-        title={selDef ? `${unidad} · día ${selDef.day + 1} · ${selDef.turno === "largo" ? "Largo" : "Noche"}` : ""}
-      >
-        {selDef && (
-          <>
-            <div className="chip crit" style={{ marginTop: 4 }}>
-              Falta {Math.max(0, (selDef.turno === "largo" ? req.largo : req.noche) - (selDef.turno === "largo" ? coberturaDia(grid, unitIds, selDef.day, req).largo : coberturaDia(grid, unitIds, selDef.day, req).noche))}
-            </div>
-            <div className="sect" style={{ marginTop: 12 }}>Mejor reemplazo · Índice NEX</div>
-            {recs.length === 0 && <div className="empty" style={{ padding: 16 }}>Sin personal habilitado y libre ese día.</div>}
-            {recs.map((r) => (
-              <div className="nexrec" key={r.id}>
-                <span className={`rs${r.tipo === "horaExtra" ? " warn" : ""}`}>{r.score}</span>
-                <div>
-                  <div style={{ fontSize: 12.5, fontWeight: 600 }}>{r.nombre}</div>
-                  <div style={{ fontSize: 10.5, color: "var(--ink2)" }}>{r.detalle}</div>
-                </div>
-                <button className="btn prim" style={{ padding: "6px 10px", fontSize: 11.5 }} onClick={() => { setCell(r.id, selDef.day, selDef.turno); toast(`${r.nombre.split(" ")[0]} asignado/a`); }} type="button">Asignar</button>
-              </div>
-            ))}
-          </>
-        )}
-      </Drawer>
 
       {/* person detail */}
       <Drawer open={!!persona} onClose={() => setSelPersona(null)} eyebrow={persona?.estamento} title={persona?.nombre}>

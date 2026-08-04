@@ -1548,3 +1548,28 @@ h1.title { font-weight: 760; letter-spacing: -0.025em; }
 .adm-rule { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--hairline); }
 .adm-rule:last-child { border-bottom: 0; }
 .adm-input { width: 82px; text-align: right; font-family: var(--font-mono); font-size: 13px; padding: 8px 10px; border: 1px solid var(--hairline); border-radius: 8px; background: var(--surface); color: var(--ink); }
+
+/* Programación · panel NEX de reemplazos (compacto, junto a la malla) */
+.pl-console { display: flex; gap: 12px; align-items: flex-start; width: 100%; }
+.pl-console .gridcard { flex: 1 1 auto; min-width: 0; }
+.pl-nex {
+  flex: 0 0 302px; width: 302px; align-self: stretch;
+  position: sticky; top: 12px;
+  background: linear-gradient(155deg, var(--accent-soft), transparent 55%), var(--glass);
+  backdrop-filter: blur(var(--blur)) saturate(1.25); -webkit-backdrop-filter: blur(var(--blur)) saturate(1.25);
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--glass-brd));
+  border-radius: var(--r-lg); box-shadow: var(--e2), 0 0 32px -16px var(--accent-glow), 0 1px 0 var(--hi) inset;
+  padding: 14px 15px; animation: nexin var(--dur2) var(--ease-spring) both;
+}
+@keyframes nexin { from { opacity: 0; transform: translateX(10px); } }
+.pl-nex-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 11px; }
+.pl-nex-t { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; margin-top: 4px; }
+.pl-nex .dclose { width: 26px; height: 26px; border-radius: 8px; border: 1px solid var(--hairline); background: var(--glass-2); color: var(--ink3); cursor: pointer; font-size: 12px; flex: 0 0 auto; }
+.pl-nex .dclose:hover { color: var(--ink); }
+.pl-nex-empty { font-size: 12.5px; color: var(--ink2); line-height: 1.5; background: var(--surface-2); border: 1px dashed var(--hairline); border-radius: var(--r-sm); padding: 14px; margin-top: 11px; }
+.pl-nex-list { margin-top: 11px; display: flex; flex-direction: column; gap: 8px; }
+.pl-nex .nexrec { margin: 0; }
+@media (max-width: 900px) {
+  .pl-console { flex-direction: column; }
+  .pl-nex { width: 100%; flex: none; position: static; }
+}
