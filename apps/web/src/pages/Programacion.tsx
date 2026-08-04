@@ -4,6 +4,7 @@ import { getPlanner } from "@/api/api";
 import { PageHead, SearchInput, Segmented } from "@/components/kit";
 import { Drawer } from "@/components/Drawer";
 import { useToast } from "@/components/Toast";
+import { useApp } from "@/app/store";
 import {
   MESES,
   DOW,
@@ -27,6 +28,8 @@ const cloneGrid = (g: Record<string, Turno[]>) => Object.fromEntries(Object.entr
 
 export function Programacion() {
   const toast = useToast();
+  const { profile } = useApp();
+  const soloLectura = profile === "funcionario";
   const { data } = useQuery({ queryKey: ["planner"], queryFn: getPlanner });
 
   const now = new Date();
@@ -73,7 +76,7 @@ export function Programacion() {
       (!q || p.nombre.toLowerCase().includes(q.toLowerCase())),
   );
 
-  const editable = vista !== "publicada";
+  const editable = !soloLectura && vista !== "publicada";
   const viewGrid = vista === "publicada" ? pub.current[monthKey] ?? grid : grid;
 
   const windowSize = zoom === "mes" ? n : zoom === "quincena" ? Math.min(15, n) : Math.min(7, n);
@@ -137,11 +140,9 @@ export function Programacion() {
   return (
     <div className="page" style={{ ["--cw"]: `${cw}px` } as React.CSSProperties}>
       <PageHead
-        eyebrow="Programación · planner mensual"
-        title={<>Centro operativo <span className="thin">de dotación</span></>}
-        actions={
-          <button className="btn prim" onClick={publicar} disabled={!editable} type="button">Publicar malla</button>
-        }
+        eyebrow={soloLectura ? "Mi programación · solo lectura" : "Programación · planner mensual"}
+        title={soloLectura ? <>Mi malla <span className="thin">del mes</span></> : <>Centro operativo <span className="thin">de dotación</span></>}
+        actions={soloLectura ? undefined : <button className="btn prim" onClick={publicar} disabled={!editable} type="button">Publicar malla</button>}
       />
       <div className="pltoolbar">
         <div className="monthnav">
@@ -158,7 +159,9 @@ export function Programacion() {
           </div>
         )}
         <span className="spacer" style={{ flex: 1 }} />
-        <Segmented value={vista} onChange={setVista} ariaLabel="Vista" options={[{ value: "borrador", label: "Borrador" }, { value: "publicada", label: "Publicada" }, { value: "comparar", label: "Comparar" }]} />
+        {!soloLectura && (
+          <Segmented value={vista} onChange={setVista} ariaLabel="Vista" options={[{ value: "borrador", label: "Borrador" }, { value: "publicada", label: "Publicada" }, { value: "comparar", label: "Comparar" }]} />
+        )}
       </div>
 
       <div className="pltoolbar" style={{ marginTop: 0 }}>
@@ -176,7 +179,7 @@ export function Programacion() {
           {pub.current[monthKey] ? "● Malla publicada" : "● Borrador"}
         </span>
         <span style={{ flex: 1 }} />
-        <span className="plhint">Toca una celda para editar · arrastra para mover · toca la cobertura roja para ver NEX</span>
+        <span className="plhint">{soloLectura ? "Vista de tu malla · solo lectura" : "Toca una celda para editar · arrastra para mover · toca la cobertura roja para ver NEX"}</span>
       </div>
 
       <div className="pl-console">
@@ -252,7 +255,7 @@ export function Programacion() {
                         <td key={d} className="pltd">
                           <div
                             className={`covcell ${cls}${sel ? " sel" : ""}`}
-                            onClick={() => def !== 0 && setSelDef({ day: d, turno })}
+                            onClick={() => !soloLectura && def !== 0 && setSelDef({ day: d, turno })}
                             title={def > 0 ? `Déficit ${def}` : def < 0 ? `Exceso ${-def}` : "OK"}
                           >
                             {cnt}

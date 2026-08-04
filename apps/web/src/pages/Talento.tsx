@@ -6,6 +6,7 @@ import { DonutGrad } from "@/components/Charts";
 import { Icon } from "@/components/icons";
 import { GuiaNexBar } from "@/pages/home/parts";
 import { useToast } from "@/components/Toast";
+import { useApp } from "@/app/store";
 import type { EstadoHabilitacion } from "@nexshift/contracts";
 
 const GLYPH: Record<EstadoHabilitacion, string> = {
@@ -18,7 +19,9 @@ const GLYPH: Record<EstadoHabilitacion, string> = {
 };
 
 export function Talento() {
-  const [tab, setTab] = useState<"matriz" | "plan">("matriz");
+  const { profile } = useApp();
+  const soloMiPlan = profile === "funcionario";
+  const [tab, setTab] = useState<"matriz" | "plan">(soloMiPlan ? "plan" : "matriz");
   const toast = useToast();
   const qc = useQueryClient();
   const matriz = useQuery({ queryKey: ["matriz"], queryFn: getMatriz });
@@ -40,26 +43,39 @@ export function Talento() {
   const porVencer = flat.filter((s) => s === "porVencer" || s === "reevaluacionRequerida").length;
   const enProceso = flat.filter((s) => s === "enProceso").length;
 
-  const guia = {
-    ocurre: `UCI tiene capacidad frágil: pool de 5 y ${porVencer} habilitaciones por vencer.`,
-    hacer: "Avanzá el plan de Paula para habilitarla en UCI.",
-    recomienda: "Priorizar RCP y ventilación mecánica cierra la brecha de competencias.",
-    riesgo: "Sin habilitar, el pool sigue frágil y suben las horas extra.",
-    siguiente: "Al completar, la Jefatura valida y el pool de UCI sube a 6.",
-  };
+  const guia = soloMiPlan
+    ? {
+        ocurre: "Estás a 1 evaluación de habilitarte en UCI.",
+        hacer: "Completá las acciones de tu plan de desarrollo.",
+        recomienda: "Priorizá RCP y ventilación mecánica: son las que faltan.",
+        riesgo: "Sin la habilitación no podés tomar turnos en UCI.",
+        siguiente: "Al completar, tu Jefatura valida y quedás habilitada.",
+      }
+    : {
+        ocurre: `UCI tiene capacidad frágil: pool de 5 y ${porVencer} habilitaciones por vencer.`,
+        hacer: "Avanzá el plan de Paula para habilitarla en UCI.",
+        recomienda: "Priorizar RCP y ventilación mecánica cierra la brecha de competencias.",
+        riesgo: "Sin habilitar, el pool sigue frágil y suben las horas extra.",
+        siguiente: "Al completar, la Jefatura valida y el pool de UCI sube a 6.",
+      };
 
   return (
     <div className="page">
-      <PageHead eyebrow="Calidad clínica · competencias y habilitación" title={<>Formar hoy <span className="thin">para cubrir mañana</span></>} />
+      <PageHead
+        eyebrow={soloMiPlan ? "Mi desarrollo" : "Calidad clínica · competencias y habilitación"}
+        title={soloMiPlan ? <>Mi habilitación <span className="thin">en curso</span></> : <>Formar hoy <span className="thin">para cubrir mañana</span></>}
+      />
       <GuiaNexBar g={guia} />
 
-      <div className="pl-stats" style={{ marginTop: 12 }}>
-        <span className="plstat good"><b>{vigentes}</b> vigentes</span>
-        <span className="plstat warn"><b>{porVencer}</b> por vencer</span>
-        <span className="plstat"><b>{enProceso}</b> en proceso</span>
-        <span style={{ flex: 1 }} />
-        <Segmented value={tab} onChange={setTab} ariaLabel="Vista" options={[{ value: "matriz", label: "Matriz" }, { value: "plan", label: "Plan individual" }]} />
-      </div>
+      {!soloMiPlan && (
+        <div className="pl-stats" style={{ marginTop: 12 }}>
+          <span className="plstat good"><b>{vigentes}</b> vigentes</span>
+          <span className="plstat warn"><b>{porVencer}</b> por vencer</span>
+          <span className="plstat"><b>{enProceso}</b> en proceso</span>
+          <span style={{ flex: 1 }} />
+          <Segmented value={tab} onChange={setTab} ariaLabel="Vista" options={[{ value: "matriz", label: "Matriz" }, { value: "plan", label: "Plan individual" }]} />
+        </div>
+      )}
 
       {tab === "matriz" && (
         <section className="panel" style={{ marginTop: 14 }}>

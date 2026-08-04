@@ -15,23 +15,21 @@ export interface NavItem {
  * (usuarios, permisos, configuración, auditoría, integraciones).
  */
 const NAV_BY_PROFILE: Record<Perfil, NavItem[]> = {
+  // Jefatura: mando operativo de la unidad. Programa, detecta brechas (y las
+  // solicita a Gestión Central), aprueba permisos y pide reportes a BPC.
   jefatura: [
     { key: "inicio", path: "/", icon: "home", label: "Inicio" },
     { key: "prog", path: "/programacion", icon: "calendar", label: "Programación" },
     { key: "brechas", path: "/brechas", icon: "gap", label: "Brechas" },
-    { key: "cob", path: "/coberturas", icon: "swap", label: "Coberturas" },
     { key: "ausencias", path: "/ausencias", icon: "plane", label: "Ausencias" },
-    { key: "talento", path: "/talento", icon: "graduation", label: "Talento" },
-    { key: "analitica", path: "/analitica", icon: "chart", label: "Analítica" },
     { key: "reportes", path: "/reportes", icon: "list", label: "Reportes" },
   ],
-  // Gestión Central: secretaría de dotación (depende de Subdirección) — solo
-  // ejecuta el contacto de coberturas.
+  // Gestión Central: secretaría de dotación (depende de Subdirección) — recibe
+  // las brechas y ejecuta el contacto de coberturas. Nada más.
   gestion: [
     { key: "inicio", path: "/", icon: "home", label: "Inicio" },
     { key: "cob", path: "/coberturas", icon: "swap", label: "Coberturas" },
     { key: "brechas", path: "/brechas", icon: "gap", label: "Brechas" },
-    { key: "ausencias", path: "/ausencias", icon: "plane", label: "Ausencias" },
   ],
   // Subdirección incluye a Buenas Prácticas Clínicas (BPC): supervisa el flujo
   // de gestión y administra reportes y calidad clínica (competencias/habilitación).
@@ -44,10 +42,11 @@ const NAV_BY_PROFILE: Record<Perfil, NavItem[]> = {
     { key: "talento", path: "/talento", icon: "graduation", label: "Calidad clínica" },
     { key: "ausencias", path: "/ausencias", icon: "plane", label: "Ausencias" },
   ],
+  // Funcionario: su espacio. Ve su malla (solo lectura), su desarrollo y pide
+  // permisos. Las ofertas de cobertura las responde desde Inicio.
   funcionario: [
     { key: "inicio", path: "/", icon: "home", label: "Inicio" },
     { key: "prog", path: "/programacion", icon: "calendar", label: "Mi programación" },
-    { key: "cob", path: "/coberturas", icon: "swap", label: "Ofertas" },
     { key: "talento", path: "/talento", icon: "graduation", label: "Mi desarrollo" },
     { key: "ausencias", path: "/ausencias", icon: "plane", label: "Permisos" },
   ],

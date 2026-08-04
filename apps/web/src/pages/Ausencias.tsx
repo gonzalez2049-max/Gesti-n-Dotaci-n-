@@ -19,6 +19,74 @@ const TIPO_TONO: Record<string, Tono> = {
 const toneStyle = (t: Tono) => ({ ["--tn" as string]: `var(--${t === "acc" ? "accent" : t})` });
 
 export function Ausencias() {
+  const { profile } = useApp();
+  return profile === "funcionario" ? <MisPermisos /> : <AusenciasGestion />;
+}
+
+/* ---- Funcionario: solicitar permisos (no aprobar) ---- */
+const TIPOS_PERMISO = ["Vacaciones", "Permiso administrativo", "Licencia médica", "Feriado legal", "Descanso compensatorio"];
+function MisPermisos() {
+  const toast = useToast();
+  const [tipo, setTipo] = useState(TIPOS_PERMISO[0]);
+  const [rango, setRango] = useState("");
+  const [motivo, setMotivo] = useState("");
+  const [mis, setMis] = useState<{ tipo: string; rango: string; estado: string; tono: Tono }[]>([
+    { tipo: "Vacaciones", rango: "Jue 12 – Dom 15", estado: "Pendiente", tono: "warn" },
+    { tipo: "Descanso compensatorio", rango: "Sáb 7", estado: "Aprobada", tono: "good" },
+  ]);
+  const guia = {
+    ocurre: "Podés pedir un permiso; tu Jefatura verá el impacto en la dotación.",
+    hacer: "Elegí el tipo y el rango de fechas, y solicitalo.",
+    recomienda: "Los permisos con más anticipación son más fáciles de aprobar.",
+    riesgo: "Si tu turno queda descubierto, se abre una cobertura.",
+    siguiente: "Tu Jefatura aprueba o rechaza y te avisa.",
+  };
+  const solicitar = () => {
+    setMis((m) => [{ tipo, rango: rango || "por definir", estado: "Pendiente", tono: "warn" }, ...m]);
+    setMotivo(""); setRango("");
+    toast("Permiso solicitado · lo revisa tu Jefatura");
+  };
+  return (
+    <div className="page">
+      <PageHead eyebrow="Mis permisos" title={<>Solicitar un <span className="thin">permiso</span></>} />
+      <GuiaNexBar g={guia} />
+      <div className="triage" style={{ marginTop: 14 }}>
+        <section className="panel">
+          <div className="panel-h"><Icon name="plane" size={15} /> Nuevo permiso</div>
+          <div className="rep-form">
+            <label className="rep-field"><span>Tipo</span>
+              <select value={tipo} onChange={(e) => setTipo(e.target.value)}>{TIPOS_PERMISO.map((t) => <option key={t}>{t}</option>)}</select>
+            </label>
+            <label className="rep-field"><span>Rango de fechas</span>
+              <input value={rango} onChange={(e) => setRango(e.target.value)} placeholder="Ej: Lun 18 – Vie 22" />
+            </label>
+            <label className="rep-field"><span>Motivo (opcional)</span>
+              <input value={motivo} onChange={(e) => setMotivo(e.target.value)} placeholder="Ej: trámite personal" />
+            </label>
+            <button className="btn prim" onClick={solicitar} type="button"><Icon name="send" size={14} /> Solicitar permiso</button>
+          </div>
+        </section>
+        <section className="panel">
+          <div className="panel-h"><Icon name="list" size={15} /> Mis solicitudes</div>
+          <div className="brlist">
+            {mis.map((s, i) => (
+              <div key={i} className={`brow rail-${s.tono}`} style={toneStyle(s.tono)}>
+                <span className="brow-orb" style={toneStyle(s.tono)}><Icon name="plane" size={16} /></span>
+                <span className="brow-body">
+                  <span className="brow-top"><span className="brow-t">{s.tipo}</span><span className={`chip ${s.tono}`}>{s.estado}</span></span>
+                  <span className="brow-w">{s.rango}</span>
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+/* ---- Jefatura / Gestión / Subdirección: aprobar / revisar ---- */
+function AusenciasGestion() {
   const toast = useToast();
   const qc = useQueryClient();
   const { profile } = useApp();

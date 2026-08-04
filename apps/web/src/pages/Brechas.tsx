@@ -7,6 +7,7 @@ import { PageHead, Segmented, Skeleton } from "@/components/kit";
 import { Icon } from "@/components/icons";
 import { GuiaNexBar } from "@/pages/home/parts";
 import { useToast } from "@/components/Toast";
+import { useApp } from "@/app/store";
 import type { Brecha } from "@nexshift/contracts";
 
 const SEV_LABEL: Record<string, string> = { critica: "Crítica", alta: "Alta", media: "Media", baja: "Baja" };
@@ -20,6 +21,9 @@ export function Brechas() {
   const toast = useToast();
   const qc = useQueryClient();
   const navigate = useNavigate();
+  const { profile } = useApp();
+  const esGestion = profile === "gestion";
+  const soloLectura = profile === "subdireccion";
 
   const filtros: FiltroBrechas = { q: "", severidad: sev };
   const { data: brechas, isLoading } = useQuery({ queryKey: ["brechas", filtros], queryFn: () => getBrechas(filtros) });
@@ -34,7 +38,7 @@ export function Brechas() {
   const ofertar = useMutation({
     mutationFn: (id: string) => enviarOferta(id),
     onSuccess: () => {
-      toast("Oferta enviada · la cobertura quedó en gestión");
+      toast("Solicitud enviada a Gestión Central · la brecha quedó en gestión");
       qc.invalidateQueries({ queryKey: ["brechas"] });
     },
   });
@@ -52,12 +56,15 @@ export function Brechas() {
 
   const guia = {
     ocurre: criticas > 0 ? `${criticas} brecha${criticas > 1 ? "s" : ""} crítica${criticas > 1 ? "s" : ""} abierta${criticas > 1 ? "s" : ""} ahora.` : "Sin brechas críticas en este momento.",
-    hacer: "Seleccioná la más crítica y enviá la oferta al recomendado.",
+    hacer: soloLectura
+      ? "Revisá el estado de las brechas y a quién afectan."
+      : esGestion
+        ? "Abrí la más crítica y contactá al recomendado en Coberturas."
+        : "Seleccioná la más crítica y solicitá la cobertura a Gestión Central.",
     recomienda: "El Índice NEX ya priorizó reemplazos habilitados y con menor carga.",
     riesgo: "Si no se cubre, el turno abre bajo dotación crítica.",
-    siguiente: "La oferta pasa a Coberturas y la brecha queda en gestión.",
-    cta: "Ir a Coberturas",
-    ruta: "/coberturas",
+    siguiente: esGestion ? "En Coberturas contactás secuencialmente hasta cubrir." : "Gestión Central contacta y, si aceptan, la Jefatura confirma.",
+    ...(esGestion ? { cta: "Ir a Coberturas", ruta: "/coberturas" } : {}),
   };
 
   return (
@@ -142,7 +149,7 @@ export function Brechas() {
               <div className="td-meta">{sel.fecha} · {sel.rol} · falta {sel.deficit}{sel.minutosAbierta > 0 ? ` · ${sel.minutosAbierta} min abierta` : ""}</div>
               <div className="td-causa"><Icon name="pulse" size={13} /> {sel.causa}</div>
 
-              <div className="foco-recolab" style={{ marginTop: 14 }}>Índice NEX · mejores reemplazos</div>
+              <div className="foco-recolab" style={{ marginTop: 14 }}>Índice NEX · {esGestion ? "a quién contactar" : "posibles reemplazos"}</div>
               <div className="foco-recos" style={{ margin: "9px 0 0" }}>
                 {candidatos.isLoading && [0, 1, 2].map((i) => <Skeleton key={i} h={52} />)}
                 {candidatos.data?.slice(0, 3).map((c, i) => {
@@ -166,13 +173,21 @@ export function Brechas() {
                 })}
               </div>
 
-              <div className="td-actions">
-                <button className="btn prim" onClick={() => ofertar.mutate(sel.id)} disabled={ofertar.isPending} type="button">
-                  <Icon name="send" size={14} /> {ofertar.isPending ? "Enviando…" : `Enviar oferta a ${candidatos.data?.[0]?.nombre?.split(" ")[0] ?? "#1"}`}
-                </button>
-                <button className="btn ghost" onClick={() => navigate("/coberturas")} type="button">Ranking completo</button>
-                <button className="btn ghost" onClick={() => cerrar.mutate(sel.id)} type="button">Marcar resuelta</button>
-              </div>
+              {soloLectura ? (
+                <div className="firma-hint" style={{ marginTop: 16 }}><Icon name="shield" size={13} /> Vista de solo lectura · la resuelven la Jefatura y Gestión Central.</div>
+              ) : esGestion ? (
+                <div className="td-actions">
+                  <button className="btn prim" onClick={() => navigate("/coberturas")} type="button"><Icon name="send" size={14} /> Contactar en Coberturas</button>
+                  <button className="btn ghost" onClick={() => cerrar.mutate(sel.id)} type="button">Marcar resuelta</button>
+                </div>
+              ) : (
+                <div className="td-actions">
+                  <button className="btn prim" onClick={() => ofertar.mutate(sel.id)} disabled={ofertar.isPending || sel.estado === "enGestion"} type="button">
+                    <Icon name="send" size={14} /> {sel.estado === "enGestion" ? "En Gestión Central" : ofertar.isPending ? "Enviando…" : "Solicitar cobertura a Gestión Central"}
+                  </button>
+                  <button className="btn ghost" onClick={() => cerrar.mutate(sel.id)} type="button">Marcar resuelta</button>
+                </div>
+              )}
             </>
           )}
         </aside>
