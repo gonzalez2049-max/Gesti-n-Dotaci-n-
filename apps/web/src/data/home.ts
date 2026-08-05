@@ -103,7 +103,7 @@ const JEFATURA: HomeJefatura = {
   narrativa: {
     nombre: "José",
     contexto: "Jefatura · UCI · Sede Central",
-    frase: "La UCI queda en riesgo esta noche: falta 1 enfermera para el turno de las 22:00.",
+    frase: "La UCI queda en riesgo esta noche: falta 1 enfermera para el turno de las 20:00.",
     foco: "NEX ya identificó 3 reemplazos habilitados.",
     chips: [
       { icon: "gap", texto: "1 brecha crítica", tono: "crit" },
@@ -112,7 +112,7 @@ const JEFATURA: HomeJefatura = {
     ],
   },
   guia: {
-    ocurre: "UCI: 12 de 14 en el turno noche (22:00) — falta 1 enfermera.",
+    ocurre: "UCI: 12 de 14 en el turno noche (20:00) — falta 1 enfermera.",
     hacer: "Solicitá la cobertura a Gestión Central.",
     recomienda: "NEX sugiere a Camila F. — apoyo habilitado, sin costo extra (92).",
     riesgo: "Si no actuás, la UCI abre la noche en dotación crítica.",
@@ -144,7 +144,7 @@ const JEFATURA: HomeJefatura = {
     { icon: "check", label: "Malla publicada", valor: "96", unidad: "%", tono: "good", spark: [80, 86, 90, 93, 95, 96] },
   ],
   foco: {
-    titulo: "Turno noche UCI · hoy 22:00",
+    titulo: "Turno noche UCI · hoy 20:00",
     subt: "Falta 1 · unidad crítica · el turno empieza en horas",
     minutos: 22,
     candidatos: [
@@ -154,7 +154,7 @@ const JEFATURA: HomeJefatura = {
     ],
   },
   timeline: [
-    { hora: "22:00", icon: "gap", texto: "Turno noche UCI · falta 1", meta: "en 6 h", tono: "crit", cuando: "futuro" },
+    { hora: "20:00", icon: "gap", texto: "Turno noche UCI · falta 1", meta: "en 6 h", tono: "crit", cuando: "futuro" },
     { hora: "ahora", icon: "pulse", texto: "Brecha crítica abierta · UCI", meta: "hace 22 min", tono: "crit", cuando: "ahora" },
     { hora: "13:40", icon: "send", texto: "Oferta enviada a 2 candidatos", meta: "sin respuesta", tono: "warn", cuando: "pasado" },
     { hora: "12:10", icon: "plane", texto: "Ana G. inició licencia médica", meta: "UCI · 5 días", tono: "info", cuando: "pasado" },
@@ -250,24 +250,24 @@ const FUNCIONARIO: HomeFuncionario = {
   narrativa: {
     nombre: "Paula",
     contexto: "Enfermera · UCI",
-    frase: "Tu próximo turno es hoy a las 22:00 en UCI.",
+    frase: "Tu próximo turno es hoy a las 20:00 en UCI.",
     foco: "Tenés 1 oferta de cobertura esperando tu respuesta.",
     chips: [
-      { icon: "clock", texto: "Turno hoy 22:00", tono: "acc" },
+      { icon: "clock", texto: "Turno hoy 20:00", tono: "acc" },
       { icon: "send", texto: "1 oferta pendiente", tono: "warn" },
       { icon: "graduation", texto: "Habilitación 75%", tono: "info" },
     ],
   },
   guia: {
-    ocurre: "Tenés un turno noche hoy 22:00 y 1 oferta de cobertura pendiente.",
+    ocurre: "Tenés un turno noche hoy 20:00 y 1 oferta de cobertura pendiente.",
     hacer: "Respondé la oferta: aceptar o rechazar.",
     recomienda: "Aceptar suma +1 libre compensatorio y tu carga sigue equilibrada.",
     riesgo: "Si no respondés en 2 h, la oferta pasa al siguiente candidato.",
     siguiente: "Si aceptás, tu Jefatura confirma el turno.",
   },
-  proximoTurno: { fecha: "Hoy", hora: "22:00", unidad: "UCI", tipo: "Noche", horas: 12, en: "empieza en 6 h" },
+  proximoTurno: { fecha: "Hoy", hora: "20:00", unidad: "UCI", tipo: "Noche", horas: 12, en: "empieza en 6 h" },
   oferta: {
-    texto: "Cubrir turno noche · UCI · sábado 22:00",
+    texto: "Cubrir turno noche · UCI · sábado 20:00",
     plazo: "Responde en 2 h",
     incentivo: "+1 libre compensatorio",
   },
@@ -281,7 +281,7 @@ const FUNCIONARIO: HomeFuncionario = {
   },
   desarrollo: { plan: "Habilitación UCI", progreso: 75, nota: "Falta la validación final de tu Jefatura." },
   timeline: [
-    { hora: "Hoy 22:00", icon: "pulse", texto: "Turno noche · UCI", meta: "12 h", tono: "acc", cuando: "futuro" },
+    { hora: "Hoy 20:00", icon: "pulse", texto: "Turno noche · UCI", meta: "12 h", tono: "acc", cuando: "futuro" },
     { hora: "Mañana", icon: "check", texto: "Libre", tono: "good", cuando: "futuro" },
     { hora: "Vie", icon: "calendar", texto: "Turno largo · UCI", meta: "12 h", tono: "info", cuando: "futuro" },
     { hora: "Mié próx.", icon: "shield", texto: "Vence reevaluación RCP", tono: "warn", cuando: "futuro" },
@@ -373,14 +373,14 @@ const GESTION: HomeGestion = {
     ],
   },
   guia: {
-    ocurre: "La Jefatura de UCI solicitó cubrir el turno noche de hoy (22:00).",
+    ocurre: "La Jefatura de UCI solicitó cubrir el turno noche de hoy (20:00).",
     hacer: "Contactá al #1 del Índice NEX y registrá su respuesta.",
     recomienda: "Camila F. — apoyo habilitado, libre y sin costo extra.",
     riesgo: "Si nadie acepta, la brecha se escala y la unidad abre bajo dotación.",
     siguiente: "Si acepta, se envía a la Jefatura para su confirmación final.",
   },
   cola: [
-    { unidad: "UCI", turno: "Noche · hoy 22:00", fecha: "falta 1", jefatura: "José M.", estado: "Por contactar", detalle: "NEX sugiere a Camila F. (#1)", tono: "crit" },
+    { unidad: "UCI", turno: "Noche · hoy 20:00", fecha: "falta 1", jefatura: "José M.", estado: "Por contactar", detalle: "NEX sugiere a Camila F. (#1)", tono: "crit" },
     { unidad: "Urgencias", turno: "Largo · mañana 08:00", fecha: "falta 1", jefatura: "José M.", estado: "Contactando", detalle: "Rodrigo P. · llamado en curso (2/4)", tono: "warn" },
     { unidad: "Pabellón", turno: "Largo · sábado", fecha: "falta 1", jefatura: "Ana T.", estado: "Esperando Jefatura", detalle: "Sofía D. aceptó · pendiente confirmación", tono: "info" },
   ],
@@ -421,7 +421,7 @@ export interface Copiloto {
 const COPILOTO: Record<Perfil, Copiloto> = {
   jefatura: {
     estado: "1 brecha crítica",
-    mensaje: "La UCI abre la noche con 1 enfermera menos (22:00).",
+    mensaje: "La UCI abre la noche con 1 enfermera menos (20:00).",
     sugerencia: "Solicitá la cobertura a Gestión Central — NEX sugiere a Camila F. (92).",
     cta: "Solicitar cobertura",
     ruta: "/brechas",
@@ -429,7 +429,7 @@ const COPILOTO: Record<Perfil, Copiloto> = {
   },
   gestion: {
     estado: "3 solicitudes en cola",
-    mensaje: "La Jefatura de UCI pidió cubrir el turno noche de hoy (22:00).",
+    mensaje: "La Jefatura de UCI pidió cubrir el turno noche de hoy (20:00).",
     sugerencia: "Contactá a Camila F. — #1 del Índice NEX, apoyo habilitado y libre.",
     cta: "Abrir cobertura",
     ruta: "/coberturas",
@@ -445,7 +445,7 @@ const COPILOTO: Record<Perfil, Copiloto> = {
   },
   funcionario: {
     estado: "1 oferta pendiente",
-    mensaje: "Tenés un turno noche hoy 22:00 y una oferta esperando.",
+    mensaje: "Tenés un turno noche hoy 20:00 y una oferta esperando.",
     sugerencia: "Aceptá dentro de 2 h para no perder el +1 libre compensatorio.",
     cta: "Responder",
     ruta: "/coberturas",

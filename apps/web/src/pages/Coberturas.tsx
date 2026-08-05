@@ -16,7 +16,7 @@ const EVENTUALIDADES = ["En vacaciones esta semana", "Con licencia médica", "Ya
 
 interface Ev { hora: string; actor: string; titulo: string; detalle: string; tono: Tone }
 function hm(min: number) {
-  const base = 21 * 60 + 38 + min;
+  const base = 14 * 60 + 8 + min;
   return `${String(Math.floor(base / 60) % 24).padStart(2, "0")}:${String(base % 60).padStart(2, "0")}`;
 }
 
@@ -38,7 +38,7 @@ export function Coberturas() {
   const [motivo, setMotivo] = useState(RECHAZOS[0]);
   const [obs, setObs] = useState(EVENTUALIDADES[0]);
   const [log, setLog] = useState<Ev[]>([
-    { hora: hm(0), actor: "Jefatura", titulo: "Solicitud de cobertura", detalle: "UCI · Noche · hoy 22:00 · falta 1", tono: "crit" },
+    { hora: hm(0), actor: "Jefatura", titulo: "Solicitud de cobertura", detalle: "UCI · Noche · hoy 20:00 · falta 1", tono: "crit" },
   ]);
 
   const disponibles = useMemo(() => (data ?? []).filter((c) => !descartados[c.id]), [data, descartados]);
@@ -91,11 +91,11 @@ export function Coberturas() {
     setDescartados({});
     setContactado(null);
     setPhase("contactar");
-    setLog([{ hora: hm(0), actor: "Jefatura", titulo: "Solicitud de cobertura", detalle: "UCI · Noche · hoy 22:00 · falta 1", tono: "crit" }]);
+    setLog([{ hora: hm(0), actor: "Jefatura", titulo: "Solicitud de cobertura", detalle: "UCI · Noche · hoy 20:00 · falta 1", tono: "crit" }]);
   };
 
   const guia = {
-    ocurre: "La Jefatura de UCI solicitó cubrir el turno noche de hoy (22:00).",
+    ocurre: "La Jefatura de UCI solicitó cubrir el turno noche de hoy (20:00).",
     hacer: "Contactá al #1 del Índice NEX y registrá su respuesta.",
     recomienda: `Empezar por ${data?.[0]?.nombre ?? "el #1"} — apoyo habilitado y libre.`,
     riesgo: "Si nadie acepta, se escala y la unidad abre bajo dotación.",
@@ -117,7 +117,7 @@ export function Coberturas() {
       <section className="panel sol" style={toneStyle("crit")}>
         <div className="sol-head">
           <span className="sol-tag">Solicitud de la Jefatura</span>
-          <span className="sol-title">UCI · Noche · hoy 22:00 · falta 1</span>
+          <span className="sol-title">UCI · Noche · hoy 20:00 · falta 1</span>
           <span className="sol-from">de José M. · Jefatura UCI</span>
         </div>
         <div className="flowbar">
@@ -179,7 +179,7 @@ export function Coberturas() {
             <div className="contact">
               <div className="contact-live"><span className="sala-livedot" /> Llamando a</div>
               <div className="contact-name">{cand.nombre}</div>
-              <div className="contact-sub">{cand.tipoCobertura} · UCI · hoy 22:00 · responde en ≤ 30 min</div>
+              <div className="contact-sub">{cand.tipoCobertura} · UCI · hoy 20:00 · responde en ≤ 30 min</div>
               <div className="contact-q">Registrá su respuesta:</div>
               <div className="contact-actions">
                 <button className="btn prim" onClick={acepta} type="button"><Icon name="check" size={14} /> Acepta</button>

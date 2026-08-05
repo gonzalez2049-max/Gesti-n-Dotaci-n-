@@ -19,7 +19,7 @@ export function Funcionario() {
   const [avail, setAvail] = useState<Record<string, boolean>>({});
 
   const guia = {
-    ocurre: "Tenés 1 oferta de cobertura por responder y tu próximo turno es hoy 22:00.",
+    ocurre: "Tenés 1 oferta de cobertura por responder y tu próximo turno es hoy 20:00.",
     hacer: "Aceptá, rechazá o pedí que te consideren para otra eventualidad.",
     recomienda: "Aceptar suma +1 libre compensatorio y tu carga sigue equilibrada.",
     riesgo: "Si no respondés en 2 h, Gestión Central sigue con el siguiente.",
@@ -97,7 +97,7 @@ export function Funcionario() {
       </section>
 
       <div className="lsr" style={{ marginTop: 14 }}>
-        {[["clock", "Mi próximo turno", "22:00", "hoy · UCI"], ["pulse", "Turnos (semana)", "4", ""], ["plane", "Feriado legal", "12", "días"], ["shield", "Certificación", "1", "por vencer"]].map(([ic, l, v, u]) => (
+        {[["clock", "Mi próximo turno", "20:00", "hoy · UCI"], ["pulse", "Turnos (semana)", "4", ""], ["plane", "Feriado legal", "12", "días"], ["shield", "Certificación", "1", "por vencer"]].map(([ic, l, v, u]) => (
           <div className="ls" key={l} style={toneStyle("acc")}>
             <span className="ls-ic"><Icon name={ic as never} size={14} /></span>
             <div className="ls-main">

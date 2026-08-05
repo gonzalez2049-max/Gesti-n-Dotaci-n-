@@ -23,13 +23,13 @@ const JEFATURA: InicioResumen = {
     siguiente: "La dotación vuelve al verde",
     cta: "Ir a la acción",
   },
-  accionPrioritaria: "Turno sin cubrir — UCI, hoy 22:00",
+  accionPrioritaria: "Turno sin cubrir — UCI, hoy 20:00",
   accionesPrioritarias: [
     {
       id: "a1",
       nivel: "ahora",
       tipo: "cobertura",
-      titulo: "Turno con dotación insuficiente — UCI, hoy 22:00",
+      titulo: "Turno con dotación insuficiente — UCI, hoy 20:00",
       porque: "Falta 1 · unidad crítica · turno en horas",
       ctaLabel: "Resolver",
       semaforo: "critico",
