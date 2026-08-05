@@ -3,7 +3,7 @@ import { getAnalitica } from "@/api/api";
 import { PageHead, Skeleton } from "@/components/kit";
 import { Icon } from "@/components/icons";
 import { LineChart, Sparkline, StackedBars } from "@/components/Charts";
-import { GuiaNexBar, NexPanel, toneStyle } from "@/pages/home/parts";
+import { toneStyle } from "@/pages/home/parts";
 import type { Tono } from "@/data/home";
 
 const toneVar: Record<string, string> = { crit: "--crit", warn: "--warn", good: "--good", neutro: "--info" };
@@ -19,28 +19,11 @@ const ACCION: Record<string, string> = {
 export function Analitica() {
   const { data, isLoading } = useQuery({ queryKey: ["analitica"], queryFn: getAnalitica });
 
-  const guia = {
-    ocurre: "El ausentismo sube (9,1%) y el costo de cobertura casi se duplicó.",
-    hacer: "Concentrá recursos donde el riesgo es mayor: UCI y Urgencias.",
-    recomienda: "Reforzar el pool estable en UCI reduce hora extra y tiempo de respuesta.",
-    riesgo: "Sin intervención, las brechas crónicas y el costo siguen creciendo.",
-    siguiente: "Se simula el ajuste y se valida con las jefaturas. La analítica apoya, no ejecuta.",
-  };
 
-  const nex = {
-    titulo: "Intervení primero en UCI",
-    razon:
-      "UCI concentra el mayor riesgo de la red: brecha crónica, ausentismo del 11% y un pool frágil (5). Un refuerzo de pool en jul–ago bajaría el costo de cobertura y el tiempo de respuesta.",
-    confianza: 84,
-    accion: "Pedir reporte de UCI",
-    ruta: "/reportes",
-    impacto: ["−40% hora extra proyectada", "Cobertura nocturna estable", "Menos brechas crónicas"],
-  };
 
   return (
     <div className="page">
       <PageHead eyebrow="Analítica · Subdirección — observatorio" title={<>Cómo vamos, por qué <span className="thin">y dónde intervenir</span></>} />
-      <GuiaNexBar g={guia} />
 
       {isLoading && <Skeleton h={90} style={{ marginTop: 14 }} />}
 
@@ -87,7 +70,6 @@ export function Analitica() {
               </div>
             </section>
 
-            <NexPanel nex={nex} />
           </div>
 
           <section className="panel" style={{ marginTop: 14 }}>

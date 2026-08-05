@@ -1,14 +1,13 @@
 import { Icon } from "@/components/icons";
 import type { HomeAdmin as T } from "@/data/home";
-import { GuiaNexBar, NarrativaHead, NexPanel, Timeline, toneStyle } from "./parts";
+import { NarrativaHead, Timeline, toneStyle } from "./parts";
 
 export function HomeAdmin({ d }: { d: T }) {
   return (
     <div className="page home-adm">
       <NarrativaHead n={d.narrativa} />
-      <GuiaNexBar g={d.guia} />
 
-      <div className="strat">
+      <div className="strat strat-solo">
         <section className="panel salud">
           <div className="panel-h">
             <Icon name="shield" size={15} /> Salud del sistema
@@ -27,8 +26,6 @@ export function HomeAdmin({ d }: { d: T }) {
             ))}
           </div>
         </section>
-
-        <NexPanel nex={d.nex} />
       </div>
 
       <Timeline eventos={d.timeline} titulo="Actividad reciente · auditoría" live />

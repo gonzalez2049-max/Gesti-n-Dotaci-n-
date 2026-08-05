@@ -31,15 +31,14 @@ const NAV_BY_PROFILE: Record<Perfil, NavItem[]> = {
     { key: "cob", path: "/coberturas", icon: "swap", label: "Coberturas" },
     { key: "brechas", path: "/brechas", icon: "gap", label: "Brechas" },
   ],
-  // Subdirección incluye a Buenas Prácticas Clínicas (BPC): supervisa el flujo
-  // de gestión y administra reportes y calidad clínica (competencias/habilitación).
-  // Subdirección: módulo de solo-datos (observatorio para decidir dónde
-  // intervenir). Sin acciones operativas; entrega evidencia vía Reportes.
+  // Subdirección incluye a Buenas Prácticas Clínicas (BPC): observatorio de
+  // solo-datos para decidir dónde intervenir. Ve analítica, reportes y la
+  // programación (solo lectura). Sin acciones operativas.
   subdireccion: [
     { key: "inicio", path: "/", icon: "home", label: "Inicio" },
     { key: "analitica", path: "/analitica", icon: "chart", label: "Analítica" },
     { key: "reportes", path: "/reportes", icon: "list", label: "Reportes" },
-    { key: "talento", path: "/talento", icon: "graduation", label: "Calidad clínica" },
+    { key: "prog", path: "/programacion", icon: "calendar", label: "Programación" },
     { key: "ausencias", path: "/ausencias", icon: "plane", label: "Ausencias" },
   ],
   // Funcionario: su espacio. Ve su malla (solo lectura), su desarrollo y pide
@@ -47,7 +46,7 @@ const NAV_BY_PROFILE: Record<Perfil, NavItem[]> = {
   funcionario: [
     { key: "inicio", path: "/", icon: "home", label: "Inicio" },
     { key: "prog", path: "/programacion", icon: "calendar", label: "Mi programación" },
-    { key: "talento", path: "/talento", icon: "graduation", label: "Mi desarrollo" },
+    { key: "miespacio", path: "/mi-espacio", icon: "user", label: "Mi espacio" },
     { key: "ausencias", path: "/ausencias", icon: "plane", label: "Permisos" },
   ],
   administrador: [

@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { PageHead } from "@/components/kit";
-import { DonutGrad } from "@/components/Charts";
 import { Icon } from "@/components/icons";
-import { GuiaNexBar, toneStyle } from "@/pages/home/parts";
+import { toneStyle } from "@/pages/home/parts";
 import { useToast } from "@/components/Toast";
 
 type Oferta = "recibida" | "aceptada" | "confirmada" | "rechazada" | "evento";
@@ -18,22 +17,13 @@ export function Funcionario() {
   const [obs, setObs] = useState(EVENTUALIDADES[0]);
   const [avail, setAvail] = useState<Record<string, boolean>>({});
 
-  const guia = {
-    ocurre: "Tenés 1 oferta de cobertura por responder y tu próximo turno es hoy 20:00.",
-    hacer: "Aceptá, rechazá o pedí que te consideren para otra eventualidad.",
-    recomienda: "Aceptar suma +1 libre compensatorio y tu carga sigue equilibrada.",
-    riesgo: "Si no respondés en 2 h, Gestión Central sigue con el siguiente.",
-    siguiente: "Si aceptás, Gestión Central lo envía a tu Jefatura para confirmar.",
-  };
-
   const stepIdx = { recibida: 0, aceptada: 1, confirmada: 3, rechazada: 0, evento: 0 }[oferta];
 
   return (
     <div className="page">
       <PageHead eyebrow="Mi espacio" title={<>Hola, Paula <span className="thin">· tu día</span></>} />
-      <GuiaNexBar g={guia} />
 
-      <div className="fx" style={{ marginTop: 14 }}>
+      <div style={{ marginTop: 14 }}>
         <section className="panel oferta" style={toneStyle("warn")}>
           <div className="panel-h"><Icon name="send" size={15} /> Oferta de Gestión Central</div>
           <div className="of-txt">Urgencias · Largo 08:00–20:00 · mañana</div>
@@ -75,13 +65,6 @@ export function Funcionario() {
           {oferta === "rechazada" && <div className="firma-hint"><Icon name="arrow-right" size={13} /> Tu motivo quedó registrado. Gestión Central sigue con el siguiente.</div>}
           {oferta === "evento" && <div className="firma-hint"><Icon name="user" size={13} /> Registrado · te consideran para una próxima eventualidad.</div>}
         </section>
-
-        <section className="panel bienestar" style={{ textAlign: "center" }}>
-          <div className="panel-h" style={{ justifyContent: "center" }}><Icon name="graduation" size={15} /> Mi desarrollo</div>
-          <div style={{ display: "flex", justifyContent: "center", margin: "8px 0 6px" }}><DonutGrad pct={75} size={104} label="75%" /></div>
-          <div style={{ fontSize: 13.5, fontWeight: 640 }}>Habilitarme en UCI</div>
-          <div style={{ fontSize: 11.5, color: "var(--ink2)" }}>falta 1 evaluación · valida tu Jefatura</div>
-        </section>
       </div>
 
       <section className="panel" style={{ marginTop: 14 }}>
@@ -97,7 +80,7 @@ export function Funcionario() {
       </section>
 
       <div className="lsr" style={{ marginTop: 14 }}>
-        {[["clock", "Mi próximo turno", "20:00", "hoy · UCI"], ["pulse", "Turnos (semana)", "4", ""], ["plane", "Feriado legal", "12", "días"], ["shield", "Certificación", "1", "por vencer"]].map(([ic, l, v, u]) => (
+        {[["clock", "Mi próximo turno", "20:00", "hoy · UCI"], ["pulse", "Turnos (semana)", "4", ""], ["plane", "Feriado legal", "12", "días"], ["clock", "Horas (mes)", "168", "h"]].map(([ic, l, v, u]) => (
           <div className="ls" key={l} style={toneStyle("acc")}>
             <span className="ls-ic"><Icon name={ic as never} size={14} /></span>
             <div className="ls-main">

@@ -3,7 +3,6 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { navFor, navMobileFor } from "@/data/nav";
 import { PROFILES, profileByKey } from "@/data/profiles";
 import { Icon } from "@/components/icons";
-import { NexCopilot } from "@/components/NexCopilot";
 import { useApp } from "@/app/store";
 
 export function AppShell() {
@@ -89,8 +88,6 @@ export function AppShell() {
       <main className="main">
         <Outlet />
       </main>
-
-      <NexCopilot />
 
       <nav className="botnav" aria-label="Navegación">
         {navMobile.map((n) => (

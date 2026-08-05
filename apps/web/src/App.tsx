@@ -5,7 +5,6 @@ import { Programacion } from "@/pages/Programacion";
 import { Brechas } from "@/pages/Brechas";
 import { Coberturas } from "@/pages/Coberturas";
 import { Ausencias } from "@/pages/Ausencias";
-import { Talento } from "@/pages/Talento";
 import { Analitica } from "@/pages/Analitica";
 import { Administracion } from "@/pages/Administracion";
 import { Reportes } from "@/pages/Reportes";
@@ -20,7 +19,6 @@ export default function App() {
         <Route path="brechas" element={<Brechas />} />
         <Route path="coberturas" element={<Coberturas />} />
         <Route path="ausencias" element={<Ausencias />} />
-        <Route path="talento" element={<Talento />} />
         <Route path="analitica" element={<Analitica />} />
         <Route path="reportes" element={<Reportes />} />
         <Route path="administracion" element={<Administracion />} />

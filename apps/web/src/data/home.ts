@@ -4,7 +4,7 @@ import type { IconName } from "@/components/icons";
 /** Datos del Home "Centro de Comando". Cada perfil tiene su propia narrativa,
  *  jerarquía y objetivo — no comparten layout. Prototipo con datos ficticios;
  *  la forma anticipa lo que luego servirá el backend (Brechas, Notificaciones,
- *  Índice NEX, Analítica). */
+ *  Analítica). */
 
 export type Tono = "good" | "warn" | "crit" | "info" | "acc";
 
@@ -17,7 +17,7 @@ export interface Narrativa {
   nombre: string;
   contexto: string;
   frase: string; // el "briefing" que cuenta la situación
-  foco?: string; // la palabra/expresión que NEX resalta
+  foco?: string; // la expresión que se resalta
   chips: { icon: IconName; texto: string; tono: Tono }[];
 }
 
@@ -40,15 +40,6 @@ export interface EventoTL {
   cuando: "pasado" | "ahora" | "futuro";
 }
 
-export interface NexInsight {
-  titulo: string;
-  razon: string;
-  confianza?: number; // 0..100
-  accion: string;
-  ruta: string;
-  impacto: string[];
-  alternativas?: string;
-}
 
 export interface LiveStat {
   icon: IconName;
@@ -59,16 +50,6 @@ export interface LiveStat {
   spark?: number[];
 }
 
-/** Marco NEX: las 5 preguntas que toda pantalla debe responder. */
-export interface GuiaNex {
-  ocurre: string; // ¿qué ocurre?
-  hacer: string; // ¿qué debo hacer?
-  recomienda: string; // ¿qué recomienda NEX?
-  riesgo: string; // ¿qué pasa si no actúo?
-  siguiente: string; // ¿cuál es el siguiente paso?
-  cta?: string;
-  ruta?: string;
-}
 
 /* ------------------------------ JEFATURA ------------------------------ */
 export interface HeatCell {
@@ -84,7 +65,6 @@ const c = (tono: Tono, txt: string): HeatCell => ({ tono, txt });
 export interface HomeJefatura {
   tipo: "jefatura";
   narrativa: Narrativa;
-  guia: GuiaNex;
   operacion: { semaforo: Semaforo; titulo: string; unidades: UnidadEstado[] };
   heatmap: Heatmap;
   pulso: LiveStat[];
@@ -92,10 +72,8 @@ export interface HomeJefatura {
     titulo: string;
     subt: string;
     minutos: number;
-    candidatos: { nombre: string; detalle: string; score: number; tono: Tono }[];
   };
   timeline: EventoTL[];
-  nex: NexInsight;
 }
 
 const JEFATURA: HomeJefatura = {
@@ -104,19 +82,12 @@ const JEFATURA: HomeJefatura = {
     nombre: "José",
     contexto: "Jefatura · UCI · Sede Central",
     frase: "La UCI queda en riesgo esta noche: falta 1 enfermera para el turno de las 20:00.",
-    foco: "NEX ya identificó 3 reemplazos habilitados.",
+    foco: "Hay 3 reemplazos posibles en la unidad.",
     chips: [
       { icon: "gap", texto: "1 brecha crítica", tono: "crit" },
       { icon: "calendar", texto: "3 permisos por responder", tono: "warn" },
       { icon: "shield", texto: "2 reevaluaciones por vencer", tono: "info" },
     ],
-  },
-  guia: {
-    ocurre: "UCI: 12 de 14 en el turno noche (20:00) — falta 1 enfermera.",
-    hacer: "Solicitá la cobertura a Gestión Central.",
-    recomienda: "NEX sugiere a Camila F. — apoyo habilitado, sin costo extra (92).",
-    riesgo: "Si no actuás, la UCI abre la noche en dotación crítica.",
-    siguiente: "Gestión Central la contacta y, si acepta, confirmás vos.",
   },
   operacion: {
     semaforo: "riesgo",
@@ -147,11 +118,6 @@ const JEFATURA: HomeJefatura = {
     titulo: "Turno noche UCI · hoy 20:00",
     subt: "Falta 1 · unidad crítica · el turno empieza en horas",
     minutos: 22,
-    candidatos: [
-      { nombre: "Camila F.", detalle: "Apoyo · 11 turnos · sin costo extra", score: 92, tono: "good" },
-      { nombre: "Rodrigo P.", detalle: "UCI · 13 turnos · reasignación", score: 84, tono: "good" },
-      { nombre: "Nadia S.", detalle: "Hora extra · 16 turnos", score: 61, tono: "warn" },
-    ],
   },
   timeline: [
     { hora: "20:00", icon: "gap", texto: "Turno noche UCI · falta 1", meta: "en 6 h", tono: "crit", cuando: "futuro" },
@@ -160,26 +126,14 @@ const JEFATURA: HomeJefatura = {
     { hora: "12:10", icon: "plane", texto: "Ana G. inició licencia médica", meta: "UCI · 5 días", tono: "info", cuando: "pasado" },
     { hora: "09:15", icon: "calendar", texto: "Malla de agosto publicada", meta: "UCI", tono: "good", cuando: "pasado" },
   ],
-  nex: {
-    titulo: "Asigná a Camila F. al turno noche",
-    razon:
-      "Es personal de apoyo habilitado en UCI, con la menor carga del equipo (11 turnos) y sin costo de hora extra. Supera a las otras dos opciones en el Índice NEX.",
-    confianza: 92,
-    accion: "Enviar oferta a Camila",
-    ruta: "/brechas",
-    impacto: ["Cierra la brecha crítica", "Dotación vuelve a verde", "Sin hora extra"],
-    alternativas: "2 candidatos más",
-  },
 };
 
 /* ---------------------------- SUBDIRECCIÓN ---------------------------- */
 export interface HomeSubdireccion {
   tipo: "subdireccion";
   narrativa: Narrativa;
-  guia: GuiaNex;
   indicadores: { label: string; valor: string; unidad?: string; delta: string; tono: Tono; dir: "up" | "down" | "flat"; spark: number[] }[];
   red: UnidadEstado[];
-  nex: NexInsight;
   timeline: EventoTL[];
 }
 
@@ -189,19 +143,12 @@ const SUBDIRECCION: HomeSubdireccion = {
     nombre: "Dra. Rivas",
     contexto: "Subdirección · Sede Central",
     frase: "La red está estable, pero el ausentismo en UCI subió 18% este mes.",
-    foco: "NEX detectó un patrón que conviene revisar antes de la próxima malla.",
+    foco: "Conviene revisar el patrón antes de la próxima malla.",
     chips: [
       { icon: "chart", texto: "Cobertura global 94%", tono: "good" },
       { icon: "arrow-up", texto: "Ausentismo +18% UCI", tono: "warn" },
       { icon: "list", texto: "2 reportes por preparar", tono: "info" },
     ],
-  },
-  guia: {
-    ocurre: "El ausentismo en UCI creció 18% por tercer mes consecutivo.",
-    hacer: "Revisá la malla de UCI antes de la próxima publicación.",
-    recomienda: "Sumar 1 cupo estable reduce ~40% la hora extra proyectada.",
-    riesgo: "Si no se ajusta, sube la hora extra y el riesgo de brechas nocturnas.",
-    siguiente: "Se simula la nueva malla y se valida con la Jefatura.",
   },
   indicadores: [
     { label: "Cobertura global", valor: "94", unidad: "%", delta: "+2,1", tono: "good", dir: "up", spark: [89, 90, 91, 92, 93, 94] },
@@ -216,18 +163,9 @@ const SUBDIRECCION: HomeSubdireccion = {
     { sigla: "PAB", nombre: "Pabellón", req: 8, disp: 8, semaforo: "equilibrio", tendencia: "flat" },
     { sigla: "NEO", nombre: "Neonatología", req: 9, disp: 7, semaforo: "riesgo", nota: "2 licencias", tendencia: "down" },
   ],
-  nex: {
-    titulo: "Revisá la malla de UCI para septiembre",
-    razon:
-      "El ausentismo y las horas extra en UCI crecen tres meses seguidos. Incorporar 1 cupo estable reduciría la hora extra proyectada cerca de un 40% y estabilizaría la dotación nocturna.",
-    confianza: 78,
-    accion: "Ver análisis de UCI",
-    ruta: "/analitica",
-    impacto: ["−40% hora extra proyectada", "Dotación nocturna estable", "Menor riesgo de brecha"],
-  },
   timeline: [
     { hora: "Este mes", icon: "arrow-up", texto: "Ausentismo UCI +18%", meta: "3er mes al alza", tono: "warn", cuando: "ahora" },
-    { hora: "Sem 30", icon: "graduation", texto: "5 planes de desarrollo completados", meta: "habilitaciones", tono: "good", cuando: "pasado" },
+    { hora: "Sem 30", icon: "calendar", texto: "Mallas de agosto publicadas a tiempo", meta: "5 unidades", tono: "good", cuando: "pasado" },
     { hora: "Sem 29", icon: "chart", texto: "Cobertura global superó 92%", tono: "good", cuando: "pasado" },
     { hora: "Próx.", icon: "shield", texto: "Reevaluación trimestral RCP", meta: "48 personas", tono: "info", cuando: "futuro" },
   ],
@@ -237,11 +175,9 @@ const SUBDIRECCION: HomeSubdireccion = {
 export interface HomeFuncionario {
   tipo: "funcionario";
   narrativa: Narrativa;
-  guia: GuiaNex;
   proximoTurno: { fecha: string; hora: string; unidad: string; tipo: string; horas: number; en: string };
   oferta?: { texto: string; plazo: string; incentivo: string };
   bienestar: { turnosMes: number; noches: number; libres: number; carga: number; mensaje: string; tono: Tono };
-  desarrollo: { plan: string; progreso: number; nota: string };
   timeline: EventoTL[];
 }
 
@@ -255,15 +191,8 @@ const FUNCIONARIO: HomeFuncionario = {
     chips: [
       { icon: "clock", texto: "Turno hoy 20:00", tono: "acc" },
       { icon: "send", texto: "1 oferta pendiente", tono: "warn" },
-      { icon: "graduation", texto: "Habilitación 75%", tono: "info" },
+      { icon: "plane", texto: "12 días de feriado legal", tono: "info" },
     ],
-  },
-  guia: {
-    ocurre: "Tenés un turno noche hoy 20:00 y 1 oferta de cobertura pendiente.",
-    hacer: "Respondé la oferta: aceptar o rechazar.",
-    recomienda: "Aceptar suma +1 libre compensatorio y tu carga sigue equilibrada.",
-    riesgo: "Si no respondés en 2 h, la oferta pasa al siguiente candidato.",
-    siguiente: "Si aceptás, tu Jefatura confirma el turno.",
   },
   proximoTurno: { fecha: "Hoy", hora: "20:00", unidad: "UCI", tipo: "Noche", horas: 12, en: "empieza en 6 h" },
   oferta: {
@@ -279,12 +208,11 @@ const FUNCIONARIO: HomeFuncionario = {
     mensaje: "Tu carga está equilibrada este mes.",
     tono: "good",
   },
-  desarrollo: { plan: "Habilitación UCI", progreso: 75, nota: "Falta la validación final de tu Jefatura." },
   timeline: [
     { hora: "Hoy 20:00", icon: "pulse", texto: "Turno noche · UCI", meta: "12 h", tono: "acc", cuando: "futuro" },
     { hora: "Mañana", icon: "check", texto: "Libre", tono: "good", cuando: "futuro" },
     { hora: "Vie", icon: "calendar", texto: "Turno largo · UCI", meta: "12 h", tono: "info", cuando: "futuro" },
-    { hora: "Mié próx.", icon: "shield", texto: "Vence reevaluación RCP", tono: "warn", cuando: "futuro" },
+    { hora: "Sáb", icon: "check", texto: "Libre", tono: "good", cuando: "futuro" },
   ],
 };
 
@@ -292,9 +220,7 @@ const FUNCIONARIO: HomeFuncionario = {
 export interface HomeAdmin {
   tipo: "administrador";
   narrativa: Narrativa;
-  guia: GuiaNex;
   salud: { icon: IconName; label: string; valor: string; estado: Tono; nota: string }[];
-  nex: NexInsight;
   timeline: EventoTL[];
 }
 
@@ -311,31 +237,16 @@ const ADMINISTRADOR: HomeAdmin = {
       { icon: "users", texto: "48 usuarios activos", tono: "acc" },
     ],
   },
-  guia: {
-    ocurre: "Cambiaste el umbral de RCP (30 → 45 días); se está propagando.",
-    hacer: "Revisá las reevaluaciones afectadas por el cambio.",
-    recomienda: "2 personas quedan “por vencer”: conviene avisar a sus jefaturas.",
-    riesgo: "Si no se revisa, podrían caducar habilitaciones sin aviso.",
-    siguiente: "Se notifica a las jefaturas y se recalculan las alertas.",
-  },
   salud: [
     { icon: "settings", label: "Reglas activas", valor: "12", estado: "good", nota: "2 propagándose" },
-    { icon: "sparkles", label: "Pesos NEX", valor: "OK", estado: "good", nota: "editado hace 2 h" },
+    { icon: "settings", label: "Reglas de dotación", valor: "OK", estado: "good", nota: "editado hace 2 h" },
     { icon: "swap", label: "Integración RRHH", valor: "En línea", estado: "good", nota: "sync 08:00" },
     { icon: "shield", label: "Reevaluaciones", valor: "88%", estado: "warn", nota: "al día" },
   ],
-  nex: {
-    titulo: "Revisá el umbral de RCP que cambiaste",
-    razon:
-      "Subiste el umbral de reevaluación de RCP de 30 a 45 días. Con este cambio, 2 personas quedan marcadas como “por vencer” a partir de hoy.",
-    accion: "Ver reevaluaciones afectadas",
-    ruta: "/administracion",
-    impacto: ["2 personas por vencer", "Alertas recalculadas", "Sin bloqueo de habilitación"],
-  },
   timeline: [
     { hora: "08:55", icon: "user-plus", texto: "Alta de usuario: p.ramirez", meta: "Jefatura · UCI", tono: "info", cuando: "pasado" },
     { hora: "08:40", icon: "settings", texto: "Umbral RCP: 30 → 45 días", meta: "propagó a alertas", tono: "warn", cuando: "pasado" },
-    { hora: "08:22", icon: "sparkles", texto: "Peso Costo NEX: 25 → 20", meta: "re-ordena recomendaciones", tono: "acc", cuando: "pasado" },
+    { hora: "08:22", icon: "settings", texto: "Umbral de descanso: 12 → 11 h", meta: "propaga a mallas", tono: "acc", cuando: "pasado" },
   ],
 };
 
@@ -352,11 +263,9 @@ export interface ColaItem {
 export interface HomeGestion {
   tipo: "gestion";
   narrativa: Narrativa;
-  guia: GuiaNex;
   cola: ColaItem[];
   pulso: LiveStat[];
   timeline: EventoTL[];
-  nex: NexInsight;
 }
 
 const GESTION: HomeGestion = {
@@ -365,22 +274,15 @@ const GESTION: HomeGestion = {
     nombre: "Nadia",
     contexto: "Gestión Central de Dotación",
     frase: "Tenés 3 solicitudes de cobertura en cola; 1 es de UCI para esta noche.",
-    foco: "NEX ya ordenó a quién contactar primero.",
+    foco: "La cola ya está priorizada para contactar.",
     chips: [
       { icon: "swap", texto: "3 en cola", tono: "crit" },
       { icon: "clock", texto: "1 esperando Jefatura", tono: "warn" },
       { icon: "check", texto: "Tasa aceptación 72%", tono: "good" },
     ],
   },
-  guia: {
-    ocurre: "La Jefatura de UCI solicitó cubrir el turno noche de hoy (20:00).",
-    hacer: "Contactá al #1 del Índice NEX y registrá su respuesta.",
-    recomienda: "Camila F. — apoyo habilitado, libre y sin costo extra.",
-    riesgo: "Si nadie acepta, la brecha se escala y la unidad abre bajo dotación.",
-    siguiente: "Si acepta, se envía a la Jefatura para su confirmación final.",
-  },
   cola: [
-    { unidad: "UCI", turno: "Noche · hoy 20:00", fecha: "falta 1", jefatura: "José M.", estado: "Por contactar", detalle: "NEX sugiere a Camila F. (#1)", tono: "crit" },
+    { unidad: "UCI", turno: "Noche · hoy 20:00", fecha: "falta 1", jefatura: "José M.", estado: "Por contactar", detalle: "Primero en la lista: Camila F.", tono: "crit" },
     { unidad: "Urgencias", turno: "Largo · mañana 08:00", fecha: "falta 1", jefatura: "José M.", estado: "Contactando", detalle: "Rodrigo P. · llamado en curso (2/4)", tono: "warn" },
     { unidad: "Pabellón", turno: "Largo · sábado", fecha: "falta 1", jefatura: "Ana T.", estado: "Esperando Jefatura", detalle: "Sofía D. aceptó · pendiente confirmación", tono: "info" },
   ],
@@ -396,74 +298,8 @@ const GESTION: HomeGestion = {
     { hora: "21:05", icon: "check", texto: "Sofía D. aceptó · Pabellón", meta: "enviado a Jefatura", tono: "good", cuando: "pasado" },
     { hora: "20:40", icon: "user", texto: "Marta R. pidió 'otra eventualidad'", meta: "en vacaciones esta semana", tono: "info", cuando: "pasado" },
   ],
-  nex: {
-    titulo: "Contactá a Camila F. para la UCI",
-    razon:
-      "Es la #1 del Índice NEX para este turno: personal de apoyo habilitado en UCI, libre esta noche y sin costo de hora extra. Si rechaza, seguí con Rodrigo P. (#2).",
-    confianza: 92,
-    accion: "Abrir y contactar",
-    ruta: "/coberturas",
-    impacto: ["Cubre la brecha crítica", "Sin hora extra", "Trazabilidad del contacto"],
-    alternativas: "el ranking completo",
-  },
 };
 
-/* --------- NEX copiloto permanente (dock global en toda la app) -------- */
-export interface Copiloto {
-  estado: string; // etiqueta corta del foco actual
-  mensaje: string; // qué ocurre, una línea
-  sugerencia: string; // qué recomienda NEX
-  cta: string;
-  ruta: string;
-  tono: Tono;
-}
-
-const COPILOTO: Record<Perfil, Copiloto> = {
-  jefatura: {
-    estado: "1 brecha crítica",
-    mensaje: "La UCI abre la noche con 1 enfermera menos (20:00).",
-    sugerencia: "Solicitá la cobertura a Gestión Central — NEX sugiere a Camila F. (92).",
-    cta: "Solicitar cobertura",
-    ruta: "/brechas",
-    tono: "crit",
-  },
-  gestion: {
-    estado: "3 solicitudes en cola",
-    mensaje: "La Jefatura de UCI pidió cubrir el turno noche de hoy (20:00).",
-    sugerencia: "Contactá a Camila F. — #1 del Índice NEX, apoyo habilitado y libre.",
-    cta: "Abrir cobertura",
-    ruta: "/coberturas",
-    tono: "crit",
-  },
-  subdireccion: {
-    estado: "Patrón detectado",
-    mensaje: "El ausentismo en UCI creció 18% por tercer mes.",
-    sugerencia: "Sumá 1 cupo estable a la malla: −40% hora extra proyectada.",
-    cta: "Ver análisis",
-    ruta: "/analitica",
-    tono: "warn",
-  },
-  funcionario: {
-    estado: "1 oferta pendiente",
-    mensaje: "Tenés un turno noche hoy 20:00 y una oferta esperando.",
-    sugerencia: "Aceptá dentro de 2 h para no perder el +1 libre compensatorio.",
-    cta: "Responder",
-    ruta: "/coberturas",
-    tono: "acc",
-  },
-  administrador: {
-    estado: "2 reglas propagándose",
-    mensaje: "Cambiaste el umbral de RCP (30 → 45 días).",
-    sugerencia: "Revisá 2 reevaluaciones que quedan “por vencer”.",
-    cta: "Revisar",
-    ruta: "/administracion",
-    tono: "info",
-  },
-};
-
-export function getCopiloto(perfil: Perfil): Copiloto {
-  return COPILOTO[perfil] ?? COPILOTO.jefatura;
-}
 
 export type HomeData = HomeJefatura | HomeGestion | HomeSubdireccion | HomeFuncionario | HomeAdmin;
 

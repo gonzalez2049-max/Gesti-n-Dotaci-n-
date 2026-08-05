@@ -1,4 +1,4 @@
-import type { NexRec, PlannerPersona, PlannerRequerido, Turno } from "@nexshift/contracts";
+import type { PlannerPersona, PlannerRequerido, Turno } from "@nexshift/contracts";
 
 export const MESES = [
   "enero", "febrero", "marzo", "abril", "mayo", "junio",
@@ -48,7 +48,7 @@ export function primerDow(year: number, month: number): number {
 }
 
 /** Ausencias de ejemplo (vacaciones/licencias) que crean déficits reales
- *  para demostrar alertas y recomendaciones NEX. [díaInicio, díaFin] 0-based. */
+ *  para demostrar alertas y déficits. [díaInicio, díaFin] 0-based. */
 const AUSENCIAS: Record<string, [number, number]> = {
   f1: [3, 7], // Ana G. · UCI
   f4: [14, 18], // Elena R. · UCI
@@ -104,41 +104,6 @@ export function turnosDelMes(celdas: Turno[] | undefined): number {
 }
 export function nochesDelMes(celdas: Turno[] | undefined): number {
   return (celdas ?? []).filter((t) => t === "noche").length;
-}
-
-/** Recomendaciones NEX para cubrir un déficit de (día, turno) — en tiempo real. */
-export function nexRecs(
-  personas: PlannerPersona[],
-  grid: Record<string, Turno[]>,
-  dia: number,
-  _turno: "largo" | "noche",
-): NexRec[] {
-  const recs: NexRec[] = [];
-  const libres = personas.filter((p) => grid[p.id]?.[dia] === "libre");
-  const conCarga = libres
-    .map((p) => ({ p, carga: turnosDelMes(grid[p.id]), hab: p.habilitado }))
-    .sort((a, b) => a.carga - b.carga);
-
-  for (const { p, carga, hab } of conCarga) {
-    if (!hab) continue; // elegibilidad dura: no habilitados no aparecen
-    const cargaScore = Math.max(0, 100 - carga * 4);
-    const apoyo = p.equipo === "Apoyo";
-    const esHoraExtra = carga >= 15;
-    recs.push({
-      id: p.id,
-      tipo: esHoraExtra ? "horaExtra" : apoyo ? "reemplazo" : "reasignacion",
-      nombre: p.nombre,
-      detalle: esHoraExtra
-        ? `Hora extra · ${carga} turnos este mes`
-        : apoyo
-          ? `Equipo de apoyo · ${carga} turnos · sin costo extra`
-          : `${p.equipo} · ${carga} turnos · reasignación`,
-      score: Math.round((apoyo ? 8 : esHoraExtra ? -10 : 0) + cargaScore * 0.9 + (hab ? 8 : 0)),
-      costoTono: esHoraExtra ? "warn" : "good",
-    });
-  }
-  recs.sort((a, b) => b.score - a.score);
-  return recs.slice(0, 4);
 }
 
 export const SHORT: Record<Turno, string> = {

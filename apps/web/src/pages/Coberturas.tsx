@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { getCandidatos } from "@/api/api";
 import { PageHead, Skeleton } from "@/components/kit";
 import { Icon } from "@/components/icons";
-import { GuiaNexBar } from "@/pages/home/parts";
 import { useToast } from "@/components/Toast";
 import type { CandidatoNex } from "@nexshift/contracts";
 
@@ -65,7 +64,7 @@ export function Coberturas() {
       addLog({ actor: "Gestión Central", titulo: "Escalada a Coordinación", detalle: "Sin candidatos elegibles disponibles", tono: "crit" });
     } else {
       setPhase("contactar");
-      addLog({ actor: "Gestión Central", titulo: `Sigue con ${quedan[0].nombre}`, detalle: "Siguiente en el Índice NEX", tono: "warn" });
+      addLog({ actor: "Gestión Central", titulo: `Sigue con ${quedan[0].nombre}`, detalle: "Siguiente de la lista", tono: "warn" });
     }
     toast(tipo === "rechazo" ? "Rechazo registrado · pasa al siguiente" : "Registrado para otra eventualidad");
   };
@@ -94,24 +93,14 @@ export function Coberturas() {
     setLog([{ hora: hm(0), actor: "Jefatura", titulo: "Solicitud de cobertura", detalle: "UCI · Noche · hoy 20:00 · falta 1", tono: "crit" }]);
   };
 
-  const guia = {
-    ocurre: "La Jefatura de UCI solicitó cubrir el turno noche de hoy (20:00).",
-    hacer: "Contactá al #1 del Índice NEX y registrá su respuesta.",
-    recomienda: `Empezar por ${data?.[0]?.nombre ?? "el #1"} — apoyo habilitado y libre.`,
-    riesgo: "Si nadie acepta, se escala y la unidad abre bajo dotación.",
-    siguiente: "Si acepta, se envía a la Jefatura para su confirmación final.",
-    cta: "Ver Índice completo",
-    ruta: "/brechas",
-  };
 
   return (
     <div className="page">
       <PageHead
         eyebrow="Coberturas · Gestión Central de Dotación"
-        title={<>Contactar y cubrir <span className="thin">— secuencial por NEX</span></>}
+        title={<>Contactar y cubrir <span className="thin">— contacto secuencial</span></>}
         actions={<button className="btn ghost" onClick={reset} type="button"><Icon name="arrow-right" size={13} /> Reiniciar</button>}
       />
-      <GuiaNexBar g={guia} />
 
       {/* solicitud + flujo */}
       <section className="panel sol" style={toneStyle("crit")}>
@@ -143,35 +132,25 @@ export function Coberturas() {
         {/* ---- consola de contacto ---- */}
         <section className="panel">
           <div className="panel-h">
-            <Icon name="sparkles" size={15} /> Índice NEX · contacto secuencial
+            <Icon name="users" size={15} /> Personal a contactar · secuencial
           </div>
 
           {isLoading && <div style={{ display: "grid", gap: 8 }}>{[0, 1, 2].map((i) => <Skeleton key={i} h={64} />)}</div>}
 
           {phase === "contactar" && (
             <div className="foco-recos" style={{ margin: 0 }}>
-              {disponibles.map((c, i) => {
-                const t: Tone = c.score >= 80 ? "good" : "warn";
-                return (
-                  <div className={`cand ${i === 0 ? "best" : ""}`} key={c.id} style={toneStyle(t)}>
-                    <span className="cand-rank">{i + 1}</span>
-                    <div className="cand-info">
-                      <div className="cand-name">
-                        {c.nombre}
-                        {i === 0 && <span className="cand-badge">NEX recomienda</span>}
-                        {c.alerta && <span className="chip warn" style={{ marginLeft: 2 }}>{c.alerta}</span>}
-                      </div>
-                      <div className="cand-det">{c.tipoCobertura} · {c.razon} · {c.costo}</div>
-                    </div>
-                    <div className="cand-score" style={{ gap: 10 }}>
-                      <div className="cand-bar"><span style={{ width: `${c.score}%` }} /></div>
-                      <button className={`btn ${i === 0 ? "prim" : "ghost"}`} style={{ padding: "7px 12px", fontSize: 12 }} onClick={() => contactar(c)} type="button">
-                        <Icon name="send" size={13} /> Contactar
-                      </button>
-                    </div>
+              {disponibles.map((c, i) => (
+                <div className="cand" key={c.id}>
+                  <span className="cand-rank">{i + 1}</span>
+                  <div className="cand-info">
+                    <div className="cand-name">{c.nombre}</div>
+                    <div className="cand-det">{c.tipoCobertura} · {c.costo}</div>
                   </div>
-                );
-              })}
+                  <button className="btn prim" style={{ padding: "7px 12px", fontSize: 12 }} onClick={() => contactar(c)} type="button">
+                    <Icon name="send" size={13} /> Contactar
+                  </button>
+                </div>
+              ))}
             </div>
           )}
 

@@ -1,7 +1,7 @@
 import { Icon } from "@/components/icons";
 import { Sparkline } from "@/components/Charts";
 import type { HomeSubdireccion as T } from "@/data/home";
-import { GuiaNexBar, NarrativaHead, NexPanel, RedMap, Timeline, toneStyle } from "./parts";
+import { NarrativaHead, RedMap, Timeline, toneStyle } from "./parts";
 
 const semTone = (s: string) => (s === "critico" ? "crit" : s === "riesgo" ? "warn" : s === "exceso" ? "info" : "good");
 
@@ -10,9 +10,8 @@ export function HomeSubdireccion({ d }: { d: T }) {
   return (
     <div className="page home-sub">
       <NarrativaHead n={d.narrativa} />
-      <GuiaNexBar g={d.guia} />
 
-      <div className="strat">
+      <div className="strat strat-solo">
         <section className="panel mapwrap">
           <div className="panel-h">
             <Icon name="grid" size={15} /> Mapa de la red
@@ -29,8 +28,6 @@ export function HomeSubdireccion({ d }: { d: T }) {
             ))}
           </div>
         </section>
-
-        <NexPanel nex={d.nex} />
       </div>
 
       <div className="focorow">

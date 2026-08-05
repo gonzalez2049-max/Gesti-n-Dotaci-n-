@@ -1,16 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@/components/icons";
 import type { HomeGestion as T } from "@/data/home";
-import { GuiaNexBar, LiveStatRow, NarrativaHead, NexPanel, Timeline, toneStyle } from "./parts";
+import { LiveStatRow, NarrativaHead, Timeline, toneStyle } from "./parts";
 
 export function HomeGestion({ d }: { d: T }) {
   const navigate = useNavigate();
   return (
     <div className="page home-gestion">
       <NarrativaHead n={d.narrativa} />
-      <GuiaNexBar g={d.guia} />
 
-      <div className="ops">
+      <div className="ops ops-solo">
         <section className="panel">
           <div className="panel-h">
             <Icon name="swap" size={15} /> Cola de solicitudes
@@ -38,8 +37,6 @@ export function HomeGestion({ d }: { d: T }) {
             ))}
           </div>
         </section>
-
-        <NexPanel nex={d.nex} />
       </div>
 
       <LiveStatRow stats={d.pulso} />

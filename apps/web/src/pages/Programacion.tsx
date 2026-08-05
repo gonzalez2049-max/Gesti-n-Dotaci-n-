@@ -14,7 +14,6 @@ import {
   diasDelMes,
   generarGrid,
   horarioTurno,
-  nexRecs,
   nochesDelMes,
   releva09,
   turnoDe,
@@ -31,7 +30,7 @@ const cloneGrid = (g: Record<string, Turno[]>) => Object.fromEntries(Object.entr
 export function Programacion() {
   const toast = useToast();
   const { profile } = useApp();
-  const soloLectura = profile === "funcionario";
+  const soloLectura = profile === "funcionario" || profile === "subdireccion";
   const { data } = useQuery({ queryKey: ["planner"], queryFn: getPlanner });
 
   const now = new Date();
@@ -45,7 +44,6 @@ export function Programacion() {
   const [turno, setTurno] = useState("todos");
   const [q, setQ] = useState("");
   const [selPersona, setSelPersona] = useState<string | null>(null);
-  const [selDef, setSelDef] = useState<{ day: number; turno: "largo" | "noche" } | null>(null);
   const [edit, setEdit] = useState<{ p: string; d: number; x: number; y: number } | null>(null);
   const [pubV, setPubV] = useState(0);
 
@@ -59,7 +57,6 @@ export function Programacion() {
     if (!data) return;
     if (!cache.current[monthKey]) cache.current[monthKey] = generarGrid(data.personas, year, month);
     setGrid(cache.current[monthKey]);
-    setSelDef(null);
     setWin(0);
   }, [data, monthKey, year, month]);
 
@@ -126,7 +123,6 @@ export function Programacion() {
     return c;
   }, [viewGrid, unitIds, req, n]);
 
-  const recs = selDef ? nexRecs(unitPersonas, grid, selDef.day, selDef.turno) : [];
   const persona = selPersona ? personas.find((p) => p.id === selPersona) : null;
 
   const nextMonth = (dir: number) => {
@@ -166,7 +162,7 @@ export function Programacion() {
       </div>
 
       <div className="pltoolbar" style={{ marginTop: 0 }}>
-        <FilterSelect label="Unidad" value={unidad} onChange={(v) => { setUnidad(v); setSelDef(null); }} options={unidades} />
+        <FilterSelect label="Unidad" value={unidad} onChange={setUnidad} options={unidades} />
         <FilterSelect label="Estamento" value={estamento} onChange={setEstamento} options={["todos", ...estamentos]} />
         <FilterSelect label="Turno" value={turno} onChange={setTurno} options={["todos", "A", "B", "C", "D", "Apoyo"]} />
         <span className="spacer" style={{ flex: 1 }} />
@@ -180,7 +176,7 @@ export function Programacion() {
           {pub.current[monthKey] ? "● Malla publicada" : "● Borrador"}
         </span>
         <span style={{ flex: 1 }} />
-        <span className="plhint">{soloLectura ? "Vista de tu malla · solo lectura" : "Toca una celda para editar · arrastra para mover · toca la cobertura roja para ver NEX"}</span>
+        <span className="plhint">{soloLectura ? "Vista de la malla · solo lectura" : "Toca una celda para editar · arrastra para mover un turno"}</span>
       </div>
 
       <div className="pl-console">
@@ -193,9 +189,8 @@ export function Programacion() {
                   {days.map((d) => {
                     const dow = new Date(year, month, d + 1).getDay();
                     const wknd = dow === 0 || dow === 6;
-                    const sel = selDef?.day === d;
                     return (
-                      <th key={d} className={`dayhead${wknd ? " wknd" : ""}${sel ? " sel" : ""}`}>
+                      <th key={d} className={`dayhead${wknd ? " wknd" : ""}`}>
                         <div className="dl">{DOW[dow]}</div>
                         <div className="dn">{d + 1}</div>
                       </th>
@@ -207,7 +202,7 @@ export function Programacion() {
                 {visibles.map((p) => (
                   <tr key={p.id}>
                     <td className="namecol">
-                      <div className="namecell" onClick={() => { setSelDef(null); setSelPersona(p.id); }}>
+                      <div className="namecell" onClick={() => setSelPersona(p.id)}>
                         <span className="av2">{p.iniciales}</span>
                         <span className="nm2">{p.nombre.split(" ")[0]} {p.nombre.split(" ")[1]?.[0]}.<small>{p.estamento} · <TurnoBadge p={p} /></small></span>
                       </div>
@@ -220,7 +215,7 @@ export function Programacion() {
                       return (
                         <td className="pltd" key={d}>
                           <button
-                            className={`plcell ${t}${wknd ? " wknd" : ""}${changed(p.id, d) ? " changed" : ""}${selDef?.day === d ? " colsel" : ""}`}
+                            className={`plcell ${t}${wknd ? " wknd" : ""}${changed(p.id, d) ? " changed" : ""}`}
                             draggable={editable && t !== "libre"}
                             onDragStart={(e) => e.dataTransfer.setData("text/plain", `${p.id}|${d}`)}
                             onDragOver={(e) => { if (editable) { e.preventDefault(); e.currentTarget.classList.add("dragover"); } }}
@@ -252,12 +247,10 @@ export function Programacion() {
                       const cnt = turno === "largo" ? cov.largo : cov.noche;
                       const def = turno === "largo" ? cov.defLargo : cov.defNoche;
                       const cls = def > 0 ? "def" : def < 0 ? "exc" : "ok";
-                      const sel = selDef?.day === d && selDef.turno === turno;
                       return (
                         <td key={d} className="pltd">
                           <div
-                            className={`covcell ${cls}${sel ? " sel" : ""}`}
-                            onClick={() => !soloLectura && def !== 0 && (setSelPersona(null), setSelDef({ day: d, turno }))}
+                            className={`covcell ${cls}`}
                             title={def > 0 ? `Déficit ${def}` : def < 0 ? `Exceso ${-def}` : "OK"}
                           >
                             {cnt}
@@ -288,36 +281,7 @@ export function Programacion() {
           </div>
         </div>
 
-        {selDef && (
-          <aside className="pl-nex">
-            <div className="pl-nex-head">
-              <div>
-                <div className="eyebrow">NEX · reemplazos</div>
-                <div className="pl-nex-t">{unidad} · día {selDef.day + 1} · {selDef.turno === "largo" ? "Largo" : "Noche"}</div>
-              </div>
-              <button className="dclose" onClick={() => setSelDef(null)} aria-label="Cerrar" type="button">✕</button>
-            </div>
-            <span className="chip crit">Falta {Math.max(0, (selDef.turno === "largo" ? req.largo : req.noche) - (selDef.turno === "largo" ? coberturaDia(grid, unitIds, selDef.day, req).largo : coberturaDia(grid, unitIds, selDef.day, req).noche))}</span>
-            {recs.length === 0 ? (
-              <div className="pl-nex-empty">Sin personal habilitado y libre ese día. Probá otro día o revisá la habilitación.</div>
-            ) : (
-              <div className="pl-nex-list">
-                {recs.map((r) => (
-                  <div className="nexrec" key={r.id}>
-                    <span className={`rs${r.tipo === "horaExtra" ? " warn" : ""}`}>{r.score}</span>
-                    <div>
-                      <div style={{ fontSize: 12.5, fontWeight: 600 }}>{r.nombre}</div>
-                      <div style={{ fontSize: 10.5, color: "var(--ink2)" }}>{r.detalle}</div>
-                    </div>
-                    <button className="btn prim" style={{ padding: "6px 10px", fontSize: 11.5 }} onClick={() => { setCell(r.id, selDef.day, selDef.turno); toast(`${r.nombre.split(" ")[0]} asignado/a`); }} type="button">Asignar</button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </aside>
-        )}
-
-        {!selDef && persona && (
+        {persona && (
           <aside className="pl-nex pl-side">
             <div className="pl-nex-head">
               <div>

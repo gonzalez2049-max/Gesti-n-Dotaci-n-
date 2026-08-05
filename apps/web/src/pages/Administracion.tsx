@@ -1,15 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { getConfig, setPesoNex, setRegla } from "@/api/api";
+import { getConfig, setRegla } from "@/api/api";
 import { PageHead, Skeleton } from "@/components/kit";
 import { Icon, type IconName } from "@/components/icons";
-import { GuiaNexBar } from "@/pages/home/parts";
 import { useToast } from "@/components/Toast";
 
 const SEC_TITLE: Record<string, { eyebrow: string; title: string; icon: IconName }> = {
   usuarios: { eyebrow: "Administración · Usuarios", title: "Usuarios y acceso", icon: "users" },
   permisos: { eyebrow: "Administración · Permisos", title: "Permisos por rol", icon: "shield" },
-  config: { eyebrow: "Administración · Configuración", title: "Reglas y pesos NEX", icon: "settings" },
+  config: { eyebrow: "Administración · Configuración", title: "Reglas de dotación", icon: "settings" },
   auditoria: { eyebrow: "Administración · Auditoría", title: "Registro de actividad", icon: "list" },
   integraciones: { eyebrow: "Administración · Integraciones", title: "Servicios conectados", icon: "link" },
 };
@@ -41,23 +40,9 @@ export function Administracion() {
     mutationFn: ({ clave, valor }: { clave: string; valor: number }) => setRegla(clave, valor),
     onSuccess: () => { toast("Cambio auditado y propagado"); qc.invalidateQueries({ queryKey: ["config"] }); },
   });
-  const peso = useMutation({
-    mutationFn: ({ clave, valor }: { clave: string; valor: number }) => setPesoNex(clave, valor),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["config"] }); qc.invalidateQueries({ queryKey: ["cand"] }); },
-  });
-
-  const guia = {
-    ocurre: "2 cambios de reglas propagándose; sin incidencias abiertas.",
-    hacer: "Gestioná usuarios, permisos y configuración; todo queda auditado.",
-    recomienda: "Revisá el umbral de RCP: deja 2 reevaluaciones por vencer.",
-    riesgo: "Un cambio mal configurado se propaga a todos los módulos.",
-    siguiente: "Cada cambio queda en la auditoría append-only.",
-  };
-
   return (
     <div className="page">
       <PageHead eyebrow={meta.eyebrow} title={<>{meta.title}</>} actions={<span className="chip acc">Sesión: Administrador</span>} />
-      <GuiaNexBar g={guia} />
 
       {isLoading && <Skeleton h={200} style={{ marginTop: 14 }} />}
       {data && (
@@ -117,17 +102,6 @@ export function Administracion() {
                   </div>
                 ))}
               </div>
-              <div className="foco-recolab" style={{ marginTop: 18 }}>Pesos del Índice NEX</div>
-              <div style={{ fontSize: 12, color: "var(--ink3)", margin: "6px 0 10px" }}>Re-ordenan las recomendaciones de cobertura; no cambian la elegibilidad.</div>
-              {data.pesosNex.map((p) => (
-                <div key={p.clave} style={{ marginBottom: 12 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12.5, marginBottom: 3 }}>
-                    <span>{p.clave}</span>
-                    <span style={{ fontFamily: "var(--font-mono)", color: "var(--accent-ink)", fontWeight: 600 }}>{p.valor}</span>
-                  </div>
-                  <input className="range" type="range" min={0} max={40} defaultValue={p.valor} onChange={(e) => peso.mutate({ clave: p.clave, valor: Number(e.target.value) })} />
-                </div>
-              ))}
             </>
           )}
 

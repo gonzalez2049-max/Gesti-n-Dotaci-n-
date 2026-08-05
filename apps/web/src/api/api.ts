@@ -4,7 +4,6 @@ import type {
   InicioResumen,
   MallaSemana,
   Perfil,
-  PlanDesarrollo,
   PlannerPersona,
   PlannerRequerido,
   SolicitudAusencia,
@@ -48,7 +47,7 @@ export function getBrechas(f: FiltroBrechas = {}): Promise<Brecha[]> {
 export const getBrecha = (id: string): Promise<Brecha | undefined> =>
   wait(db.brechas.find((b) => b.id === id));
 
-/* ---- Coberturas (Índice NEX) ---- */
+/* ---- Coberturas ---- */
 export const getCandidatos = (brechaId: string): Promise<CandidatoNex[]> => {
   const base = db.candidatos[brechaId] ?? db.candidatos.b1;
   const pesos = Object.fromEntries(db.pesosNex.map((p) => [p.clave.toLowerCase(), p.valor]));
@@ -120,21 +119,6 @@ export const getSolicitudes = (): Promise<SolicitudAusencia[]> => wait(db.solici
 export function responderSolicitud(id: string, aprobar: boolean): Promise<void> {
   const s = db.solicitudes.find((x) => x.id === id);
   if (s) s.estado = aprobar ? "aprobada" : "rechazada";
-  return wait(undefined);
-}
-
-/* ---- Talento ---- */
-export const getMatriz = () => wait(db.competencias);
-export const getPlan = (): Promise<PlanDesarrollo> => wait(db.plan);
-export function avanzarPlan(): Promise<void> {
-  const next = db.plan.acciones.find((a) => a.estado !== "done");
-  if (next) {
-    next.estado = "done";
-    const done = db.plan.acciones.filter((a) => a.estado === "done").length;
-    db.plan.progreso = Math.round((done / db.plan.acciones.length) * 100);
-    const following = db.plan.acciones.find((a) => a.estado === "pend");
-    if (following) following.estado = "curso";
-  }
   return wait(undefined);
 }
 

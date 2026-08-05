@@ -3,7 +3,7 @@ import { Icon } from "@/components/icons";
 import { Ring } from "@/components/Ring";
 import { useToast } from "@/components/Toast";
 import type { HomeFuncionario as T } from "@/data/home";
-import { GuiaNexBar, NarrativaHead, Timeline, toneStyle } from "./parts";
+import { NarrativaHead, Timeline, toneStyle } from "./parts";
 
 export function HomeFuncionario({ d }: { d: T }) {
   const toast = useToast();
@@ -12,7 +12,6 @@ export function HomeFuncionario({ d }: { d: T }) {
   return (
     <div className="page home-fx">
       <NarrativaHead n={d.narrativa} />
-      <GuiaNexBar g={d.guia} />
 
       <div className="fx">
         <section className="panel turno-hero" style={toneStyle("acc")}>
@@ -97,18 +96,6 @@ export function HomeFuncionario({ d }: { d: T }) {
 
         <Timeline eventos={d.timeline} titulo="Tu semana" />
       </div>
-
-      <section className="panel desarrollo" style={toneStyle("info")}>
-        <div className="dev-row">
-          <span className="dev-ic"><Icon name="graduation" size={18} /></span>
-          <div className="dev-main">
-            <div className="dev-title">{d.desarrollo.plan}</div>
-            <div className="dev-note">{d.desarrollo.nota}</div>
-            <div className="dev-bar"><span style={{ width: `${d.desarrollo.progreso}%` }} /></div>
-          </div>
-          <b className="dev-pct">{d.desarrollo.progreso}%</b>
-        </div>
-      </section>
     </div>
   );
 }

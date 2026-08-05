@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { cerrarBrecha, enviarOferta, getBrechas, getCandidatos, type FiltroBrechas } from "@/api/api";
+import { cerrarBrecha, enviarOferta, getBrechas, type FiltroBrechas } from "@/api/api";
 import { orbClass } from "@/components/ui";
 import { PageHead, Segmented, Skeleton } from "@/components/kit";
 import { Icon } from "@/components/icons";
-import { GuiaNexBar } from "@/pages/home/parts";
 import { useToast } from "@/components/Toast";
 import { useApp } from "@/app/store";
 import type { Brecha } from "@nexshift/contracts";
@@ -27,7 +26,6 @@ export function Brechas() {
 
   const filtros: FiltroBrechas = { q: "", severidad: sev };
   const { data: brechas, isLoading } = useQuery({ queryKey: ["brechas", filtros], queryFn: () => getBrechas(filtros) });
-  const candidatos = useQuery({ queryKey: ["cand", sel?.id], queryFn: () => getCandidatos(sel!.id), enabled: !!sel });
 
   // selecciona la primera brecha automáticamente para llenar el panel de detalle
   useEffect(() => {
@@ -54,18 +52,6 @@ export function Brechas() {
   const criticas = brechas?.filter((b) => b.severidad === "critica").length ?? 0;
   const enGestion = brechas?.filter((b) => b.estado === "enGestion" || b.estado === "escalada").length ?? 0;
 
-  const guia = {
-    ocurre: criticas > 0 ? `${criticas} brecha${criticas > 1 ? "s" : ""} crítica${criticas > 1 ? "s" : ""} abierta${criticas > 1 ? "s" : ""} ahora.` : "Sin brechas críticas en este momento.",
-    hacer: soloLectura
-      ? "Revisá el estado de las brechas y a quién afectan."
-      : esGestion
-        ? "Abrí la más crítica y contactá al recomendado en Coberturas."
-        : "Seleccioná la más crítica y solicitá la cobertura a Gestión Central.",
-    recomienda: "El Índice NEX ya priorizó reemplazos habilitados y con menor carga.",
-    riesgo: "Si no se cubre, el turno abre bajo dotación crítica.",
-    siguiente: esGestion ? "En Coberturas contactás secuencialmente hasta cubrir." : "Gestión Central contacta y, si aceptan, la Jefatura confirma.",
-    ...(esGestion ? { cta: "Ir a Coberturas", ruta: "/coberturas" } : {}),
-  };
 
   return (
     <div className="page">
@@ -73,7 +59,6 @@ export function Brechas() {
         eyebrow="Brechas · consola de triage"
         title={<>Dónde falta dotación <span className="thin">— por riesgo</span></>}
       />
-      <GuiaNexBar g={guia} />
 
       <div className="pl-stats" style={{ marginTop: 12 }}>
         <span className="plstat"><b>{total}</b> abiertas</span>
@@ -136,42 +121,24 @@ export function Brechas() {
           </div>
         </section>
 
-        {/* ---- detalle + NEX ---- */}
+        {/* ---- detalle de la brecha ---- */}
         <aside className="panel triage-detail">
-          {!sel && <div className="empty" style={{ padding: 30 }}><div className="empty-w">Seleccioná una brecha para ver los reemplazos NEX.</div></div>}
+          {!sel && <div className="empty" style={{ padding: 30 }}><div className="empty-w">Seleccioná una brecha para ver el detalle.</div></div>}
           {sel && (
             <>
               <div className="panel-h">
-                <Icon name="sparkles" size={15} /> Resolver brecha
+                <Icon name="gap" size={15} /> Resolver brecha
                 <span className="ops-tag tn-crit" style={toneStyle("crit")}>{EST_LABEL[sel.estado]}</span>
               </div>
               <div className="td-title">{sel.unidad} · {sel.turno}</div>
               <div className="td-meta">{sel.fecha} · {sel.rol} · falta {sel.deficit}{sel.minutosAbierta > 0 ? ` · ${sel.minutosAbierta} min abierta` : ""}</div>
               <div className="td-causa"><Icon name="pulse" size={13} /> {sel.causa}</div>
 
-              <div className="foco-recolab" style={{ marginTop: 14 }}>Índice NEX · {esGestion ? "a quién contactar" : "posibles reemplazos"}</div>
-              <div className="foco-recos" style={{ margin: "9px 0 0" }}>
-                {candidatos.isLoading && [0, 1, 2].map((i) => <Skeleton key={i} h={52} />)}
-                {candidatos.data?.slice(0, 3).map((c, i) => {
-                  const t: Tone = c.score >= 80 ? "good" : "warn";
-                  return (
-                    <div className={`cand ${i === 0 ? "best" : ""}`} key={c.id} style={toneStyle(t)}>
-                      <span className="cand-rank">{i + 1}</span>
-                      <div className="cand-info">
-                        <div className="cand-name">
-                          {c.nombre}
-                          {c.recomendado && <span className="cand-badge">NEX recomienda</span>}
-                        </div>
-                        <div className="cand-det">{c.tipoCobertura} · {c.costo}</div>
-                      </div>
-                      <div className="cand-score">
-                        <div className="cand-bar"><span style={{ width: `${c.score}%` }} /></div>
-                        <b>{c.score}</b>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <p className="foco-desc" style={{ marginTop: 14 }}>
+                {esGestion
+                  ? "Gestioná la cobertura contactando al personal de la unidad de forma secuencial en Coberturas."
+                  : "Solicitá la cobertura a Gestión Central: ellos contactan al personal de la unidad y te devuelven la respuesta para que confirmes."}
+              </p>
 
               {soloLectura ? (
                 <div className="firma-hint" style={{ marginTop: 16 }}><Icon name="shield" size={13} /> Vista de solo lectura · la resuelven la Jefatura y Gestión Central.</div>

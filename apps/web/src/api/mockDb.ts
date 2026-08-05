@@ -146,7 +146,7 @@ export const db = {
   auditoria: [
     { hora: "08:55", area: "Estructura", accion: "Alta de usuario: p.ramirez", detalle: "Jefatura · UCI" },
     { hora: "08:40", area: "Reglas", accion: "Umbral RCP: 30 → 45 días", detalle: "propagó a alertas de reevaluación" },
-    { hora: "08:22", area: "Pesos NEX", accion: "Peso Costo: 25 → 20", detalle: "re-ordena recomendaciones" },
+    { hora: "08:22", area: "Reglas", accion: "Umbral de descanso: 12 → 11 h", detalle: "propaga a mallas" },
   ] as AuditEntry[],
 
   usuarios: [

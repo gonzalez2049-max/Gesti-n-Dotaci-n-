@@ -113,7 +113,7 @@ export function generarContenido(tipo: ReporteTipo, periodo: string): ReporteCon
         filas: [
           { k: "UCI", v: "72 h · 5 personas", tono: "warn" },
           { k: "Urgencias", v: "40 h · 3 personas" },
-          { k: "Recomendación NEX", v: "1 cupo estable reduciría ~40%", tono: "info" },
+          { k: "Recomendación BPC", v: "1 cupo estable reduciría ~40%", tono: "info" },
         ],
       };
     case "ausencias":

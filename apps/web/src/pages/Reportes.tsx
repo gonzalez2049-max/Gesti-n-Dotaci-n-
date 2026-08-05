@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { useApp } from "@/app/store";
 import { PageHead } from "@/components/kit";
 import { Icon } from "@/components/icons";
-import { GuiaNexBar } from "@/pages/home/parts";
 import { useToast } from "@/components/Toast";
 import {
   ESTADO_LABEL,
@@ -88,18 +87,10 @@ function ReportesBPC() {
     toast(`Reporte firmado y enviado a la Jefatura de ${sel.unidad}`);
   };
 
-  const guia = {
-    ocurre: `${pendientes} solicitud${pendientes === 1 ? "" : "es"} de reporte pendiente${pendientes === 1 ? "" : "s"} de las jefaturas.`,
-    hacer: "Revisá el reporte propuesto y enviálo a la Jefatura.",
-    recomienda: "NEX ya compiló los datos del período pedido.",
-    riesgo: "Si no se envía, la Jefatura no tiene evidencia para su reunión de gestión.",
-    siguiente: "La Jefatura recibe el reporte y puede pedir el siguiente.",
-  };
 
   return (
     <div className="page">
       <PageHead eyebrow="Reportes · Buenas Prácticas Clínicas" title={<>Solicitudes de las <span className="thin">jefaturas</span></>} />
-      <GuiaNexBar g={guia} />
 
       <div className="pl-stats" style={{ marginTop: 12 }}>
         <span className="plstat"><b>{items.length}</b> solicitudes</span>
@@ -185,18 +176,10 @@ function ReportesJefatura() {
     toast("Solicitud enviada a Buenas Prácticas Clínicas");
   };
 
-  const guia = {
-    ocurre: "Podés pedirle a Buenas Prácticas Clínicas el detalle de cómo se cubrió tu unidad.",
-    hacer: "Elegí el tipo de reporte y el período, y solicitalo.",
-    recomienda: "Para la reunión de gestión, pedí 'Cobertura de brechas' del mes.",
-    riesgo: "Sin reporte, no tenés evidencia del esfuerzo de cobertura.",
-    siguiente: "Buenas Prácticas Clínicas lo prepara y te lo envía acá.",
-  };
 
   return (
     <div className="page">
       <PageHead eyebrow="Reportes · Jefatura" title={<>Solicitá reportes a <span className="thin">Buenas Prácticas Clínicas</span></>} />
-      <GuiaNexBar g={guia} />
 
       <div className="triage" style={{ marginTop: 14 }}>
         <section className="panel">

@@ -3,7 +3,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSolicitudes, responderSolicitud } from "@/api/api";
 import { PageHead, Segmented, Skeleton } from "@/components/kit";
 import { Icon } from "@/components/icons";
-import { GuiaNexBar } from "@/pages/home/parts";
 import { useToast } from "@/components/Toast";
 import { useApp } from "@/app/store";
 import type { Tono } from "@/data/home";
@@ -34,13 +33,6 @@ function MisPermisos() {
     { tipo: "Vacaciones", rango: "Jue 12 – Dom 15", estado: "Pendiente", tono: "warn" },
     { tipo: "Descanso compensatorio", rango: "Sáb 7", estado: "Aprobada", tono: "good" },
   ]);
-  const guia = {
-    ocurre: "Podés pedir un permiso; tu Jefatura verá el impacto en la dotación.",
-    hacer: "Elegí el tipo y el rango de fechas, y solicitalo.",
-    recomienda: "Los permisos con más anticipación son más fáciles de aprobar.",
-    riesgo: "Si tu turno queda descubierto, se abre una cobertura.",
-    siguiente: "Tu Jefatura aprueba o rechaza y te avisa.",
-  };
   const solicitar = () => {
     setMis((m) => [{ tipo, rango: rango || "por definir", estado: "Pendiente", tono: "warn" }, ...m]);
     setMotivo(""); setRango("");
@@ -49,7 +41,6 @@ function MisPermisos() {
   return (
     <div className="page">
       <PageHead eyebrow="Mis permisos" title={<>Solicitar un <span className="thin">permiso</span></>} />
-      <GuiaNexBar g={guia} />
       <div className="triage" style={{ marginTop: 14 }}>
         <section className="panel">
           <div className="panel-h"><Icon name="plane" size={15} /> Nuevo permiso</div>
@@ -113,13 +104,6 @@ function AusenciasGestion() {
   const pendientes = (data ?? []).filter((s) => s.estado === "pendiente").length;
   const conImpacto = (data ?? []).filter((s) => s.estado === "pendiente" && s.generaBrechas > 0).length;
 
-  const guia = {
-    ocurre: `${pendientes} solicitud${pendientes === 1 ? "" : "es"} de permiso pendiente${pendientes === 1 ? "" : "s"}; ${conImpacto} generaría${conImpacto === 1 ? "" : "n"} brecha.`,
-    hacer: soloLectura ? "Revisá el impacto de cada permiso en la dotación." : "Aprobá o rechazá viendo antes el impacto en la dotación.",
-    recomienda: "NEX marca en rojo los permisos que dejan un turno bajo dotación.",
-    riesgo: "Si aprobás uno con impacto, se abre una cobertura automáticamente.",
-    siguiente: "La brecha pasa a Gestión Central para contactar reemplazo.",
-  };
 
   return (
     <div className="page">
@@ -128,7 +112,6 @@ function AusenciasGestion() {
         title={<>Permisos con <span className="thin">impacto en la dotación</span></>}
         actions={soloLectura ? undefined : <button className="btn ghost" onClick={() => toast("Licencia médica registrada · impacto inmediato")} type="button"><Icon name="plane" size={13} /> Registrar licencia</button>}
       />
-      <GuiaNexBar g={guia} />
 
       <div className="pl-stats" style={{ marginTop: 12 }}>
         <span className="plstat warn"><b>{pendientes}</b> pendientes</span>

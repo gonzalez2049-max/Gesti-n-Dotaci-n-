@@ -1,10 +1,7 @@
-import { useNavigate } from "react-router-dom";
 import { Icon } from "@/components/icons";
-import { Ring } from "@/components/Ring";
 import { Sparkline } from "@/components/Charts";
 import { saludoHora } from "@/data/home";
-import type { EventoTL, GuiaNex, Heatmap as THeatmap, LiveStat, Narrativa as TNarrativa, NexInsight, Tono, UnidadEstado } from "@/data/home";
-import type { IconName } from "@/components/icons";
+import type { EventoTL, Heatmap as THeatmap, LiveStat, Narrativa as TNarrativa, Tono, UnidadEstado } from "@/data/home";
 
 const semTono = (s: string): Tono => (s === "critico" ? "crit" : s === "riesgo" ? "warn" : s === "exceso" ? "info" : "good");
 
@@ -55,86 +52,6 @@ export function PulseLine({ tone = "good", height = 46 }: { tone?: Tono; height?
       </g>
       <circle className="ecg-dot" r="3.2" cy="23" fill="var(--tn)" />
     </svg>
-  );
-}
-
-/* ---------- guía contextual · Marco NEX de 5 preguntas ---------- */
-export function GuiaNexBar({ g }: { g: GuiaNex }) {
-  const navigate = useNavigate();
-  const pasos: { k: string; icon: IconName; txt: string; cls: string }[] = [
-    { k: "Qué ocurre", icon: "pulse", txt: g.ocurre, cls: "" },
-    { k: "Qué hacer", icon: "bolt", txt: g.hacer, cls: "do" },
-    { k: "NEX recomienda", icon: "sparkles", txt: g.recomienda, cls: "nex" },
-    { k: "Si no actúo", icon: "arrow-down", txt: g.riesgo, cls: "risk" },
-    { k: "Siguiente paso", icon: "arrow-right", txt: g.siguiente, cls: "" },
-  ];
-  return (
-    <section className="guia5" aria-label="Guía contextual NEX">
-      <div className="g5-steps">
-        {pasos.map((p, i) => (
-          <div className={`g5-step ${p.cls}`} key={i}>
-            <div className="g5-k">
-              <Icon name={p.icon} size={12} /> {p.k}
-            </div>
-            <div className="g5-t">{p.txt}</div>
-          </div>
-        ))}
-      </div>
-      {g.cta && g.ruta && (
-        <button className="btn prim g5-cta" type="button" onClick={() => navigate(g.ruta!)}>
-          <Icon name="bolt" size={14} /> {g.cta}
-        </button>
-      )}
-    </section>
-  );
-}
-
-/* ---------- panel de IA NEX ---------- */
-export function NexPanel({ nex }: { nex: NexInsight }) {
-  const navigate = useNavigate();
-  return (
-    <aside className="nex" aria-label="Recomendación NEX">
-      <div className="nex-glow" aria-hidden="true" />
-      <div className="nex-head">
-        <span className="nex-orb">
-          <Icon name="sparkles" size={15} />
-        </span>
-        <div className="nex-id">
-          NEX · Inteligencia
-          <span className="nex-think">
-            analizando <i /><i /><i />
-          </span>
-        </div>
-        {nex.confianza != null && (
-          <div className="nex-conf">
-            <Ring pct={nex.confianza} size={44} label={`${nex.confianza}`} />
-            <span>confianza</span>
-          </div>
-        )}
-      </div>
-
-      <div className="nex-reco">{nex.titulo}</div>
-      <p className="nex-razon">{nex.razon}</p>
-
-      <div className="nex-impacto">
-        {nex.impacto.map((im, i) => (
-          <span className="nex-imp" key={i}>
-            <Icon name="arrow-right" size={12} /> {im}
-          </span>
-        ))}
-      </div>
-
-      <div className="nex-actions">
-        <button className="btn prim" type="button" onClick={() => navigate(nex.ruta)}>
-          <Icon name="bolt" size={14} /> {nex.accion}
-        </button>
-        {nex.alternativas && (
-          <button className="btn ghost" type="button" onClick={() => navigate(nex.ruta)}>
-            Ver {nex.alternativas}
-          </button>
-        )}
-      </div>
-    </aside>
   );
 }
 
