@@ -16,6 +16,7 @@ import {
   generarGrid,
   nexRecs,
   nochesDelMes,
+  turnoDe,
   turnosDelMes,
 } from "@/data/planner";
 import type { PlannerPersona, Turno } from "@nexshift/contracts";
@@ -40,7 +41,7 @@ export function Programacion() {
   const [vista, setVista] = useState<Vista>("borrador");
   const [unidad, setUnidad] = useState("UCI");
   const [estamento, setEstamento] = useState("todos");
-  const [equipo, setEquipo] = useState("todos");
+  const [turno, setTurno] = useState("todos");
   const [q, setQ] = useState("");
   const [selPersona, setSelPersona] = useState<string | null>(null);
   const [selDef, setSelDef] = useState<{ day: number; turno: "largo" | "noche" } | null>(null);
@@ -64,7 +65,6 @@ export function Programacion() {
   const personas = data?.personas ?? [];
   const unidades = useMemo(() => Array.from(new Set(personas.map((p) => p.unidad))), [personas]);
   const estamentos = useMemo(() => Array.from(new Set(personas.map((p) => p.estamento))), [personas]);
-  const equipos = useMemo(() => Array.from(new Set(personas.map((p) => p.equipo))), [personas]);
   const req = data?.requerido[unidad] ?? { largo: 0, noche: 0 };
 
   const unitPersonas = personas.filter((p) => p.unidad === unidad);
@@ -72,7 +72,7 @@ export function Programacion() {
   const visibles = unitPersonas.filter(
     (p) =>
       (estamento === "todos" || p.estamento === estamento) &&
-      (equipo === "todos" || p.equipo === equipo) &&
+      (turno === "todos" || turnoDe(p) === turno) &&
       (!q || p.nombre.toLowerCase().includes(q.toLowerCase())),
   );
 
@@ -167,7 +167,7 @@ export function Programacion() {
       <div className="pltoolbar" style={{ marginTop: 0 }}>
         <FilterSelect label="Unidad" value={unidad} onChange={(v) => { setUnidad(v); setSelDef(null); }} options={unidades} />
         <FilterSelect label="Estamento" value={estamento} onChange={setEstamento} options={["todos", ...estamentos]} />
-        <FilterSelect label="Equipo" value={equipo} onChange={setEquipo} options={["todos", ...equipos]} />
+        <FilterSelect label="Turno" value={turno} onChange={setTurno} options={["todos", "A", "B", "C", "D", "Apoyo"]} />
         <span className="spacer" style={{ flex: 1 }} />
         <SearchInput value={q} onChange={setQ} placeholder="Buscar funcionario…" />
       </div>
@@ -208,7 +208,7 @@ export function Programacion() {
                     <td className="namecol">
                       <div className="namecell" onClick={() => setSelPersona(p.id)}>
                         <span className="av2">{p.iniciales}</span>
-                        <span className="nm2">{p.nombre.split(" ")[0]} {p.nombre.split(" ")[1]?.[0]}.<small>{p.estamento} · {p.equipo}</small></span>
+                        <span className="nm2">{p.nombre.split(" ")[0]} {p.nombre.split(" ")[1]?.[0]}.<small>{p.estamento} · <TurnoBadge p={p} /></small></span>
                       </div>
                     </td>
                     {days.map((d) => {
@@ -337,6 +337,12 @@ export function Programacion() {
   );
 }
 
+function TurnoBadge({ p, chip }: { p: PlannerPersona; chip?: boolean }) {
+  const t = turnoDe(p);
+  if (t === "Apoyo") return <span className={chip ? "chip" : "tbadge apoyo"}>Apoyo</span>;
+  return <span className={chip ? `chip tn-turno tn-${t}` : `tbadge t-${t}`} title={`Turno ${t}`}>Turno {t}</span>;
+}
+
 function FilterSelect({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: string[] }) {
   return (
     <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11.5, color: "var(--ink3)" }}>
@@ -365,7 +371,7 @@ function PersonaDetalle({ persona, celdas, n }: { persona: PlannerPersona; celda
     <>
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "4px 0 14px" }}>
         <span className="chip">{persona.unidad}</span>
-        <span className="chip">{persona.equipo}</span>
+        <TurnoBadge p={persona} chip />
         <span className={`chip ${persona.habilitado ? "good" : "warn"}`}>{persona.habilitado ? "Habilitado ✓" : "En proceso"}</span>
       </div>
       <div className="grid g2" style={{ gridTemplateColumns: "1fr 1fr" }}>

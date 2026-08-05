@@ -9,6 +9,13 @@ export const DOW = ["D", "L", "M", "M", "J", "V", "S"];
 /** Ciclo base de cuarto turno: Largo → Noche → Libre → Libre. */
 const CICLO: Turno[] = ["largo", "noche", "libre", "libre"];
 
+/** Los 4 turnos rotativos del cuarto turno. Cada persona pertenece a uno
+ *  (según su fase de rotación); el personal de Apoyo flota, sin turno fijo. */
+export const TURNOS = ["A", "B", "C", "D"] as const;
+export function turnoDe(p: { patronOffset: number; equipo: string }): string {
+  return p.equipo === "Apoyo" ? "Apoyo" : TURNOS[p.patronOffset % 4];
+}
+
 export function diasDelMes(year: number, month: number): number {
   return new Date(year, month + 1, 0).getDate();
 }

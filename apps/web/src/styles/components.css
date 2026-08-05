@@ -790,6 +790,49 @@ table.pl {
   color: var(--ink3);
   font-weight: 400;
 }
+.nm2 small .tbadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0 5px;
+  height: 13px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  vertical-align: baseline;
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+/* Turnos A / B / C / D del cuarto turno — cada grupo un color propio. */
+.tbadge.t-A,
+.chip.tn-A {
+  color: #4f7cff;
+  background: color-mix(in srgb, #4f7cff 14%, transparent);
+}
+.tbadge.t-B,
+.chip.tn-B {
+  color: #17a888;
+  background: color-mix(in srgb, #17a888 14%, transparent);
+}
+.tbadge.t-C,
+.chip.tn-C {
+  color: #d1820b;
+  background: color-mix(in srgb, #d1820b 14%, transparent);
+}
+.tbadge.t-D,
+.chip.tn-D {
+  color: #b25ad1;
+  background: color-mix(in srgb, #b25ad1 14%, transparent);
+}
+.tbadge.apoyo {
+  color: var(--ink3);
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--hairline);
+}
+.chip.tn-turno {
+  box-shadow: inset 0 0 0 1px currentColor;
+}
 td.pltd {
   padding: 0;
 }
