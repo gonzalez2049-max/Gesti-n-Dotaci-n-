@@ -113,11 +113,11 @@ const JEFATURA: HomeJefatura = {
   },
   guia: {
     ocurre: "La UCI queda con 1 enfermera menos en el turno noche (22:00).",
-    hacer: "Enviá la oferta al candidato recomendado.",
-    recomienda: "Camila F. — apoyo habilitado, sin costo extra (Índice NEX 92).",
+    hacer: "Solicitá la cobertura a Gestión Central.",
+    recomienda: "NEX sugiere a Camila F. — apoyo habilitado, sin costo extra (92).",
     riesgo: "Si no actuás, la UCI abre la noche en dotación crítica.",
-    siguiente: "Camila confirma y la dotación vuelve a verde.",
-    cta: "Resolver brecha",
+    siguiente: "Gestión Central la contacta y, si acepta, confirmás vos.",
+    cta: "Solicitar cobertura",
     ruta: "/brechas",
   },
   operacion: {
@@ -432,8 +432,8 @@ const COPILOTO: Record<Perfil, Copiloto> = {
   jefatura: {
     estado: "1 brecha crítica",
     mensaje: "La UCI abre la noche con 1 enfermera menos (22:00).",
-    sugerencia: "Asigná a Camila F. — apoyo habilitado, sin costo extra (NEX 92).",
-    cta: "Resolver ahora",
+    sugerencia: "Solicitá la cobertura a Gestión Central — NEX sugiere a Camila F. (92).",
+    cta: "Solicitar cobertura",
     ruta: "/brechas",
     tono: "crit",
   },

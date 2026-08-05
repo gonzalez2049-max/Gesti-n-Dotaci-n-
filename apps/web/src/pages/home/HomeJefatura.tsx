@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Icon } from "@/components/icons";
 import { Gauge } from "@/components/Gauge";
 import type { HomeJefatura as T } from "@/data/home";
-import { GuiaNexBar, Heatmap, NarrativaHead, NexPanel, PulseLine, Timeline, toneStyle } from "./parts";
+import { GuiaNexBar, Heatmap, NarrativaHead, PulseLine, Timeline, toneStyle } from "./parts";
 
 const semTone = (s: string) => (s === "critico" ? "crit" : s === "riesgo" ? "warn" : s === "exceso" ? "info" : "good");
 const semLabel: Record<string, string> = { critico: "Crítico", riesgo: "En riesgo", exceso: "Sobredotado", equilibrio: "Estable" };
@@ -64,7 +64,7 @@ export function HomeJefatura({ d }: { d: T }) {
           <div className="foco-sub">{d.foco.subt}</div>
 
           <div className="foco-recos">
-            <div className="foco-recolab">Índice NEX · mejores candidatos</div>
+            <div className="foco-recolab">Índice NEX · posibles reemplazos (los contacta Gestión Central)</div>
             {d.foco.candidatos.map((cand, i) => (
               <div className={`cand ${i === 0 ? "best" : ""}`} key={cand.nombre} style={toneStyle(cand.tono)}>
                 <span className="cand-rank">{i + 1}</span>
@@ -86,17 +86,12 @@ export function HomeJefatura({ d }: { d: T }) {
           </div>
 
           <button className="btn prim foco-cta" type="button" onClick={() => navigate("/brechas")}>
-            <Icon name="send" size={14} /> Resolver esta brecha
+            <Icon name="send" size={14} /> Solicitar cobertura a Gestión Central
           </button>
         </section>
 
-        <NexPanel nex={d.nex} />
-      </div>
-
-      {/* ---- ACTIVIDAD EN VIVO ---- */}
-      <section className="panel tl-panel">
         <Timeline eventos={d.timeline} titulo="Actividad en vivo" live />
-      </section>
+      </div>
     </div>
   );
 }
