@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getPlanner } from "@/api/api";
 import { PageHead, SearchInput, Segmented } from "@/components/kit";
-import { Drawer } from "@/components/Drawer";
 import { useToast } from "@/components/Toast";
 import { useApp } from "@/app/store";
 import {
@@ -208,7 +207,7 @@ export function Programacion() {
                 {visibles.map((p) => (
                   <tr key={p.id}>
                     <td className="namecol">
-                      <div className="namecell" onClick={() => setSelPersona(p.id)}>
+                      <div className="namecell" onClick={() => { setSelDef(null); setSelPersona(p.id); }}>
                         <span className="av2">{p.iniciales}</span>
                         <span className="nm2">{p.nombre.split(" ")[0]} {p.nombre.split(" ")[1]?.[0]}.<small>{p.estamento} · <TurnoBadge p={p} /></small></span>
                       </div>
@@ -258,7 +257,7 @@ export function Programacion() {
                         <td key={d} className="pltd">
                           <div
                             className={`covcell ${cls}${sel ? " sel" : ""}`}
-                            onClick={() => !soloLectura && def !== 0 && setSelDef({ day: d, turno })}
+                            onClick={() => !soloLectura && def !== 0 && (setSelPersona(null), setSelDef({ day: d, turno }))}
                             title={def > 0 ? `Déficit ${def}` : def < 0 ? `Exceso ${-def}` : "OK"}
                           >
                             {cnt}
@@ -317,6 +316,19 @@ export function Programacion() {
             )}
           </aside>
         )}
+
+        {!selDef && persona && (
+          <aside className="pl-nex pl-side">
+            <div className="pl-nex-head">
+              <div>
+                <div className="eyebrow">{persona.estamento} · {persona.unidad}</div>
+                <div className="pl-nex-t">{persona.nombre}</div>
+              </div>
+              <button className="dclose" onClick={() => setSelPersona(null)} aria-label="Cerrar" type="button">✕</button>
+            </div>
+            <PersonaDetalle persona={persona} celdas={grid[persona.id]} n={n} />
+          </aside>
+        )}
       </div>
 
       {/* editor popover */}
@@ -334,10 +346,6 @@ export function Programacion() {
         </>
       )}
 
-      {/* person detail */}
-      <Drawer open={!!persona} onClose={() => setSelPersona(null)} eyebrow={persona?.estamento} title={persona?.nombre}>
-        {persona && <PersonaDetalle persona={persona} celdas={grid[persona.id]} n={n} />}
-      </Drawer>
     </div>
   );
 }

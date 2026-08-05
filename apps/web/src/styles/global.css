@@ -1567,9 +1567,18 @@ h1.title { font-weight: 760; letter-spacing: -0.025em; }
 .pl-nex-empty { font-size: 12.5px; color: var(--ink2); line-height: 1.5; background: var(--surface-2); border: 1px dashed var(--hairline); border-radius: var(--r-sm); padding: 14px; margin-top: 11px; }
 .pl-nex-list { margin-top: 11px; display: flex; flex-direction: column; gap: 8px; }
 .pl-nex .nexrec { margin: 0; }
+/* Variante neutra: detalle de persona (sin acento NEX), un poco más ancha. */
+.pl-side {
+  flex-basis: 340px; width: 340px;
+  background: var(--glass);
+  border-color: var(--glass-brd);
+  box-shadow: var(--e2), 0 1px 0 var(--hi) inset;
+  max-height: calc(100vh - 130px); overflow-y: auto;
+}
 @media (max-width: 900px) {
   .pl-console { flex-direction: column; }
   .pl-nex { width: 100%; flex: none; position: static; }
+  .pl-side { width: 100%; flex-basis: auto; max-height: none; }
 }
 
 /* ============================================================= */
