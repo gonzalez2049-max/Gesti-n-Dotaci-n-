@@ -112,13 +112,11 @@ const JEFATURA: HomeJefatura = {
     ],
   },
   guia: {
-    ocurre: "La UCI queda con 1 enfermera menos en el turno noche (22:00).",
+    ocurre: "UCI: 12 de 14 en el turno noche (22:00) — falta 1 enfermera.",
     hacer: "Solicitá la cobertura a Gestión Central.",
     recomienda: "NEX sugiere a Camila F. — apoyo habilitado, sin costo extra (92).",
     riesgo: "Si no actuás, la UCI abre la noche en dotación crítica.",
     siguiente: "Gestión Central la contacta y, si acepta, confirmás vos.",
-    cta: "Solicitar cobertura",
-    ruta: "/brechas",
   },
   operacion: {
     semaforo: "riesgo",
@@ -204,8 +202,6 @@ const SUBDIRECCION: HomeSubdireccion = {
     recomienda: "Sumar 1 cupo estable reduce ~40% la hora extra proyectada.",
     riesgo: "Si no se ajusta, sube la hora extra y el riesgo de brechas nocturnas.",
     siguiente: "Se simula la nueva malla y se valida con la Jefatura.",
-    cta: "Ver análisis de UCI",
-    ruta: "/analitica",
   },
   indicadores: [
     { label: "Cobertura global", valor: "94", unidad: "%", delta: "+2,1", tono: "good", dir: "up", spark: [89, 90, 91, 92, 93, 94] },
@@ -268,8 +264,6 @@ const FUNCIONARIO: HomeFuncionario = {
     recomienda: "Aceptar suma +1 libre compensatorio y tu carga sigue equilibrada.",
     riesgo: "Si no respondés en 2 h, la oferta pasa al siguiente candidato.",
     siguiente: "Si aceptás, tu Jefatura confirma el turno.",
-    cta: "Responder oferta",
-    ruta: "/coberturas",
   },
   proximoTurno: { fecha: "Hoy", hora: "22:00", unidad: "UCI", tipo: "Noche", horas: 12, en: "empieza en 6 h" },
   oferta: {
@@ -323,8 +317,6 @@ const ADMINISTRADOR: HomeAdmin = {
     recomienda: "2 personas quedan “por vencer”: conviene avisar a sus jefaturas.",
     riesgo: "Si no se revisa, podrían caducar habilitaciones sin aviso.",
     siguiente: "Se notifica a las jefaturas y se recalculan las alertas.",
-    cta: "Ver reevaluaciones",
-    ruta: "/administracion",
   },
   salud: [
     { icon: "settings", label: "Reglas activas", valor: "12", estado: "good", nota: "2 propagándose" },
@@ -386,8 +378,6 @@ const GESTION: HomeGestion = {
     recomienda: "Camila F. — apoyo habilitado, libre y sin costo extra.",
     riesgo: "Si nadie acepta, la brecha se escala y la unidad abre bajo dotación.",
     siguiente: "Si acepta, se envía a la Jefatura para su confirmación final.",
-    cta: "Abrir cobertura",
-    ruta: "/coberturas",
   },
   cola: [
     { unidad: "UCI", turno: "Noche · hoy 22:00", fecha: "falta 1", jefatura: "José M.", estado: "Por contactar", detalle: "NEX sugiere a Camila F. (#1)", tono: "crit" },

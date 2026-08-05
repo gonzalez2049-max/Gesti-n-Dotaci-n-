@@ -14,8 +14,10 @@ import {
   coberturaDia,
   diasDelMes,
   generarGrid,
+  horarioTurno,
   nexRecs,
   nochesDelMes,
+  releva09,
   turnoDe,
   turnosDelMes,
 } from "@/data/planner";
@@ -215,6 +217,7 @@ export function Programacion() {
                       const t = viewGrid[p.id]?.[d] ?? "libre";
                       const dow = new Date(year, month, d + 1).getDay();
                       const wknd = dow === 0 || dow === 6;
+                      const hor = horarioTurno(t, releva09(year, month, d));
                       return (
                         <td className="pltd" key={d}>
                           <button
@@ -230,7 +233,7 @@ export function Programacion() {
                               moveCell(fp, Number(fd), p.id, d);
                             }}
                             onClick={(e) => editable && setEdit({ p: p.id, d, x: e.clientX, y: e.clientY })}
-                            title={`${p.nombre} · ${d + 1} ${MESES[month]}`}
+                            title={`${p.nombre} · ${d + 1} ${MESES[month]}${hor ? ` · ${TURNO_LABEL[t]} ${hor}` : ` · ${TURNO_LABEL[t]}`}`}
                             type="button"
                           >
                             {SHORT[t]}
@@ -276,6 +279,8 @@ export function Programacion() {
             <span><span className="sw permiso">PA</span> Permiso adm.</span>
             <span><span className="sw feriado">FL</span> Feriado legal</span>
             <span><span className="sw libre"></span> Libre</span>
+            <span className="pl-legend-sep" />
+            <span className="pl-hor">Largo <b>08–20</b> · Noche <b>20–08</b> · finde/festivo relevo <b>09:00</b></span>
             <span className="pl-legend-sep" />
             <span><span className="sw" style={{ background: "var(--crit-s)", color: "var(--crit)" }}>!</span> Déficit</span>
             <span><span className="sw" style={{ background: "var(--info-s)", color: "var(--info)" }}>+</span> Exceso</span>
@@ -379,6 +384,12 @@ function PersonaDetalle({ persona, celdas, n }: { persona: PlannerPersona; celda
         <MiniStat label="Horas estimadas" value={`${turnos * 12} h`} tone="neutro" />
         <MiniStat label="Noches" value={String(noches)} tone={noches > 8 ? "warn" : "neutro"} />
         <MiniStat label="Días libres" value={String(libres)} tone="neutro" />
+      </div>
+      <div className="sect">Horarios del cuarto turno</div>
+      <div className="pl-horbox">
+        <div className="pl-horrow"><span className="sw largo">L</span><b>Largo</b><span>08:00–20:00 · hábil</span><em>09:00–20:00 · finde/festivo</em></div>
+        <div className="pl-horrow"><span className="sw noche">N</span><b>Noche</b><span>20:00–08:00 · hábil</span><em>20:00–09:00 · finde/festivo</em></div>
+        <div className="pl-hornote">En fin de semana y festivos el relevo de la mañana se corre a las 09:00.</div>
       </div>
       <div className="sect">Distribución del mes</div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>

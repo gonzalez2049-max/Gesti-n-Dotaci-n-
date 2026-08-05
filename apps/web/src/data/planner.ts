@@ -16,6 +16,30 @@ export function turnoDe(p: { patronOffset: number; equipo: string }): string {
   return p.equipo === "Apoyo" ? "Apoyo" : TURNOS[p.patronOffset % 4];
 }
 
+/** Festivos (demo). Clave "año-mes" (mes 0-based) → días 1-based del mes.
+ *  Agosto 2026: 15 · Asunción de la Virgen. */
+const FESTIVOS: Record<string, number[]> = {
+  "2026-7": [15],
+};
+export function esFestivo(year: number, month: number, dia1: number): boolean {
+  return (FESTIVOS[`${year}-${month}`] ?? []).includes(dia1);
+}
+/** En fin de semana y festivos el relevo de la mañana se corre a las 09:00. */
+export function releva09(year: number, month: number, dia0: number): boolean {
+  const dow = new Date(year, month, dia0 + 1).getDay();
+  return dow === 0 || dow === 6 || esFestivo(year, month, dia0 + 1);
+}
+
+/** Horario de cada turno del cuarto turno.
+ *  Día hábil:  Largo 08:00–20:00 · Noche 20:00–08:00 (12 h).
+ *  Fin de semana y festivos: el relevo de la mañana pasa a las 09:00, así
+ *  que el Largo ENTRA 09:00 y la Noche SALE 09:00. */
+export function horarioTurno(t: Turno, relevo09: boolean): string {
+  if (t === "largo") return relevo09 ? "09:00–20:00" : "08:00–20:00";
+  if (t === "noche") return relevo09 ? "20:00–09:00" : "20:00–08:00";
+  return "";
+}
+
 export function diasDelMes(year: number, month: number): number {
   return new Date(year, month + 1, 0).getDate();
 }

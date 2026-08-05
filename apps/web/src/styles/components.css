@@ -1005,3 +1005,57 @@ td.pltd {
   font-weight: 700;
   font-size: 8px;
 }
+.pl-hor {
+  color: var(--ink2);
+}
+.pl-hor b {
+  color: var(--ink);
+  font-weight: 700;
+}
+/* Horarios en el detalle de persona */
+.pl-horbox {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 4px 0 2px;
+}
+.pl-horrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--ink2);
+}
+.pl-horrow .sw {
+  width: 18px;
+  height: 16px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 9px;
+  flex: none;
+}
+.pl-horrow b {
+  color: var(--ink);
+  font-weight: 650;
+  min-width: 42px;
+}
+.pl-horrow span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.pl-horrow em {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink3);
+  margin-left: auto;
+}
+.pl-hornote {
+  font-size: 11px;
+  color: var(--ink3);
+  line-height: 1.4;
+  margin-top: 2px;
+}
