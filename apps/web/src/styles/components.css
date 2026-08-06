@@ -1140,3 +1140,14 @@ td.pltd {
   .hoja-scrim, .hoja-bar { display: none !important; }
   .hoja-wrap { overflow: visible !important; padding: 0 !important; }
 }
+
+/* selector de turno (día/noche) en la barra de la hoja */
+.hoja-seg { display: inline-flex; gap: 2px; background: var(--surface-2); border: 1px solid var(--hairline); border-radius: 8px; padding: 2px; margin-left: 12px; }
+.hoja-seg button { border: 0; background: transparent; color: var(--ink2); font: inherit; font-size: 12px; font-weight: 600; padding: 5px 13px; border-radius: 6px; cursor: pointer; }
+.hoja-seg button.on { background: var(--surface); color: var(--ink); box-shadow: var(--e1, 0 1px 2px rgba(0,0,0,.12)); }
+/* chip del grupo de turno (A/B/C/D) dentro del documento (siempre claro) */
+.hoja-grupo { display: inline-flex; align-items: center; padding: 1px 8px; border-radius: 5px; font-weight: 700; font-size: 11.5px; box-shadow: inset 0 0 0 1px currentColor; }
+.hoja-grupo.t-A { color: #2f6bd6; background: #eaf1fd; }
+.hoja-grupo.t-B { color: #12876f; background: #e6f6f1; }
+.hoja-grupo.t-C { color: #b06f0a; background: #fbf1e0; }
+.hoja-grupo.t-D { color: #8a49b0; background: #f4ecfa; }

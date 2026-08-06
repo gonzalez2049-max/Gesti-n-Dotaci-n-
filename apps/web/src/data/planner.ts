@@ -16,6 +16,13 @@ export function turnoDe(p: { patronOffset: number; equipo: string }): string {
   return p.equipo === "Apoyo" ? "Apoyo" : TURNOS[p.patronOffset % 4];
 }
 
+/** Letra del turno (A/B/C/D) del grupo que cubre un turno (largo/noche) ese día.
+ *  En el ciclo, largo = fase 0 y noche = fase 1. */
+export function grupoDelTurno(dia: number, turno: "largo" | "noche"): string {
+  const fase = turno === "largo" ? 0 : 1;
+  return TURNOS[(((fase - dia) % 4) + 4) % 4];
+}
+
 /** Festivos (demo). Clave "año-mes" (mes 0-based) → días 1-based del mes.
  *  Agosto 2026: 15 · Asunción de la Virgen. */
 const FESTIVOS: Record<string, number[]> = {
@@ -50,19 +57,18 @@ export function primerDow(year: number, month: number): number {
 /** Ausencias de ejemplo (vacaciones/licencias) que crean déficits reales
  *  para demostrar alertas y déficits. [díaInicio, díaFin] 0-based. */
 const AUSENCIAS: Record<string, [number, number]> = {
-  f1: [3, 7], // Ana G. · UCI
-  f4: [14, 18], // Elena R. · UCI
-  f7: [9, 11], // Sofía D. · UCI
+  u02: [3, 7], // Turno A · enfermero · vacaciones
+  u13: [14, 18], // Turno B · enfermero · licencia
+  u28: [9, 11], // Turno C · TENS
   f9: [6, 9], // Rocío S. · Urgencias
 };
 
 /** Marcas especiales de ejemplo para mostrar los tipos de celda. [día0-based, tipo]. */
 const ESPECIALES: Record<string, [number, Turno][]> = {
-  f2: [[13, "cambio"]], // cambio de turno
-  f3: [[16, "feriado"]], // feriado legal
-  f5: [[19, "permiso"]], // permiso administrativo
-  f6: [[23, "descanso"]], // descanso compensatorio
-  f8: [[27, "cambio"]],
+  u03: [[13, "cambio"]], // cambio de turno
+  u14: [[16, "feriado"]], // feriado legal
+  u25: [[19, "permiso"]], // permiso administrativo
+  u36: [[23, "descanso"]], // descanso compensatorio
 };
 
 /** Genera la malla base del mes desde el patrón + desfase de cada persona. */
@@ -121,8 +127,8 @@ export const EST_CORTO: Record<string, string> = {
  *  La Jefatura valida la hoja contra estos mínimos. */
 export const DOTACION_MIN: Record<string, Record<"largo" | "noche", Record<string, number>>> = {
   UCI: {
-    largo: { "Enfermero/a": 1, TENS: 1, Auxiliar: 1 },
-    noche: { "Enfermero/a": 1, TENS: 1, Auxiliar: 1 },
+    largo: { "Enfermero/a": 4, TENS: 3, Auxiliar: 1 },
+    noche: { "Enfermero/a": 3, TENS: 2, Auxiliar: 1 },
   },
   Urgencias: {
     largo: { "Enfermero/a": 2, TENS: 1 },

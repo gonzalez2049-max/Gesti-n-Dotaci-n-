@@ -5,10 +5,10 @@ import { useToast } from "@/components/Toast";
 import {
   DOTACION_MIN,
   MESES,
-  TURNO_LABEL,
   conteoEstamentos,
   firmaElectronica,
   folioHoja,
+  grupoDelTurno,
   horarioTurno,
   jefeDeTurno,
   releva09,
@@ -28,7 +28,9 @@ interface Props {
   onClose: () => void;
 }
 
-const JORNADA: Record<"largo" | "noche", string> = { largo: "Jornada diurna", noche: "Jornada nocturna" };
+type Tt = "largo" | "noche";
+const TT_LABEL: Record<Tt, string> = { largo: "Turno Largo · Día", noche: "Turno Noche" };
+const JORNADA: Record<Tt, string> = { largo: "Jornada diurna", noche: "Jornada nocturna" };
 
 interface Firma {
   por: string;
@@ -39,13 +41,13 @@ interface Firma {
 
 export function HojaDiaria({ unidad, year, month, day, personas, grid, jefatura, soloLectura, onClose }: Props) {
   const toast = useToast();
-  const [firma, setFirma] = useState<Firma | null>(null);
+  const [turno, setTurno] = useState<Tt>("largo");
+  const [firmas, setFirmas] = useState<Partial<Record<Tt, Firma>>>({});
   const [correo, setCorreo] = useState("");
   const [enviar, setEnviar] = useState(false);
 
   const dia1 = day + 1;
   const relevo = releva09(year, month, day);
-  const folio = folioHoja(unidad, year, month, dia1);
   const fechaLarga = new Date(year, month, dia1).toLocaleDateString("es-CL", {
     weekday: "long",
     day: "numeric",
@@ -54,22 +56,20 @@ export function HojaDiaria({ unidad, year, month, day, personas, grid, jefatura,
   });
 
   const min = DOTACION_MIN[unidad] ?? { largo: {}, noche: {} };
-  const turnos = useMemo(
-    () =>
-      (["largo", "noche"] as const).map((t) => {
-        const lista = rosterTurno(personas, grid, unidad, day, t);
-        return { turno: t, lista, jefe: jefeDeTurno(lista), conteo: conteoEstamentos(lista, min[t] ?? {}) };
-      }),
-    [personas, grid, unidad, day, min],
-  );
+  const { lista, jefe, conteo, grupo } = useMemo(() => {
+    const l = rosterTurno(personas, grid, unidad, day, turno);
+    return { lista: l, jefe: jefeDeTurno(l), conteo: conteoEstamentos(l, min[turno] ?? {}), grupo: grupoDelTurno(day, turno) };
+  }, [personas, grid, unidad, day, turno, min]);
 
-  const totalDeficit = turnos.reduce((a, s) => a + s.conteo.filter((c) => !c.ok).length, 0);
-  const cumple = totalDeficit === 0;
+  const folio = `${folioHoja(unidad, year, month, dia1)}-${grupo}`;
+  const deficit = conteo.filter((c) => !c.ok).length;
+  const cumple = deficit === 0;
+  const firma = firmas[turno];
 
   const validar = () => {
     const ts = new Date().toLocaleString("es-CL", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
-    setFirma({ por: jefatura, codigo: folio, firma: firmaElectronica(`${folio}·${jefatura}·${Date.now()}`), ts });
-    toast("Hoja validada y firmada electrónicamente");
+    setFirmas((f) => ({ ...f, [turno]: { por: jefatura, codigo: folio, firma: firmaElectronica(`${folio}·${jefatura}·${Date.now()}`), ts } }));
+    toast(`Hoja del ${turno === "largo" ? "día" : "turno noche"} validada y firmada`);
   };
 
   const enviarCorreo = () => {
@@ -87,17 +87,14 @@ export function HojaDiaria({ unidad, year, month, day, personas, grid, jefatura,
         <span className="hoja-bar-t">
           <Icon name="calendar" size={15} /> Hoja diaria · {unidad} · {dia1} {MESES[month]}
         </span>
+        <div className="hoja-seg" role="group" aria-label="Turno">
+          <button className={turno === "largo" ? "on" : ""} onClick={() => setTurno("largo")} type="button">Largo (día)</button>
+          <button className={turno === "noche" ? "on" : ""} onClick={() => setTurno("noche")} type="button">Noche</button>
+        </div>
         <span style={{ flex: 1 }} />
         {enviar ? (
           <span className="hoja-mail">
-            <input
-              className="field2"
-              type="email"
-              placeholder="correo@hospital.cl"
-              value={correo}
-              onChange={(e) => setCorreo(e.target.value)}
-              autoFocus
-            />
+            <input className="field2" type="email" placeholder="correo@hospital.cl" value={correo} onChange={(e) => setCorreo(e.target.value)} autoFocus />
             <button className="btn prim" onClick={enviarCorreo} type="button"><Icon name="send" size={13} /> Enviar</button>
             <button className="btn ghost" onClick={() => setEnviar(false)} type="button">Cancelar</button>
           </span>
@@ -112,12 +109,11 @@ export function HojaDiaria({ unidad, year, month, day, personas, grid, jefatura,
 
       <div className="hoja-wrap">
         <article className="hoja">
-          {/* encabezado */}
           <header className="hoja-head">
             <div className="hoja-logo"><span className="logo" /> NEX&nbsp;Shift</div>
             <div className="hoja-title">
               <h1>Hoja de Programación Diaria</h1>
-              <div className="hoja-sub">Unidad de {unidad} · Sede Central</div>
+              <div className="hoja-sub">{TT_LABEL[turno]} · Unidad de {unidad} · Sede Central</div>
             </div>
             <div className="hoja-folio">
               <div className="hoja-folio-k">Folio</div>
@@ -127,86 +123,67 @@ export function HojaDiaria({ unidad, year, month, day, personas, grid, jefatura,
 
           <div className="hoja-meta">
             <span><b>Fecha</b> {fechaLarga}</span>
-            <span><b>Jornada</b> {relevo ? "Fin de semana / festivo (relevo 09:00)" : "Día hábil"}</span>
-            <span><b>Turnos</b> Diurno y Nocturno</span>
+            <span><b>Turno</b> <span className={`hoja-grupo t-${grupo}`}>Turno {grupo}</span></span>
+            <span><b>Jornada</b> {JORNADA[turno]}</span>
+            <span><b>Horario</b> {horarioTurno(turno, relevo)}{relevo ? " (relevo 09:00)" : ""}</span>
+            <span><b>Jefe de turno</b> {jefe ? jefe.nombre : "— sin enfermero designado"}</span>
           </div>
 
-          {/* secciones por turno */}
-          {turnos.map(({ turno, lista, jefe, conteo }) => (
-            <section className="hoja-turno" key={turno}>
-              <div className="hoja-turno-h">
-                <span className="hoja-turno-t">{TURNO_LABEL[turno]}</span>
-                <span className="hoja-turno-j">{JORNADA[turno]}</span>
-                <span className="hoja-turno-hr">{horarioTurno(turno, relevo)}</span>
-                <span style={{ flex: 1 }} />
-                <span className="hoja-lider">
-                  Jefe de turno: <b>{jefe ? jefe.nombre : "—"}</b>
-                </span>
-              </div>
+          {lista.length === 0 ? (
+            <div className="hoja-vacio">Sin personal asignado a este turno en la fecha seleccionada.</div>
+          ) : (
+            <table className="hoja-tabla">
+              <thead>
+                <tr>
+                  <th style={{ width: 34 }}>N°</th>
+                  <th>Nombre</th>
+                  <th style={{ width: 130 }}>Estamento</th>
+                  <th style={{ width: 96 }}>Rol</th>
+                  <th style={{ width: 110 }}>Horario</th>
+                </tr>
+              </thead>
+              <tbody>
+                {lista.map((p, i) => (
+                  <tr key={p.id}>
+                    <td className="mono">{i + 1}</td>
+                    <td>{p.nombre}</td>
+                    <td>{p.estamento}</td>
+                    <td>{jefe && p.id === jefe.id ? "Jefe de turno" : "—"}</td>
+                    <td className="mono">{horarioTurno(turno, relevo)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
 
-              {lista.length === 0 ? (
-                <div className="hoja-vacio">Sin personal asignado a este turno.</div>
-              ) : (
-                <table className="hoja-tabla">
-                  <thead>
-                    <tr>
-                      <th style={{ width: 34 }}>N°</th>
-                      <th>Nombre</th>
-                      <th style={{ width: 130 }}>Estamento</th>
-                      <th style={{ width: 90 }}>Rol</th>
-                      <th style={{ width: 110 }}>Horario</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {lista.map((p, i) => (
-                      <tr key={p.id}>
-                        <td className="mono">{i + 1}</td>
-                        <td>{p.nombre}</td>
-                        <td>{p.estamento}</td>
-                        <td>{jefe && p.id === jefe.id ? "Jefe de turno" : p.lider ? "Líder" : "—"}</td>
-                        <td className="mono">{horarioTurno(turno, relevo)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
+          <table className="hoja-dot">
+            <thead>
+              <tr>
+                <th>Validación de dotación</th>
+                {conteo.map((c) => <th key={c.estamento}>{c.estamento}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Mínimo exigido</td>
+                {conteo.map((c) => <td className="mono" key={c.estamento}>{c.min}</td>)}
+              </tr>
+              <tr>
+                <td>Presentes</td>
+                {conteo.map((c) => <td className="mono" key={c.estamento}>{c.presentes}</td>)}
+              </tr>
+              <tr>
+                <td>Estado</td>
+                {conteo.map((c) => (
+                  <td key={c.estamento} className={c.ok ? "hoja-ok" : "hoja-def"}>{c.ok ? "✓ Cumple" : "⚠ Déficit"}</td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
 
-              {/* validación de dotación por estamento */}
-              <table className="hoja-dot">
-                <thead>
-                  <tr>
-                    <th>Validación de dotación</th>
-                    {conteo.map((c) => (
-                      <th key={c.estamento}>{c.estamento}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Mínimo exigido</td>
-                    {conteo.map((c) => <td className="mono" key={c.estamento}>{c.min}</td>)}
-                  </tr>
-                  <tr>
-                    <td>Presentes</td>
-                    {conteo.map((c) => <td className="mono" key={c.estamento}>{c.presentes}</td>)}
-                  </tr>
-                  <tr>
-                    <td>Estado</td>
-                    {conteo.map((c) => (
-                      <td key={c.estamento} className={c.ok ? "hoja-ok" : "hoja-def"}>
-                        {c.ok ? "✓ Cumple" : "⚠ Déficit"}
-                      </td>
-                    ))}
-                  </tr>
-                </tbody>
-              </table>
-            </section>
-          ))}
-
-          {/* validación / firma */}
           <footer className="hoja-firma">
             <div className={`hoja-firma-estado ${cumple ? "ok" : "def"}`}>
-              {cumple ? "✓ Dotación conforme a los mínimos exigidos" : `⚠ ${totalDeficit} déficit(s) de dotación — requiere gestión`}
+              {cumple ? "✓ Dotación conforme a los mínimos exigidos para este turno" : `⚠ ${deficit} déficit(s) de dotación en este turno — requiere gestión`}
             </div>
 
             {firma ? (
@@ -240,7 +217,7 @@ export function HojaDiaria({ unidad, year, month, day, personas, grid, jefatura,
                   <div className="hoja-firma-v">{jefatura} · Jefatura de {unidad}</div>
                 </div>
                 <button className="btn prim" onClick={validar} type="button">
-                  <Icon name="shield" size={14} /> Validar y firmar
+                  <Icon name="shield" size={14} /> Validar y firmar {turno === "largo" ? "el día" : "la noche"}
                 </button>
               </div>
             )}
