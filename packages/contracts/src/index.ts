@@ -311,11 +311,12 @@ export interface PlannerPersona {
   id: string;
   nombre: string;
   iniciales: string;
-  estamento: "Enfermero/a" | "TENS" | "Matrón/a";
+  estamento: "Enfermero/a" | "TENS" | "Auxiliar" | "Matrón/a";
   unidad: string;
   equipo: "Equipo A" | "Equipo B" | "Apoyo";
   patronOffset: number; // desfase del ciclo de cuarto turno
   habilitado: boolean; // habilitado y vigente para la unidad
+  lider?: boolean; // líder de equipo / jefe de turno
 }
 export interface PlannerRequerido {
   largo: number;

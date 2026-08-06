@@ -106,6 +106,99 @@ export function nochesDelMes(celdas: Turno[] | undefined): number {
   return (celdas ?? []).filter((t) => t === "noche").length;
 }
 
+/* ---------------- Hoja de programación diaria ---------------- */
+
+/** Orden y etiqueta corta de estamentos para la hoja diaria. */
+export const EST_ORDEN = ["Enfermero/a", "TENS", "Auxiliar", "Matrón/a"] as const;
+export const EST_CORTO: Record<string, string> = {
+  "Enfermero/a": "Enf.",
+  TENS: "TENS",
+  Auxiliar: "Aux.",
+  "Matrón/a": "Matrón",
+};
+
+/** Dotación mínima exigida por unidad y turno, por estamento.
+ *  La Jefatura valida la hoja contra estos mínimos. */
+export const DOTACION_MIN: Record<string, Record<"largo" | "noche", Record<string, number>>> = {
+  UCI: {
+    largo: { "Enfermero/a": 1, TENS: 1, Auxiliar: 1 },
+    noche: { "Enfermero/a": 1, TENS: 1, Auxiliar: 1 },
+  },
+  Urgencias: {
+    largo: { "Enfermero/a": 2, TENS: 1 },
+    noche: { "Enfermero/a": 1, TENS: 1 },
+  },
+  "Pabellón": {
+    largo: { "Enfermero/a": 1, "Matrón/a": 1 },
+    noche: { "Enfermero/a": 1 },
+  },
+};
+
+export interface PersonaTurno {
+  id: string;
+  nombre: string;
+  estamento: string;
+  unidad: string;
+  equipo: string;
+  lider?: boolean;
+}
+
+/** Personal de una unidad que trabaja un turno (largo/noche) en un día. */
+export function rosterTurno<T extends PersonaTurno>(
+  personas: T[],
+  grid: Record<string, Turno[]>,
+  unidad: string,
+  dia: number,
+  turno: "largo" | "noche",
+): T[] {
+  const orden = (e: string) => {
+    const i = EST_ORDEN.indexOf(e as (typeof EST_ORDEN)[number]);
+    return i < 0 ? 99 : i;
+  };
+  return personas
+    .filter((p) => p.unidad === unidad && grid[p.id]?.[dia] === turno)
+    .sort((a, b) => orden(a.estamento) - orden(b.estamento) || a.nombre.localeCompare(b.nombre));
+}
+
+/** Jefe de turno: el líder presente; si no hay, el primer enfermero.
+ *  Si no hay enfermero en el turno, no hay jefe designado (déficit de liderazgo). */
+export function jefeDeTurno<T extends PersonaTurno>(lista: T[]): T | null {
+  return lista.find((p) => p.lider && p.estamento === "Enfermero/a") ?? lista.find((p) => p.estamento === "Enfermero/a") ?? null;
+}
+
+/** Cuenta por estamento y compara con el mínimo exigido. */
+export function conteoEstamentos(
+  lista: PersonaTurno[],
+  min: Record<string, number>,
+): { estamento: string; min: number; presentes: number; ok: boolean }[] {
+  const claves = Array.from(new Set([...Object.keys(min), ...lista.map((p) => p.estamento)]));
+  claves.sort((a, b) => EST_ORDEN.indexOf(a as never) - EST_ORDEN.indexOf(b as never));
+  return claves.map((e) => {
+    const presentes = lista.filter((p) => p.estamento === e).length;
+    const m = min[e] ?? 0;
+    return { estamento: e, min: m, presentes, ok: presentes >= m };
+  });
+}
+
+const SIGLA: Record<string, string> = { UCI: "UCI", Urgencias: "URG", "Pabellón": "PAB" };
+/** Folio / código interno de validación: HPD-<UNIDAD>-<AAAAMMDD>. */
+export function folioHoja(unidad: string, year: number, month: number, dia1: number): string {
+  const mm = String(month + 1).padStart(2, "0");
+  const dd = String(dia1).padStart(2, "0");
+  return `HPD-${SIGLA[unidad] ?? unidad.slice(0, 3).toUpperCase()}-${year}${mm}${dd}`;
+}
+
+/** Firma electrónica simulada: hash corto y estable de la semilla de validación. */
+export function firmaElectronica(seed: string): string {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  const hex = (h >>> 0).toString(16).toUpperCase().padStart(8, "0");
+  return `${hex.slice(0, 4)}-${hex.slice(4)}`;
+}
+
 export const SHORT: Record<Turno, string> = {
   largo: "L",
   noche: "N",

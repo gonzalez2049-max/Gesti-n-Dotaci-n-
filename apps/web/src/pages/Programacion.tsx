@@ -4,6 +4,8 @@ import { getPlanner } from "@/api/api";
 import { PageHead, SearchInput, Segmented } from "@/components/kit";
 import { useToast } from "@/components/Toast";
 import { useApp } from "@/app/store";
+import { profileByKey } from "@/data/profiles";
+import { HojaDiaria } from "@/pages/HojaDiaria";
 import {
   MESES,
   DOW,
@@ -46,6 +48,8 @@ export function Programacion() {
   const [selPersona, setSelPersona] = useState<string | null>(null);
   const [edit, setEdit] = useState<{ p: string; d: number; x: number; y: number } | null>(null);
   const [pubV, setPubV] = useState(0);
+  const [selDay, setSelDay] = useState(now.getDate() - 1);
+  const [hoja, setHoja] = useState(false);
 
   const cache = useRef<Record<string, Record<string, Turno[]>>>({});
   const pub = useRef<Record<string, Record<string, Turno[]>>>({});
@@ -58,6 +62,7 @@ export function Programacion() {
     if (!cache.current[monthKey]) cache.current[monthKey] = generarGrid(data.personas, year, month);
     setGrid(cache.current[monthKey]);
     setWin(0);
+    setSelDay((d) => Math.min(d, diasDelMes(year, month) - 1));
   }, [data, monthKey, year, month]);
 
   const personas = data?.personas ?? [];
@@ -139,7 +144,12 @@ export function Programacion() {
       <PageHead
         eyebrow={soloLectura ? "Mi programación · solo lectura" : "Programación · planner mensual"}
         title={soloLectura ? <>Mi malla <span className="thin">del mes</span></> : <>Centro operativo <span className="thin">de dotación</span></>}
-        actions={soloLectura ? undefined : <button className="btn prim" onClick={publicar} disabled={!editable} type="button">Publicar malla</button>}
+        actions={
+          <>
+            <button className="btn ghost" onClick={() => setHoja(true)} type="button">Hoja del día {selDay + 1}</button>
+            {!soloLectura && <button className="btn prim" onClick={publicar} disabled={!editable} type="button">Publicar malla</button>}
+          </>
+        }
       />
       <div className="pltoolbar">
         <div className="monthnav">
@@ -190,7 +200,13 @@ export function Programacion() {
                     const dow = new Date(year, month, d + 1).getDay();
                     const wknd = dow === 0 || dow === 6;
                     return (
-                      <th key={d} className={`dayhead${wknd ? " wknd" : ""}`}>
+                      <th
+                        key={d}
+                        className={`dayhead${wknd ? " wknd" : ""}${selDay === d ? " sel" : ""}`}
+                        onClick={() => setSelDay(d)}
+                        title={`Seleccionar día ${d + 1} para la hoja diaria`}
+                        style={{ cursor: "pointer" }}
+                      >
                         <div className="dl">{DOW[dow]}</div>
                         <div className="dn">{d + 1}</div>
                       </th>
@@ -215,7 +231,7 @@ export function Programacion() {
                       return (
                         <td className="pltd" key={d}>
                           <button
-                            className={`plcell ${t}${wknd ? " wknd" : ""}${changed(p.id, d) ? " changed" : ""}`}
+                            className={`plcell ${t}${wknd ? " wknd" : ""}${changed(p.id, d) ? " changed" : ""}${selDay === d ? " colsel" : ""}`}
                             draggable={editable && t !== "libre"}
                             onDragStart={(e) => e.dataTransfer.setData("text/plain", `${p.id}|${d}`)}
                             onDragOver={(e) => { if (editable) { e.preventDefault(); e.currentTarget.classList.add("dragover"); } }}
@@ -310,6 +326,19 @@ export function Programacion() {
         </>
       )}
 
+      {hoja && (
+        <HojaDiaria
+          unidad={unidad}
+          year={year}
+          month={month}
+          day={selDay}
+          personas={personas}
+          grid={viewGrid}
+          jefatura={profileByKey(profile)?.quien ?? "Jefatura"}
+          soloLectura={soloLectura}
+          onClose={() => setHoja(false)}
+        />
+      )}
     </div>
   );
 }
