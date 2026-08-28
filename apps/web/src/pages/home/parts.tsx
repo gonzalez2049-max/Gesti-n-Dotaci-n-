@@ -42,15 +42,18 @@ export function NarrativaHead({ n }: { n: TNarrativa }) {
 
 /* ---------- línea de pulso (señal viva ambiental) ---------- */
 export function PulseLine({ tone = "good", height = 46 }: { tone?: Tono; height?: number }) {
-  const seg = "M0 23 H34 l4 -3 l3 6 l5 -17 l5 26 l4 -12 H120";
+  const beats = 4;
+  let d = "M0 23";
+  for (let i = 0; i < beats; i++) {
+    const x = i * 120;
+    d += ` H${x + 34} l4 -3 l3 6 l5 -17 l5 26 l4 -12 H${x + 120}`;
+  }
+  const W = beats * 120;
   return (
-    <svg className="ecg" viewBox="0 0 240 46" preserveAspectRatio="none" style={{ height, ...toneStyle(tone) }} aria-hidden="true">
-      <g className="ecg-g" fill="none" stroke="var(--tn)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        {[0, 120, 240].map((x) => (
-          <path key={x} d={seg} transform={`translate(${x} 0)`} />
-        ))}
-      </g>
-      <circle className="ecg-dot" r="3.2" cy="23" fill="var(--tn)" />
+    <svg className="ecg" viewBox={`0 0 ${W} 46`} preserveAspectRatio="none" style={{ height, ...toneStyle(tone) }} aria-hidden="true">
+      <path className="ecg-base" d={d} fill="none" stroke="var(--tn)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path className="ecg-glow" d={d} pathLength={100} fill="none" stroke="var(--tn)" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path className="ecg-run" d={d} pathLength={100} fill="none" stroke="var(--tn)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

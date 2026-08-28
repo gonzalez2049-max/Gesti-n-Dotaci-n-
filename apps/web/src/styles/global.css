@@ -1015,10 +1015,12 @@ h1.title { font-weight: 760; letter-spacing: -0.025em; }
 /* ---------- operación en vivo ---------- */
 .ops-tag { margin-left: auto; font-weight: 700; font-size: 11px; letter-spacing: 0.02em; padding: 3px 10px; border-radius: 99px; background: color-mix(in srgb, var(--tn) 15%, transparent); }
 .ecg { display: block; width: 100%; margin: 2px 0 16px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
-.ecg-g { animation: ecgscroll 3s linear infinite; opacity: 0.85; }
-@keyframes ecgscroll { to { transform: translateX(-120px); } }
-.ecg-dot { animation: ecgdot 3s linear infinite; filter: drop-shadow(0 0 5px var(--tn)); }
-@keyframes ecgdot { from { transform: translateX(0); } to { transform: translateX(240px); } }
+/* trazado base tenue */
+.ecg-base { opacity: 0.24; }
+/* la luz recorre el trazo del electro (sube y baja por los picos) */
+.ecg-run { stroke-dasharray: 3 97; stroke-dashoffset: 0; filter: drop-shadow(0 0 3px var(--tn)); animation: ecgrun 2.6s linear infinite; }
+.ecg-glow { stroke-dasharray: 9 91; stroke-dashoffset: 0; opacity: 0.5; filter: blur(2px); animation: ecgrun 2.6s linear infinite; }
+@keyframes ecgrun { to { stroke-dashoffset: -100; } }
 
 .units { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .unit { --tn: var(--good); background: var(--surface-2); border: 1px solid var(--hairline); border-radius: var(--r); padding: 11px 12px; position: relative; transition: transform var(--dur2) var(--ease), box-shadow var(--dur2) var(--ease); }
@@ -1182,7 +1184,7 @@ h1.title { font-weight: 760; letter-spacing: -0.025em; }
   .th-time { font-size: 38px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ecg-g, .ecg-dot, .nex-glow, .nex-orb, .th-glow, .nex-think i, .narr-live, .foco-pulse, .th-pulse, .sh-led, .unit-bar > span, .cand-bar > span, .dev-bar > span, .page > * { animation: none !important; }
+  .ecg-run, .ecg-glow, .nex-glow, .nex-orb, .th-glow, .nex-think i, .narr-live, .foco-pulse, .th-pulse, .sh-led, .unit-bar > span, .cand-bar > span, .dev-bar > span, .page > * { animation: none !important; }
 }
 
 /* ============================================================= */
